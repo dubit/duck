@@ -1,0 +1,2 @@
+# DUCK code of conduct
+We wish to foster a friendly and exciting environment for collaborating and helping one another. As part of that we expect any participants to uphold this by being welcoming, respectful and considerate to each other and following contribution rules.
