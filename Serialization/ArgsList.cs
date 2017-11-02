@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Dubit.DUCK.Serialization
 {
-	[SerializeField]
+	[Serializable]
 	public partial class ArgsList : ISerializationCallbackReceiver
 	{
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
@@ -16,21 +16,21 @@ namespace Dubit.DUCK.Serialization
 		{
 			var supportedTypesList = new SupportedType[]
 			{
-				SupportedType.Create(i => i.stringValues, (i,v) => i.stringValues = v),
-				SupportedType.Create(i => i.intValues, (i,v) => i.intValues = v),
-				SupportedType.Create(i => i.floatValues, (i,v) => i.floatValues = v),
-				SupportedType.Create(i => i.boolValues, (i,v) => i.boolValues = v),
+				SupportedType.Create(i => i.stringValues, (i, v) => i.stringValues = v),
+				SupportedType.Create(i => i.intValues, (i, v) => i.intValues = v),
+				SupportedType.Create(i => i.floatValues, (i, v) => i.floatValues = v),
+				SupportedType.Create(i => i.boolValues, (i, v) => i.boolValues = v),
 				// GameObject
 				// Transform
 				// Vector2
 				// Vector3
 				// Vector4
 			};
-			
+
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
 			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.Name, t => t);
 		}
-		
+
 		public IList<Type> ArgTypes
 		{
 			get { return argTypes; }
@@ -71,13 +71,13 @@ namespace Dubit.DUCK.Serialization
 					}
 				}
 			}
-			
+
 			argTypes = new ReadOnlyCollection<Type>(types);
 		}
 
 		public object this[int index]
 		{
-			get 
+			get
 			{
 				if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
 				return args[index];
@@ -85,17 +85,29 @@ namespace Dubit.DUCK.Serialization
 
 			set
 			{
-				var argType = value.GetType();
 				if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
-				if (!ValidateArgTypeForIndex(argType, index))
+
+				if (value != null)
 				{
-					throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
+					var argType = value.GetType();
+					if (!ValidateArgTypeForIndex(argType, index))
+					{
+						throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
+					}
 				}
-				
+				else
+				{
+					var argType = argTypes[index];
+					if (argType.IsValueType)
+					{
+						throw new ArgumentException("Null cannot be set against a value type. (index = " + index + ", type = " + argType.Name);
+					}
+				}
+
 				args[index] = value;
 			}
 		}
-		
+
 		public void Set<T>(int index, T arg)
 		{
 			var argType = typeof(T);

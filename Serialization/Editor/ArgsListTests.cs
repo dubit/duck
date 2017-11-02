@@ -125,6 +125,24 @@ namespace Dubit.DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectSetIndexerToThrowWhenNullIsUsedAgainstValueTypes()
+		{
+			var argsList = new ArgsList();
+			argsList.SetTypes(new List<Type> {typeof(int), typeof(int), typeof(int)});
+
+			Assert.Throws<ArgumentException>(() => { argsList[1] = null; });
+		}
+		
+		[Test]
+		public void ExpectSetIndexerNotToThrowWhenNullIsUsedAgainstReferenceTypes()
+		{
+			var argsList = new ArgsList();
+			argsList.SetTypes(new List<Type> { typeof(string) });
+
+			Assert.DoesNotThrow(() => { argsList[0] = null; });
+		}
+
+		[Test]
 		public void ExpectGetIndexerToThrowIfIndexIsOutOfBounds()
 		{
 			var argsList = new ArgsList();
