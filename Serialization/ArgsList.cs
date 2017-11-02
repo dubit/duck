@@ -1,0 +1,133 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using UnityEngine;
+
+namespace Dubit.DUCK.Serialization
+{
+	[SerializeField]
+	public partial class ArgsList : ISerializationCallbackReceiver
+	{
+		private static readonly Dictionary<string, SupportedType> supportedTypes;
+		private static readonly Type[] supportedTypesArray;
+
+		static ArgsList()
+		{
+			var supportedTypesList = new SupportedType[]
+			{
+				SupportedType.Create(i => i.stringValues, (i,v) => i.stringValues = v),
+				SupportedType.Create(i => i.intValues, (i,v) => i.intValues = v),
+				SupportedType.Create(i => i.floatValues, (i,v) => i.floatValues = v),
+				SupportedType.Create(i => i.boolValues, (i,v) => i.boolValues = v),
+				// GameObject
+				// Transform
+				// Vector2
+				// Vector3
+				// Vector4
+			};
+			
+			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
+			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.Name, t => t);
+		}
+		
+		public IList<Type> ArgTypes
+		{
+			get { return argTypes; }
+		}
+
+		private ReadOnlyCollection<Type> argTypes;
+		private List<object> args;
+
+		public void SetTypes(IList<Type> types)
+		{
+			if (types == null) throw new ArgumentNullException("types");
+			if (!types.Any()) throw new ArgumentException("types must be a list greater than 0");
+
+			var oldArgs = args;
+			args = new List<object>();
+
+			foreach (var argType in types)
+			{
+				if (!ValidateArgType(argType))
+				{
+					throw new ArgumentException("Cannot handle arguments of type: " + argType.Name);
+				}
+
+				var defaultValue = argType.IsValueType ? Activator.CreateInstance(argType) : null;
+				args.Add(defaultValue);
+			}
+
+			if (oldArgs != null && argTypes != null)
+			{
+				for (int i = 0; i < oldArgs.Count; i++)
+				{
+					if (i < types.Count)
+					{
+						if (types[i] == argTypes[i])
+						{
+							args[i] = oldArgs[i];
+						}
+					}
+				}
+			}
+			
+			argTypes = new ReadOnlyCollection<Type>(types);
+		}
+
+		public object this[int index]
+		{
+			get 
+			{
+				if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
+				return args[index];
+			}
+
+			set
+			{
+				var argType = value.GetType();
+				if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
+				if (!ValidateArgTypeForIndex(argType, index))
+				{
+					throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
+				}
+				
+				args[index] = value;
+			}
+		}
+		
+		public void Set<T>(int index, T arg)
+		{
+			var argType = typeof(T);
+			if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
+			if (!ValidateArgTypeForIndex(argType, index))
+			{
+				throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
+			}
+
+			args[index] = arg;
+		}
+
+		public T Get<T>(int index)
+		{
+			var argType = typeof(T);
+			if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
+			if (!ValidateArgTypeForIndex(argType, index))
+			{
+				throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
+			}
+
+			return (T) args[index];
+		}
+
+		private bool ValidateArgTypeForIndex(Type type, int index)
+		{
+			return argTypes.Count > index && argTypes[index] == type;
+		}
+
+		private bool ValidateArgType(Type type)
+		{
+			return supportedTypesArray.Contains(type);
+		}
+	}
+}
