@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Dubit.DUCK.Serialization.Editor
+namespace DUCK.Serialization.Editor
 {
 	[TestFixture]
 	public class ArgsListTests

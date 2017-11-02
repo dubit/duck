@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
-namespace Dubit.DUCK.Serialization
+namespace DUCK.Serialization
 {
 	[Serializable]
 	public partial class ArgsList : ISerializationCallbackReceiver
