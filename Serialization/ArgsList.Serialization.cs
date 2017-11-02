@@ -26,6 +26,8 @@ namespace Dubit.DUCK.Serialization
 
 		public void OnBeforeSerialize()
 		{
+			if (argTypes == null) return;
+
 			var argLists = new Dictionary<string, List<object>>();
 			var typeOrderList = new List<string>();
 
