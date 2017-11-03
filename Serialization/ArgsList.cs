@@ -39,6 +39,14 @@ namespace DUCK.Serialization
 		private ReadOnlyCollection<Type> argTypes;
 		private List<object> args;
 
+		public ArgsList(params Type[] types)
+		{
+			if (types.Length > 0)
+			{
+				SetTypes(types);
+			}
+		}
+		
 		public void SetTypes(IList<Type> types)
 		{
 			if (types == null) throw new ArgumentNullException("types");

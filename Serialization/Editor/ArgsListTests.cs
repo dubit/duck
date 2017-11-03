@@ -15,6 +15,18 @@ namespace DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectConstructorWithArgsNotToThrowWithValidTypes()
+		{
+			Assert.DoesNotThrow(() => { new ArgsList(typeof(string), typeof(int)); });
+		}
+
+		[Test]
+		public void ExpectConstructorWithArgsToThrowWithInvalidTypes()
+		{
+			Assert.Throws<ArgumentException>(() => { new ArgsList(typeof(ArgsList)); });
+		}
+		
+		[Test]
 		public void ExpectSetTypesToThrowWithNull()
 		{
 			var argsList = new ArgsList();
