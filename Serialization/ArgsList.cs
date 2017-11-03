@@ -46,7 +46,7 @@ namespace DUCK.Serialization
 				SetTypes(types);
 			}
 		}
-		
+
 		public void SetTypes(IList<Type> types)
 		{
 			if (types == null) throw new ArgumentNullException("types");
@@ -108,7 +108,8 @@ namespace DUCK.Serialization
 					var argType = argTypes[index];
 					if (argType.IsValueType)
 					{
-						throw new ArgumentException("Null cannot be set against a value type. (index = " + index + ", type = " + argType.Name);
+						throw new ArgumentException("Null cannot be set against a value type. (index = " + index + ", type = " +
+						                            argType.Name);
 					}
 				}
 
