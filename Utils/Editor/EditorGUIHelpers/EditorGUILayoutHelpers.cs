@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace DUCK.Utils.Editor.EditorGUI
+namespace DUCK.Utils.Editor.EditorGUIHelpers
 {
 	public static class EditorGUILayoutHelpers
 	{
@@ -46,8 +46,11 @@ namespace DUCK.Utils.Editor.EditorGUI
 				return EditorGUILayout.ObjectField(label, (UnityEngine.Object) obj, type);
 			}
 
-			// otherwise jump into the drawer functions
-			if (!drawerFunctions.ContainsKey(type)) throw new Exception("Type: " + type.Name + " is not spported");
+			// check we can deal with this type of field
+			if (!drawerFunctions.ContainsKey(type))
+			{
+				throw new Exception("Type: " + type.Name + " is not supported");
+			}
 
 			return drawerFunctions[type](label, obj);
 		}
