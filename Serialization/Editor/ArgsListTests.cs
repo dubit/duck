@@ -268,6 +268,89 @@ namespace DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectVector2SerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(Vector2)}));
+
+			// Add some data, serialize and deserialize
+			var value = new Vector2(13.2f, -39.33f);
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<Vector2>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+		
+		[Test]
+		public void ExpectVector3SerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(Vector3)}));
+
+			// Add some data, serialize and deserialize
+			var value = new Vector3(13.2f, -39.33f, 12.7f);
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<Vector3>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+		
+		[Test]
+		public void ExpectVector4SerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(Vector4)}));
+
+			// Add some data, serialize and deserialize
+			var value = new Vector4(13.2f, -39.33f, 12.7f, 55.1f);
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<Vector4>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+
+		[Test]
+		public void ExpectGameObjectSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(GameObject)}));
+
+			// Add some data, serialize and deserialize
+			var value = new GameObject();
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<GameObject>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+
+			// Cleanup the object
+			UnityEditor.Editor.DestroyImmediate(value);
+		}
+
+		[Test]
 		public void ExpectSerializationOfMultipleTypesToBeSupported()
 		{
 			var argsList = new ArgsList();
