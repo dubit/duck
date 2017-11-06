@@ -20,11 +20,11 @@ namespace DUCK.Serialization
 				SupportedType.Create(i => i.intValues, (i, v) => i.intValues = v),
 				SupportedType.Create(i => i.floatValues, (i, v) => i.floatValues = v),
 				SupportedType.Create(i => i.boolValues, (i, v) => i.boolValues = v),
-				// GameObject
+				SupportedType.Create(i => i.gameObjectArgs, (i, v) => i.gameObjectArgs = v),
+				SupportedType.Create(i => i.vector2Args, (i, v) => i.vector2Args = v),
+				SupportedType.Create(i => i.vector3Args, (i, v) => i.vector3Args = v),
+				SupportedType.Create(i => i.vector4Args, (i, v) => i.vector4Args = v),
 				// Transform
-				// Vector2
-				// Vector3
-				// Vector4
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();

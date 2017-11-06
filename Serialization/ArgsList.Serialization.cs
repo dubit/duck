@@ -23,6 +23,17 @@ namespace DUCK.Serialization
 		[SerializeField]
 		private bool[] boolValues;
 
+		[SerializeField]
+		private GameObject[] gameObjectArgs;
+		
+		[SerializeField]
+		private Vector2[] vector2Args;
+		
+		[SerializeField]
+		private Vector3[] vector3Args;
+		
+		[SerializeField]
+		private Vector4[] vector4Args;
 
 		public void OnBeforeSerialize()
 		{
