@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace DUCK.Utils.Editor.EditorGUI
+namespace DUCK.Utils.Editor.EditorGUIHelpers
 {
 	public static class EditorGUILayoutHelpers
 	{
