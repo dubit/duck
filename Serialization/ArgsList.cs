@@ -36,8 +36,9 @@ namespace DUCK.Serialization
 			var types = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => t.IsSubclassOf(typeof(Component)))
 				.Concat(typeof(Component).Assembly.GetTypes()
-				.Where(t => t.IsSubclassOf(typeof(Component)))
-			);
+					.Where(t => t.IsSubclassOf(typeof(Component)))
+				);
+
 			foreach (var type in types)
 			{
 				componentTypes.Add(type.Name, type);
@@ -47,6 +48,11 @@ namespace DUCK.Serialization
 		public IList<Type> ArgTypes
 		{
 			get { return argTypes; }
+		}
+
+		public IList<object> AllArgs
+		{
+			get { return args; }
 		}
 
 		private ReadOnlyCollection<Type> argTypes;
