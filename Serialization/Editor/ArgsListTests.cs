@@ -25,7 +25,7 @@ namespace DUCK.Serialization.Editor
 		{
 			Assert.Throws<ArgumentException>(() => { new ArgsList(typeof(ArgsList)); });
 		}
-		
+
 		[Test]
 		public void ExpectSetTypesToThrowWithNull()
 		{
@@ -144,12 +144,12 @@ namespace DUCK.Serialization.Editor
 
 			Assert.Throws<ArgumentException>(() => { argsList[1] = null; });
 		}
-		
+
 		[Test]
 		public void ExpectSetIndexerNotToThrowWhenNullIsUsedAgainstReferenceTypes()
 		{
 			var argsList = new ArgsList();
-			argsList.SetTypes(new List<Type> { typeof(string) });
+			argsList.SetTypes(new List<Type> {typeof(string)});
 
 			Assert.DoesNotThrow(() => { argsList[0] = null; });
 		}
@@ -286,7 +286,7 @@ namespace DUCK.Serialization.Editor
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);
 		}
-		
+
 		[Test]
 		public void ExpectVector3SerializationToBeSupported()
 		{
@@ -306,7 +306,7 @@ namespace DUCK.Serialization.Editor
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);
 		}
-		
+
 		[Test]
 		public void ExpectVector4SerializationToBeSupported()
 		{
@@ -322,6 +322,26 @@ namespace DUCK.Serialization.Editor
 			var json = JsonUtility.ToJson(argsList);
 			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
 			var result = resultArgsList.Get<Vector4>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+
+		[Test]
+		public void ExpectColorSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(Color)}));
+
+			// Add some data, serialize and deserialize
+			var value = new Color(1f, 0.5f, 0f, 0f);
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<Color>(0);
 
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);
@@ -375,7 +395,7 @@ namespace DUCK.Serialization.Editor
 			argsList.Set(1, camera);
 			argsList.Set(2, spriteRenderer);
 			argsList.Set(3, gameObjectB);
-			
+
 			var json = JsonUtility.ToJson(argsList);
 			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
 
@@ -424,35 +444,37 @@ namespace DUCK.Serialization.Editor
 			Assert.AreEqual(argsList.Get<int>(5), resultArgsList.Get<int>(5));
 		}
 
-		[Test(Description = "If SetTypes() is called to change the arg order/types/amount, old data should be invalidated (and replaced with default for the types)")]
+		[Test(Description =
+			"If SetTypes() is called to change the arg order/types/amount, old data should be invalidated (and replaced with default for the types)")]
 		public void ExpectSetTypesToInvalidateIndices()
 		{
 			var value = 10;
-			
+
 			var argsList = new ArgsList();
 			argsList.SetTypes(new List<Type> {typeof(int)});
 			argsList.Set(0, value);
 			argsList.SetTypes(new List<Type> {typeof(string)});
-			
+
 			Assert.AreNotEqual(value, argsList[0]);
 			Assert.AreEqual(default(string), argsList[0]);
 		}
 
-		[Test(Description = "If SetTypes() is called to change the arg order/types/amount, for any indices where the type has not changed, the data should be maintained")]
+		[Test(Description =
+			"If SetTypes() is called to change the arg order/types/amount, for any indices where the type has not changed, the data should be maintained")]
 		public void ExpectSetTypesToInvalidateIndicesButKeepDataIfTheTypesStillMatch()
 		{
 			var value = "foobar";
-			
+
 			var argsList = new ArgsList();
-			
+
 			// setup to take (int, string)
 			argsList.SetTypes(new List<Type> {typeof(int), typeof(string)});
 			argsList.Set(0, 42);
 			argsList.Set(1, value);
-			
+
 			// now change to take (string, string)
 			argsList.SetTypes(new List<Type> {typeof(string), typeof(string)});
-			
+
 			// the second string param should still be vlaid
 			Assert.AreEqual(value, argsList[1]);
 		}

@@ -25,6 +25,7 @@ namespace DUCK.Serialization
 				SupportedType.Create(i => i.vector2Args, (i, v) => i.vector2Args = v),
 				SupportedType.Create(i => i.vector3Args, (i, v) => i.vector3Args = v),
 				SupportedType.Create(i => i.vector4Args, (i, v) => i.vector4Args = v),
+				SupportedType.Create(i => i.colorArgs, (i, v) => i.colorArgs = v),
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();

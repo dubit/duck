@@ -37,6 +37,9 @@ namespace DUCK.Serialization
 		[SerializeField]
 		private Vector4[] vector4Args;
 
+		[SerializeField]
+		private Color[] colorArgs;
+
 		public void OnBeforeSerialize()
 		{
 			if (argTypes == null) return;
