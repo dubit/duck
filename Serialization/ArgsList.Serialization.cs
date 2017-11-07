@@ -63,7 +63,9 @@ namespace DUCK.Serialization
 				var list = lazyGetList(argType);
 				if (argType.IsSubclassOf(typeof(Component)))
 				{
-					list.Add(((Component) args[i]).gameObject);
+					// TODO: This null checking is needed, and needs test coverage
+					var arg = args[i] != null ? ((Component) args[i]).gameObject : null;
+					list.Add(arg);
 					typeOrderList.Add(COMPONENT_PREFIX + argType.Name);
 				}
 				else
