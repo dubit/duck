@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DUCK.Utils.Editor.EditorGUIHelpers;
 
 namespace DUCK.Serialization.Editor
@@ -8,13 +9,14 @@ namespace DUCK.Serialization.Editor
 	/// </summary>
 	public static class ArgsListEditor
 	{
-		public static void Draw(ArgsList argsList)
+		public static void Draw(ArgsList argsList, IList<string> argNames = null)
 		{
 			for (var i = 0; i < argsList.ArgTypes.Count; i++)
 			{
 				var argType = argsList.ArgTypes[i];
 				var argValue = argsList[i];
-				var newArg = EditorGUILayoutHelpers.FieldByType(argValue, argType);
+				var label = argNames != null && argNames.Count > i ? argNames[i] : argType.Name;
+				var newArg = EditorGUILayoutHelpers.FieldByType(label, argValue, argType);
 				argsList[i] = newArg;
 			}
 		}
