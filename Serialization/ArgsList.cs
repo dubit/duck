@@ -11,6 +11,7 @@ namespace DUCK.Serialization
 	{
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
 		private static readonly Type[] supportedTypesArray;
+		private static readonly Dictionary<string, Type> componentTypes;
 
 		static ArgsList()
 		{
@@ -24,11 +25,22 @@ namespace DUCK.Serialization
 				SupportedType.Create(i => i.vector2Args, (i, v) => i.vector2Args = v),
 				SupportedType.Create(i => i.vector3Args, (i, v) => i.vector3Args = v),
 				SupportedType.Create(i => i.vector4Args, (i, v) => i.vector4Args = v),
-				// Transform
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
 			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.Name, t => t);
+			componentTypes = new Dictionary<string, Type>();
+
+			// Get every type that extends component
+			var types = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+				.Where(t => t.IsSubclassOf(typeof(Component)))
+				.Concat(typeof(Component).Assembly.GetTypes()
+				.Where(t => t.IsSubclassOf(typeof(Component)))
+			);
+			foreach (var type in types)
+			{
+				componentTypes.Add(type.Name, type);
+			}
 		}
 
 		public IList<Type> ArgTypes
@@ -148,7 +160,7 @@ namespace DUCK.Serialization
 
 		private bool ValidateArgType(Type type)
 		{
-			return supportedTypesArray.Contains(type);
+			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
 		}
 	}
 }

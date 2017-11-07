@@ -8,6 +8,8 @@ namespace DUCK.Serialization
 {
 	public partial class ArgsList
 	{
+		private const string COMPONENT_PREFIX = "c:";
+		
 		[SerializeField]
 		private string[] typeOrder;
 
@@ -25,13 +27,13 @@ namespace DUCK.Serialization
 
 		[SerializeField]
 		private GameObject[] gameObjectArgs;
-		
+
 		[SerializeField]
 		private Vector2[] vector2Args;
-		
+
 		[SerializeField]
 		private Vector3[] vector3Args;
-		
+
 		[SerializeField]
 		private Vector4[] vector4Args;
 
@@ -39,11 +41,15 @@ namespace DUCK.Serialization
 		{
 			if (argTypes == null) return;
 
-			var argLists = new Dictionary<string, List<object>>();
+			var argLists = new Dictionary<Type, List<object>>();
 			var typeOrderList = new List<string>();
 
-			Func<string, List<object>> lazyGetList = (t) =>
+			Func<Type, List<object>> lazyGetList = (t) =>
 			{
+				if (t.IsSubclassOf(typeof(Component)))
+				{
+					t = typeof(GameObject);
+				}
 				if (argLists.ContainsKey(t))
 				{
 					return argLists[t];
@@ -54,16 +60,24 @@ namespace DUCK.Serialization
 			for (int i = 0; i < argTypes.Count; i++)
 			{
 				var argType = argTypes[i];
-				var list = lazyGetList(argType.Name);
-				list.Add(args[i]);
-				typeOrderList.Add(argType.Name);
+				var list = lazyGetList(argType);
+				if (argType.IsSubclassOf(typeof(Component)))
+				{
+					list.Add(((Component) args[i]).gameObject);
+					typeOrderList.Add(COMPONENT_PREFIX + argType.Name);
+				}
+				else
+				{
+					list.Add(args[i]);
+					typeOrderList.Add(argType.Name);
+				}
 			}
 
 			typeOrder = typeOrderList.ToArray();
 
 			foreach (var supportedType in supportedTypes)
 			{
-				supportedType.Value.SetList(this, lazyGetList(supportedType.Key));
+				supportedType.Value.SetList(this, lazyGetList(supportedType.Value.Type));
 			}
 		}
 
@@ -80,39 +94,57 @@ namespace DUCK.Serialization
 				serializedLists.Add(supportedType.Type.Name, list);
 			}
 
-			for (int i = 0; i < typeOrder.Length; i++)
+			for (var i = 0; i < typeOrder.Length; i++)
 			{
 				var typeName = typeOrder[i];
-				if (!supportedTypes.ContainsKey(typeName))
+				List<object> list;
+				Type argType;
+				Func<object, object> argConverter = o => o;
+
+				if (typeName.StartsWith(COMPONENT_PREFIX))
 				{
-					// TODO: How to handle this error (on deserialize we find a type that is not supported)
-					// for now let's throw, but we may want to handle it more elegantly
-					throw new Exception("ArgsList cannot deserialize item of type: " + typeName + ", because it's not supported");
+					// strip off prefix
+					typeName = typeName.Replace(COMPONENT_PREFIX, "");
+					if (!componentTypes.ContainsKey(typeName))
+					{
+						// TODO: How to handle this error (found a component type not in the assembly on deserialize)
+						// for now let's throw, but we may want to handle it more elegantly
+						throw new Exception("ArgsList cannot deserialize component item of type: " + typeName + ", it was not found in the assemblies");
+					}
+
+					argType = componentTypes[typeName];
+					localArgTypes.Add(argType);
+					list = serializedLists[typeof(GameObject).Name];
+					argConverter = o => ((GameObject)o).GetComponent(argType);
+				}
+				else
+				{
+					if (!supportedTypes.ContainsKey(typeName))
+					{
+						// TODO: How to handle this error (on deserialize we find a type that is not supported)
+						// for now let's throw, but we may want to handle it more elegantly
+						throw new Exception("ArgsList cannot deserialize item of type: " + typeName + ", because it's not supported");
+					}
+
+					argType = supportedTypes[typeName].Type;
+					localArgTypes.Add(argType);
+					list = serializedLists[typeName];
 				}
 
-				var supportedType = supportedTypes[typeName];
-				localArgTypes.Add(supportedType.Type);
-
-				var list = serializedLists[typeName];
 				if (list.Count > 0)
 				{
 					var arg = list[0];
 					list.RemoveAt(0);
-					args.Add(arg);
+					args.Add(argConverter(arg));
 				}
 				else
 				{
 					// if there was no arg found, we must create default value for it
-					args.Add(Activator.CreateInstance(supportedType.Type));
+					args.Add(argType.IsValueType ? Activator.CreateInstance(argType) : null);
 				}
 			}
 
 			argTypes = new ReadOnlyCollection<Type>(localArgTypes);
-		}
-
-		private List<object> GetList(string typeName)
-		{
-			return null;
 		}
 
 		class SupportedType

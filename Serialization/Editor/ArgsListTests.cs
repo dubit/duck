@@ -351,6 +351,46 @@ namespace DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectComponentSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type>
+			{
+				typeof(Transform),
+				typeof(Camera),
+				typeof(SpriteRenderer),
+				typeof(GameObject),
+			}));
+
+			// Add some data, serialize and deserialize
+			var gameObjectA = new GameObject();
+			var gameObjectB = new GameObject();
+			var camera = gameObjectA.AddComponent<Camera>();
+			var spriteRenderer = gameObjectB.AddComponent<SpriteRenderer>();
+
+			argsList.Set(0, gameObjectA.transform);
+			argsList.Set(1, camera);
+			argsList.Set(2, spriteRenderer);
+			argsList.Set(3, gameObjectB);
+			
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(gameObjectA.transform, resultArgsList[0]);
+			Assert.AreEqual(camera, resultArgsList[1]);
+			Assert.AreEqual(spriteRenderer, resultArgsList[2]);
+			Assert.AreEqual(gameObjectB, resultArgsList[3]);
+
+			// Cleanup the object
+			UnityEditor.Editor.DestroyImmediate(gameObjectA);
+			UnityEditor.Editor.DestroyImmediate(gameObjectB);
+		}
+
+		[Test]
 		public void ExpectSerializationOfMultipleTypesToBeSupported()
 		{
 			var argsList = new ArgsList();
