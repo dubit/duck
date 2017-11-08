@@ -9,15 +9,24 @@ namespace DUCK.Serialization.Editor
 	/// </summary>
 	public static class ArgsListEditor
 	{
-		public static void Draw(ArgsList argsList, IList<string> argNames = null)
+		public delegate object CustomArgDrawFunc(string label, object currentValue);
+		
+		public static void Draw(ArgsList argsList, IList<string> argNames = null, Dictionary<int, CustomArgDrawFunc> customDrawFunctions = null)
 		{
 			for (var i = 0; i < argsList.ArgTypes.Count; i++)
 			{
 				var argType = argsList.ArgTypes[i];
 				var argValue = argsList[i];
 				var label = argNames != null && argNames.Count > i ? argNames[i] : argType.Name;
-				var newArg = EditorGUILayoutHelpers.FieldByType(label, argValue, argType);
-				argsList[i] = newArg;
+				if (customDrawFunctions != null && customDrawFunctions.ContainsKey(i))
+				{
+					argValue = customDrawFunctions[i](label, argValue);
+				}
+				else
+				{
+					argValue = EditorGUILayoutHelpers.FieldByType(label, argValue, argType);
+				}
+				argsList[i] = argValue;
 			}
 		}
 	}
