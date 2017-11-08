@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DUCK.Utils.Editor.EditorGUIHelpers
 {
-	public static class EditorGUILayoutHelpers
+	public static partial class EditorGUILayoutHelpers
 	{
 		private static readonly Dictionary<Type, Func<string, object, object>> drawerFunctions =
 			new Dictionary<Type, Func<string, object, object>>
