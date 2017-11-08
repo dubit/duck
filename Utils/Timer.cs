@@ -30,14 +30,15 @@ namespace DUCK.Utils
 		private int loopCount;
 
 		/// <summary>
-		/// The duration of the timer. Have to be above zero.
+		/// The duration of the timer.
+		/// Duration less than 0 or equal to 0 will make the timer finish instantly.
 		/// </summary>
 		public float Duration
 		{
 			get { return duration; }
 			set
 			{
-				if (value <= 0f) throw new Exception("Time duration must be above zero.");
+				if (value < 0f) Debug.LogWarning("Time duration should not be negative.");
 				duration = value;
 			}
 		}
