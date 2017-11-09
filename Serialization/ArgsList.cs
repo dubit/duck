@@ -107,6 +107,10 @@ namespace DUCK.Serialization
 			get
 			{
 				if (index >= argTypes.Count || index < 0) throw new ArgumentOutOfRangeException("index");
+				if (argTypes[index].IsSubclassOf(typeof(Component)) && args[index] != null)
+				{
+					return ((GameObject) args[index]).GetComponent(argTypes[index]);
+				}
 				return args[index];
 			}
 
@@ -157,6 +161,11 @@ namespace DUCK.Serialization
 				throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
 			}
 
+			if (argType.IsSubclassOf(typeof(Component)) && args[index] != null)
+			{
+				return ((GameObject) args[index]).GetComponent<T>();
+			}
+			
 			return (T) args[index];
 		}
 

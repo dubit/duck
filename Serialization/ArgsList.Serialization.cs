@@ -104,7 +104,6 @@ namespace DUCK.Serialization
 				var typeName = typeOrder[i];
 				List<object> list;
 				Type argType;
-				Func<object, object> argConverter = o => o;
 
 				if (typeName.StartsWith(COMPONENT_PREFIX))
 				{
@@ -120,7 +119,6 @@ namespace DUCK.Serialization
 					argType = componentTypes[typeName];
 					localArgTypes.Add(argType);
 					list = serializedLists[typeof(GameObject).Name];
-					argConverter = o => ((GameObject)o).GetComponent(argType);
 				}
 				else
 				{
@@ -140,7 +138,7 @@ namespace DUCK.Serialization
 				{
 					var arg = list[0];
 					list.RemoveAt(0);
-					args.Add(argConverter(arg));
+					args.Add(arg);
 				}
 				else
 				{
