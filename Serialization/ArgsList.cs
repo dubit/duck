@@ -50,9 +50,20 @@ namespace DUCK.Serialization
 			get { return argTypes; }
 		}
 
+		//  TODO: test coverage for this prop
 		public IList<object> AllArgs
 		{
-			get { return args; }
+			get 
+			{
+				return args.Select((a,i) => 
+				{
+					if (a != null && argTypes[i].IsSubclassOf(typeof(Component)))
+					{
+						return ((GameObject) a).GetComponent(argTypes[i]);
+					}
+					return a;
+				}).ToList(); 
+			}
 		}
 
 		private ReadOnlyCollection<Type> argTypes;
@@ -136,7 +147,14 @@ namespace DUCK.Serialization
 					}
 				}
 
-				args[index] = value;
+				if (value != null && value.GetType().IsSubclassOf(typeof(Component)))
+				{
+					args[index] = ((Component)value).gameObject;
+				}
+				else
+				{
+					args[index] = value;
+				}
 			}
 		}
 
@@ -149,7 +167,14 @@ namespace DUCK.Serialization
 				throw new ArgumentException(argType.Name + " is not the correct type for index " + index);
 			}
 
-			args[index] = arg;
+			if (argType.IsSubclassOf(typeof(Component)))
+			{
+				args[index] = ((Component)(object)arg).gameObject;
+			}
+			else
+			{
+				args[index] = arg;
+			}
 		}
 
 		public T Get<T>(int index)
