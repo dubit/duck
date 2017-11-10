@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DUCK.Utils.Editor.EditorGUIHelpers
 {
-	public static class EditorGUILayoutHelpers
+	public static partial class EditorGUILayoutHelpers
 	{
 		private static readonly Dictionary<Type, Func<string, object, object>> drawerFunctions =
 			new Dictionary<Type, Func<string, object, object>>
@@ -43,7 +43,7 @@ namespace DUCK.Utils.Editor.EditorGUIHelpers
 			// special case for object fields
 			if (typeof(UnityEngine.Object).IsAssignableFrom(type))
 			{
-				return EditorGUILayout.ObjectField(label, (UnityEngine.Object) obj, type);
+				return EditorGUILayout.ObjectField(label, (UnityEngine.Object) obj, type, true);
 			}
 
 			// check we can deal with this type of field
