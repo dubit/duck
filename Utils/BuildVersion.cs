@@ -10,7 +10,8 @@ namespace DUCK.Utils
 	{
 		internal const string ASSET_NAME = "BuildVersion";
 
-		public string dateStamp = "debug/Editor";
+		[SerializeField]
+		private string dateStamp = "01/01/1900";
 
 #if UNITY_EDITOR && ENABLE_BUILD_VERSION
 		public void UpdateForNewBuild()
