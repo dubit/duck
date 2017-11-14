@@ -478,5 +478,51 @@ namespace DUCK.Serialization.Editor
 			// the second string param should still be vlaid
 			Assert.AreEqual(value, argsList[1]);
 		}
+
+		[Test]
+		public void ExpectAllArgsToReturnAllArgs()
+		{
+			var argsList = new ArgsList();
+			argsList.SetTypes(new List<Type>
+			{
+				typeof(string),
+				typeof(int),
+				typeof(bool),
+				typeof(float),
+				typeof(GameObject),
+				typeof(Camera),
+				typeof(SpriteRenderer),
+			});
+
+			// Add some data, serialize and deserialize
+			var gameObjectA = new GameObject();
+			var gameObjectB = new GameObject();
+			var camera = gameObjectA.AddComponent<Camera>();
+			var spriteRenderer = gameObjectB.AddComponent<SpriteRenderer>();
+
+			// Add some data, serialize and deserialize
+			argsList.Set(0, "foo");
+			argsList.Set(1, 10);
+			argsList.Set(2, true);
+			argsList.Set(3, -4.2f);
+			argsList.Set(4, gameObjectA);
+			argsList.Set(5, camera);
+			argsList.Set(6, spriteRenderer);
+
+			var allArgs = argsList.AllArgs;
+			
+			// Now test the value is what it should be
+			Assert.AreEqual(argsList.Get<string>(0), allArgs[0]);
+			Assert.AreEqual(argsList.Get<int>(1), allArgs[1]);
+			Assert.AreEqual(argsList.Get<bool>(2), allArgs[2]);
+			Assert.AreEqual(argsList.Get<float>(3), allArgs[3]);
+			Assert.AreEqual(argsList.Get<GameObject>(4), allArgs[4]);
+			Assert.AreEqual(argsList.Get<Camera>(5), allArgs[5]);
+			Assert.AreEqual(argsList.Get<SpriteRenderer>(6), allArgs[6]);
+
+			// Cleanup the object
+			UnityEditor.Editor.DestroyImmediate(gameObjectA);
+			UnityEditor.Editor.DestroyImmediate(gameObjectB);
+		}
 	}
 }

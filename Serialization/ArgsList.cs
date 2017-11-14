@@ -50,7 +50,6 @@ namespace DUCK.Serialization
 			get { return argTypes; }
 		}
 
-		//  TODO: test coverage for this prop
 		public IList<object> AllArgs
 		{
 			get 
