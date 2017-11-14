@@ -110,7 +110,7 @@ namespace DUCK.Serialization
 					typeName = typeName.Replace(COMPONENT_PREFIX, "");
 					if (!componentTypes.ContainsKey(typeName))
 					{
-						// TODO: How to handle this error (found a component type not in the assembly on deserialize)
+						// TODO: How to handle this error (found a component type not in the assemblies on deserialize)
 						// for now let's throw, but we may want to handle it more elegantly
 						throw new Exception("ArgsList cannot deserialize component item of type: " + typeName + ", it was not found in the assemblies");
 					}
@@ -123,8 +123,6 @@ namespace DUCK.Serialization
 				{
 					if (!supportedTypes.ContainsKey(typeName))
 					{
-						// TODO: How to handle this error (on deserialize we find a type that is not supported)
-						// for now let's throw, but we may want to handle it more elegantly
 						throw new Exception("ArgsList cannot deserialize item of type: " + typeName + ", because it's not supported");
 					}
 
