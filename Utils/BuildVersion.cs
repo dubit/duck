@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿#if UNITY_EDITOR && ENABLE_BUILD_VERSION
 using UnityEditor;
 using UnityEditor.Build;
 #endif
@@ -8,35 +8,31 @@ namespace DUCK.Utils
 {
 	public class BuildVersion : ScriptableObject
 	{
-		internal const string AssetPath = "BuildVersion";
+		internal const string ASSET_NAME = "BuildVersion";
 
-		public string DateStamp = "debug/Editor";
+		[SerializeField]
+		private string dateStamp = "01/01/1900";
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ENABLE_BUILD_VERSION
 		public void UpdateForNewBuild()
 		{
-			DateStamp = System.DateTime.Now.ToString("dd/MM/yyyy");
+			dateStamp = System.DateTime.Now.ToString("dd/MM/yyyy");
 		}
 #endif
 
 		private static BuildVersion buildVersion;
 		public static BuildVersion GetBuildVersion()
 		{
-			if (buildVersion == null)
-			{
-				buildVersion = (Resources.Load(AssetPath) as BuildVersion) ?? CreateInstance<BuildVersion>();
-			}
-
-			return buildVersion;
+			return buildVersion ?? (buildVersion = Resources.Load(ASSET_NAME) as BuildVersion ?? CreateInstance<BuildVersion>());
 		}
 
 		public override string ToString()
 		{
-			return DateStamp;
+			return dateStamp;
 		}
 	}
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ENABLE_BUILD_VERSION
 	public class BuildVersionAutoIncrement : IPreprocessBuild
 	{
 		public int callbackOrder { get { return 0; } }
@@ -45,8 +41,8 @@ namespace DUCK.Utils
 		{
 			const string root = "Assets";
 			const string folder = "Resources";
-			const string folderPath = root + "/" + folder + "/";
-			const string fullPath = folderPath + BuildVersion.AssetPath + ".asset";
+			const string folderPath = root + "/" + folder;
+			const string fullPath = folderPath + "/" + BuildVersion.ASSET_NAME + ".asset";
 
 			var buildVersion = ScriptableObject.CreateInstance<BuildVersion>();
 			buildVersion.UpdateForNewBuild();
