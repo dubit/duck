@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
@@ -11,41 +10,39 @@ namespace DUCK.IOS
 		[PostProcessBuild]
 		public static void ChangeXcodePlist(BuildTarget buildTarget, string pathToBuiltProject)
 		{
-			if (buildTarget == BuildTarget.iOS)
+			if (buildTarget != BuildTarget.iOS) return;
+			
+			// Get plist
+			string plistPath = pathToBuiltProject + "/Info.plist";
+			PlistDocument plist = new PlistDocument();
+			plist.ReadFromString(File.ReadAllText(plistPath));
+
+			// Get root
+			PlistElementDict rootDict = plist.root;
+
+			var guids = AssetDatabase.FindAssets("t:IOSPermissionsObject");
+			foreach (string guid in guids)
 			{
-				// Get plist
-				string plistPath = pathToBuiltProject + "/Info.plist";
-				PlistDocument plist = new PlistDocument();
-				plist.ReadFromString(File.ReadAllText(plistPath));
+				var permissionsFile = AssetDatabase.LoadAssetAtPath<IOSPermissionsObject>(AssetDatabase.GUIDToAssetPath(guid));
 
-				// Get root
-				PlistElementDict rootDict = plist.root;
-
-				var guids = AssetDatabase.FindAssets("t:IOSPermissionsObject");
-				foreach (string guid in guids)
+				foreach(var permission in permissionsFile.Permissions)
 				{
-					var permissionsFile = AssetDatabase.LoadAssetAtPath<IOSPermissionsObject>(AssetDatabase.GUIDToAssetPath(guid));
-
-					foreach(var permission in permissionsFile.Permissions)
+					switch(permission.permissionType)
 					{
-						switch(permission.permissionType)
-						{
-							case PermissionVariableType.Boolean:
-								rootDict.SetBoolean(permission.key, bool.Parse(permission.value));
-								break;
-							case PermissionVariableType.String:
-								rootDict.SetString(permission.key, permission.value);
-								break;
-							case PermissionVariableType.Integer:
-								rootDict.SetInteger(permission.key, int.Parse(permission.value));
-								break;
-						}
+						case PermissionVariableType.Boolean:
+							rootDict.SetBoolean(permission.key, bool.Parse(permission.value));
+							break;
+						case PermissionVariableType.String:
+							rootDict.SetString(permission.key, permission.value);
+							break;
+						case PermissionVariableType.Integer:
+							rootDict.SetInteger(permission.key, int.Parse(permission.value));
+							break;
 					}
 				}
-
-				// Write to file
-				File.WriteAllText(plistPath, plist.WriteToString());
 			}
+			
+			File.WriteAllText(plistPath, plist.WriteToString());
 		}
 	}
 }
