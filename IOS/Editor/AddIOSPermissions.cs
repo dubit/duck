@@ -13,12 +13,12 @@ namespace DUCK.IOS
 			if (buildTarget != BuildTarget.iOS) return;
 			
 			// Get plist
-			string plistPath = pathToBuiltProject + "/Info.plist";
-			PlistDocument plist = new PlistDocument();
+			var plistPath = pathToBuiltProject + "/Info.plist";
+			var plist = new PlistDocument();
 			plist.ReadFromString(File.ReadAllText(plistPath));
 
 			// Get root
-			PlistElementDict rootDict = plist.root;
+			var rootDict = plist.root;
 
 			var guids = AssetDatabase.FindAssets("t:IOSPermissionsObject");
 			foreach (string guid in guids)
