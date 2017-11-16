@@ -3,11 +3,19 @@ using UnityEngine;
 
 namespace DUCK.IOS
 {
+	public enum PermissionVariableType
+	{
+		String,
+		Integer,
+		Boolean,
+	}
+
 	[Serializable]
 	public class IOSPermission
 	{
 		public string key;
 		public string value;
+		public PermissionVariableType permissionType;
 	}
 
 	public class IOSPermissionsObject : ScriptableObject

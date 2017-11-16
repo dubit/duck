@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using System;
+using System.IO;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
-using System.IO;
 
 namespace DUCK.IOS
 {
@@ -27,7 +28,18 @@ namespace DUCK.IOS
 
 					foreach(var permission in permissionsFile.Permissions)
 					{
-						rootDict.SetString(permission.key, permission.value);
+						switch(permission.permissionType)
+						{
+							case PermissionVariableType.Boolean:
+								rootDict.SetBoolean(permission.key, bool.Parse(permission.value));
+								break;
+							case PermissionVariableType.String:
+								rootDict.SetString(permission.key, permission.value);
+								break;
+							case PermissionVariableType.Integer:
+								rootDict.SetInteger(permission.key, int.Parse(permission.value));
+								break;
+						}
 					}
 				}
 
