@@ -99,12 +99,9 @@ namespace DUCK.Serialization
 			{
 				for (int i = 0; i < oldArgs.Count; i++)
 				{
-					if (i < types.Count)
+					if (i < types.Count && types[i] == argTypes[i])
 					{
-						if (types[i] == argTypes[i])
-						{
-							args[i] = oldArgs[i];
-						}
+						args[i] = oldArgs[i];
 					}
 				}
 			}
