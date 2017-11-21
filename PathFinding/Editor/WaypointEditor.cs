@@ -61,12 +61,14 @@ namespace DUCK.PathFinding.Editor
 
 		private void OnOneWayConnectToSelected()
 		{
-			var targetWaypoint = Selection.activeGameObject.GetComponent<Waypoint>();
-			if (targetWaypoint != null && waypoint != null)
-			{
-				waypoint.ConnectWaypoint(targetWaypoint);
-			}
 			Selection.selectionChanged -= OnOneWayConnectToSelected;
+
+			if (Selection.activeGameObject == null) return;
+
+			var targetWaypoint = Selection.activeGameObject.GetComponent<Waypoint>();
+			if (targetWaypoint == null || waypoint == null) return;
+
+			waypoint.ConnectWaypoint(targetWaypoint);
 		}
 
 		private void OnDoubleWayConnectToSelected()
