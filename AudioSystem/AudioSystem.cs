@@ -237,6 +237,7 @@ namespace DUCK.AudioSystem
 			if (channel != null)
 			{
 				channel.Stop();
+				channel.time = 0f;
 			}
 
 			// Try to remove from the callback list (null is acceptable)
