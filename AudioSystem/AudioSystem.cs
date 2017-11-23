@@ -379,6 +379,7 @@ namespace DUCK.AudioSystem
 			var channel = new GameObject("Channel " + number).AddComponent<AudioSource>();
 			channel.outputAudioMixerGroup = defaultMixerGroup;
 			channel.transform.SetParent(transform);
+			channel.playOnAwake = false;
 
 			return channel;
 		}
