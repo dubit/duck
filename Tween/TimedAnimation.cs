@@ -56,8 +56,8 @@ namespace DUCK.Tween
 
 		public override bool IsValid { get { return TargetObject != null || TargetRectTransform != null; } }
 
-		protected bool IsComplete { get { return IsReversed ? Progress <= 0 : Progress >= 1.0f; } }
-		protected float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
+		protected bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1.0f; } }
+		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
 
 		protected Func<float, float> easingFunction;
 
@@ -89,14 +89,24 @@ namespace DUCK.Tween
 				return;
 			}
 
-			// A little guard for unnecessary adding to the update list
-			if (!IsPlaying)
+			if (Duration > 0f)
 			{
-				AnimationDriver.Add(Update);
+				// A little guard for unnecessary adding to the update list
+				if (!IsPlaying)
+				{
+					AnimationDriver.Add(Update);
+				}
+
+				base.Play(onComplete);
+				Refresh(CurrentTime = IsReversed ? Duration : 0f);
+			}
+			else
+			{
+				base.Play(onComplete);
+				Refresh(1.0f);
+				NotifyAnimationComplete();
 			}
 
-			base.Play(onComplete);
-			Refresh(CurrentTime = IsReversed ? Duration : 0);
 		}
 
 		public override void Abort()
