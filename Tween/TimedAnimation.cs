@@ -35,24 +35,12 @@ namespace DUCK.Tween
 
 		/// <summary>
 		/// The duration of the timed animation
-		/// When it sets to less or equal 0, it will act as FastForward.
+		/// Duration will always clamp to >= 0
 		/// </summary>
 		public float Duration
 		{
 			get { return duration; }
-			set
-			{
-				if (value <= 0)
-				{
-					Debug.LogError("Animation duration cannot set to zero!");
-					duration = 1.0f; // Make sure not divide by 0
-					FastForward();
-				}
-				else
-				{
-					duration = value;
-				}
-			}
+			set { duration = Mathf.Max(0, value); }
 		}
 		private float duration;
 
