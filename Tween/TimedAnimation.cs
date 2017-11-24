@@ -40,7 +40,7 @@ namespace DUCK.Tween
 		public float Duration
 		{
 			get { return duration; }
-			set { duration = Mathf.Max(0, value); }
+			set { duration = Mathf.Max(0f, value); }
 		}
 		private float duration;
 
@@ -56,7 +56,7 @@ namespace DUCK.Tween
 
 		public override bool IsValid { get { return TargetObject != null || TargetRectTransform != null; } }
 
-		protected bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1.0f; } }
+		protected bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1f; } }
 		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
 
 		protected Func<float, float> easingFunction;
@@ -103,7 +103,7 @@ namespace DUCK.Tween
 			else
 			{
 				base.Play(onComplete);
-				Refresh(1.0f);
+				Refresh(1f);
 				NotifyAnimationComplete();
 			}
 
