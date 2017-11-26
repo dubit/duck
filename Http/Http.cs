@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DUCK.Http
 {
-	public sealed class Http : MonoBehaviour
+	public sealed partial class Http : MonoBehaviour
 	{
 		private static Http instance;
 
@@ -26,139 +25,161 @@ namespace DUCK.Http
 		private void Awake()
 		{
 			instance = this;
-
-			// Get settings. or if none exist set to default
 		}
 
-		public static HttpRequest Put(string url, byte[] rawData)
+		public void Send<TSuccess, TError>(HttpRequest<TSuccess, TError> request, Action<TSuccess> onSuccess = null,
+			Action<TError> onError = null) where TSuccess : class where TError : class
 		{
-			return new HttpRequest(UnityWebRequest.Put(url, rawData));
-		}
-
-		/// <summary>
-		/// Creates a WebRequest configured for HTTP GET.
-		/// </summary>
-		/// <param name="url">The URI of the resource to retrieve via HTTP GET.</param>
-		/// <param name="onSuccess">The delegate for when the request was succesful.</param>
-		/// <param name="onError">The delegate for when the request encountered an error.</param>
-		public static HttpRequest Get(string url)
-		{
-			return new HttpRequest(UnityWebRequest.Get(url));
-		}
-
-		public static HttpRequest<T> Get<T>(string url)
-		{
-			return new HttpRequest<T>(UnityWebRequest.Get(url));
-		}
-
-		/// <summary>
-		/// Creates a WebRequest configured for HTTP POST.
-		/// </summary>
-		/// <param name="url">The target URI to which form data will be transmitted.</param>
-		/// <param name="payload">The payload to be converted to json and transmitted</param>
-		/// <param name="onSuccess">The delegate for when the request was succesful.</param>
-		/// <param name="onError">The delegate for when the request encountered an error.</param>
-		public static HttpRequest PostAsJson(string url, object payload)
-		{
-			return PostAsJson(url, JsonUtility.ToJson(payload));
-		}
-
-		/// <summary>
-		/// Creates a WebRequest configured for HTTP POST.
-		/// </summary>
-		/// <param name="url">The target URI to which form data will be transmitted.</param>
-		/// <param name="json">The payload in json to be transmitted</param>
-		/// <param name="onSuccess">The delegate for when the request was succesful.</param>
-		/// <param name="onError">The delegate for when the request encountered an error.</param>
-		public static HttpRequest PostAsJson(string url, string json)
-		{
-			var unityWebRequest = UnityWebRequest.Post(url, json);
-			var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
-			unityWebRequest.SetRequestHeader("Content-Type", "application/json");
-			unityWebRequest.uploadHandler = uploadHandler;
-			return new HttpRequest(unityWebRequest);
-		}
-
-		public static HttpRequest Delete(string url)
-		{
-			return new HttpRequest(UnityWebRequest.Delete(url));
-		}
-
-		public void Send(UnityWebRequest webRequest, Action<HttpResponse> onSuccess = null, Action<HttpResponse> onError = null)
-		{
-			StartCoroutine(SendCoroutine(webRequest, onSuccess, onError));
-		}
-
-		public void Send<T>(UnityWebRequest webRequest, Action<HttpResponse<T>> onSuccess = null, Action<HttpResponse> onError = null)
-		{
-			StartCoroutine(SendCoroutine(webRequest, onSuccess, onError));
-		}
-
-		private static IEnumerator SendCoroutine<T>(UnityWebRequest webRequest, Action<HttpResponse<T>> onSuccess = null,
-			Action<HttpResponse> onError = null)
-		{
-			yield return webRequest.SendWebRequest();
-
-			var responseCode = webRequest.responseCode;
-			var responseType = WebServiceUtils.GetResponseType(responseCode);
-			var message = WebServiceUtils.GetResponseTypeMessage(responseType, responseCode, webRequest.url);
-
-			if (responseType == ResponseType.Successful)
+			StartCoroutine(SendCoroutine(request, (response, success) =>
 			{
-				var body = WebServiceUtils.TryParse<T>(webRequest.downloadHandler.text);
-				var response = new HttpResponse<T>
-				{
-					ResponseCode = webRequest.responseCode,
-					Message = body != null ? message : message + " - Could not parse body",
-					Body = body
-				};
-
 				if (onSuccess != null)
 				{
-					onSuccess.Invoke(response);
+					onSuccess.Invoke(success);
 				}
-			}
-			else if (webRequest.isHttpError || webRequest.isNetworkError)
+			}, (response, error) =>
 			{
-				var response = new HttpResponse
-				{
-					ResponseCode = webRequest.responseCode,
-					Message = message
-				};
 				if (onError != null)
 				{
-					onError.Invoke(response);
+					onError.Invoke(error);
 				}
-			}
+			}));
 		}
 
-		private static IEnumerator SendCoroutine(UnityWebRequest webRequest, Action<HttpResponse> onSuccess = null,
+		/// <summary>
+		/// Send a HttpRequest with callbacks for onSuccess and onError with templatized
+		/// </summary>
+		public void Send<TSuccess, TError>(HttpRequest<TSuccess, TError> request, Action<HttpResponse, TSuccess> onSuccess,
+			Action<HttpResponse, TError> onError) where TSuccess : class where TError : class
+		{
+			StartCoroutine(SendCoroutine(request, onSuccess, onError));
+		}
+
+		/// <summary>
+		/// Send a unity web request with callbacks for onSuccess, onError and onNetworkError
+		/// </summary>
+		public void Send(UnityWebRequest unityWebRequest, Action<UnityWebRequest> onSuccess = null,
+			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
+		{
+			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
+		}
+
+		public void Send(UnityWebRequest unityWebRequest, Action onSuccess = null,
+			Action onError = null, Action onNetworkError = null)
+		{
+			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
+		}
+
+		/// <summary>
+		/// Send a Unity web request with callbacks for onSuccess and onError with an HttpResponse
+		/// </summary>
+		public void Send(UnityWebRequest unityWebRequest, Action<HttpResponse> onSuccess = null,
 			Action<HttpResponse> onError = null)
 		{
-			yield return webRequest.SendWebRequest();
+			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError));
+		}
 
-			var responseCode = webRequest.responseCode;
-			var responseType = WebServiceUtils.GetResponseType(responseCode);
-			var message = WebServiceUtils.GetResponseTypeMessage(responseType, responseCode, webRequest.url);
-
-			var response = new HttpResponse
+		private static IEnumerator SendBasicCoroutine(UnityWebRequest unityWebRequest,
+			Action onSuccess = null, Action onError = null, Action onNetworkError = null)
+		{
+			yield return unityWebRequest.SendWebRequest();
+			if (unityWebRequest.isNetworkError)
 			{
-				ResponseCode = webRequest.responseCode,
-				Message = message
-			};
-
-			if (webRequest.isHttpError || webRequest.isNetworkError)
+				if (onNetworkError != null)
+				{
+					onNetworkError.Invoke();
+				}
+			}
+			else if (unityWebRequest.isHttpError)
 			{
 				if (onError != null)
 				{
-					onError.Invoke(response);
+					onError.Invoke();
 				}
 			}
 			else
 			{
 				if (onSuccess != null)
 				{
-					onSuccess.Invoke(response);
+					onSuccess.Invoke();
+				}
+			}
+		}
+
+		private static IEnumerator SendBasicCoroutine(UnityWebRequest unityWebRequest,
+			Action<UnityWebRequest> onSuccess = null,
+			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
+		{
+			yield return unityWebRequest.SendWebRequest();
+			if (unityWebRequest.isNetworkError)
+			{
+				if (onNetworkError != null)
+				{
+					onNetworkError.Invoke(unityWebRequest);
+				}
+			}
+			else if (unityWebRequest.isHttpError)
+			{
+				if (onError != null)
+				{
+					onError.Invoke(unityWebRequest);
+				}
+			}
+			else
+			{
+				if (onSuccess != null)
+				{
+					onSuccess.Invoke(unityWebRequest);
+				}
+			}
+		}
+
+		private static IEnumerator SendBasicCoroutine(UnityWebRequest request,
+			Action<HttpResponse> onSuccess,
+			Action<HttpResponse> onError)
+		{
+			yield return request.SendWebRequest();
+			var response = new HttpResponse(request);
+
+			if (onError != null && (request.isNetworkError || request.isHttpError))
+			{
+				onError.Invoke(response);
+			}
+			else if (onSuccess != null)
+			{
+				onSuccess.Invoke(response);
+			}
+		}
+
+		private static IEnumerator SendCoroutine<TSuccess, TError>(HttpRequest<TSuccess, TError> request,
+			Action<HttpResponse, TSuccess> onSuccess,
+			Action<HttpResponse, TError> onError) where TSuccess : class where TError : class
+		{
+			var unityWebRequest = request.UnityWebRequest;
+			yield return unityWebRequest.SendWebRequest();
+			var response = new HttpResponse(request.UnityWebRequest);
+
+			Debug.Log(HttpUtils.GetResponseTypeMessage(response, unityWebRequest.url));
+
+			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
+			{
+				var error = HttpUtils.TryParse<TError>(unityWebRequest.downloadHandler.text, request.MarkUpType);
+				onError.Invoke(response, error);
+			}
+			else if (onSuccess != null)
+			{
+				if (typeof(TSuccess) == typeof(Texture2D))
+				{
+					var downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
+					if (downloadHandlerTexture != null && downloadHandlerTexture.texture != null)
+					{
+						onSuccess.Invoke(response, downloadHandlerTexture.texture as TSuccess);
+					}
+					else throw new NullReferenceException("Http was successful with code " + response.ResponseCode + " but could not cast to Texture2D");
+				}
+				else
+				{
+					var success = HttpUtils.TryParse<TSuccess>(request.UnityWebRequest.downloadHandler.text, request.MarkUpType);
+					onSuccess.Invoke(response, success);
 				}
 			}
 		}

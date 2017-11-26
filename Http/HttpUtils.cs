@@ -7,23 +7,23 @@ namespace DUCK.Http
 	/// A utility class for webserivce, deals with response codes and error messages.
 	/// <see cref="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status"/>
 	/// </summary>
-	public static class WebServiceUtils
+	public static class HttpUtils
 	{
 		private static readonly Dictionary<ResponseType, string> responseTypeMessages = new Dictionary<ResponseType, string>
 		{
-			{ ResponseType.Unknown, "Cannot find server - {1}" },
-			{ ResponseType.Successful, "Request successful with code: {0} - {1}" },
-			{ ResponseType.Error, "The client encounted an error with code: {0} - {1}" },
-			{ ResponseType.ServerError, "The server encounted an error and responded with code: {0} - {1}" }
+			{ResponseType.Unknown, "Cannot find server - {1}"},
+			{ResponseType.Successful, "Request successful with code: {0} - {1}"},
+			{ResponseType.Error, "The client encounted an error with code: {0} - {1}"},
+			{ResponseType.ServerError, "The server encounted an error and responded with code: {0} - {1}"}
 		};
 
-		public static string GetResponseTypeMessage(ResponseType responseType, long responseCode, string url)
+		public static string GetResponseTypeMessage(HttpResponse response, string url)
 		{
-			if (!responseTypeMessages.ContainsKey(responseType))
+			if (!responseTypeMessages.ContainsKey(response.ResponseType))
 			{
-				return string.Format(responseTypeMessages[ResponseType.Unknown], responseCode, url);
+				return string.Format(responseTypeMessages[ResponseType.Unknown], response.ResponseCode, url);
 			}
-			return string.Format(responseTypeMessages[responseType], responseCode, url);
+			return string.Format(responseTypeMessages[response.ResponseType], response.ResponseCode, url);
 		}
 
 		public static ResponseType GetResponseType(long responseCode)
@@ -50,11 +50,16 @@ namespace DUCK.Http
 			return responseCode >= 500 && responseCode <= 511;
 		}
 
-		public static T TryParse<T>(string text)
+		public static T TryParse<T>(string text, MarkUpType markUpType)
 		{
 			try
 			{
-				return JsonUtility.FromJson<T>(text);
+				switch (markUpType)
+				{
+					case MarkUpType.Json: return JsonUtility.FromJson<T>(text);
+					case MarkUpType.Xml: return default(T);
+					default: return default(T);
+				}
 			}
 			catch
 			{
