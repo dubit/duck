@@ -27,6 +27,11 @@ namespace DUCK.Http
 			instance = this;
 		}
 
+		public void Send(HttpRequest request, Action<HttpResponse> onSuccess = null, Action<HttpResponse> onError = null)
+		{
+			StartCoroutine(SendCoroutine(request, onSuccess, onError));
+		}
+
 		public void Send<TSuccess, TError>(HttpRequest<TSuccess, TError> request, Action<TSuccess> onSuccess = null,
 			Action<TError> onError = null) where TSuccess : class where TError : class
 		{
@@ -133,6 +138,23 @@ namespace DUCK.Http
 			}
 		}
 
+		private static IEnumerator SendCoroutine(HttpRequest request, Action<HttpResponse> onSuccess,
+			Action<HttpResponse> onError)
+		{
+			var unityWebRequest = request.UnityWebRequest;
+			yield return unityWebRequest.SendWebRequest();
+			var response = new HttpResponse(unityWebRequest);
+
+			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
+			{
+				onError.Invoke(response);
+			}
+			else if (onSuccess != null)
+			{
+				onSuccess.Invoke(response);
+			}
+		}
+
 		private static IEnumerator SendBasicCoroutine(UnityWebRequest request,
 			Action<HttpResponse> onSuccess,
 			Action<HttpResponse> onError)
@@ -174,7 +196,9 @@ namespace DUCK.Http
 					{
 						onSuccess.Invoke(response, downloadHandlerTexture.texture as TSuccess);
 					}
-					else throw new NullReferenceException("Http was successful with code " + response.ResponseCode + " but could not cast to Texture2D");
+					else
+						throw new NullReferenceException("Http was successful with code " + response.ResponseCode +
+						                                 " but could not cast to Texture2D");
 				}
 				else
 				{

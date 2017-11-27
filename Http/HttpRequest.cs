@@ -29,4 +29,19 @@ namespace DUCK.Http
 			Http.Instance.Send(this, onSuccess, onError);
 		}
 	}
+
+	public class HttpRequest
+	{
+		public UnityWebRequest UnityWebRequest { get; private set; }
+
+		public HttpRequest(UnityWebRequest unityWebRequest)
+		{
+			UnityWebRequest = unityWebRequest;
+		}
+
+		public void Send(Action<HttpResponse> onSuccess = null, Action<HttpResponse> onError = null)
+		{
+			Http.Instance.Send(this, onSuccess, onError);
+		}
+	}
 }

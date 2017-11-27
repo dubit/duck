@@ -7,10 +7,41 @@ namespace DUCK.Http
 {
 	public partial class Http
 	{
+
+		/// <summary>
+		/// Basic Get Request
+		/// </summary>
+		/// <param name="url">The url</param>
+		/// <returns>A HttpRequest with Http Verb Get</returns>
+		public static HttpRequest Get(string url)
+		{
+			return new HttpRequest(UnityWebRequest.Get(url));
+		}
+
 		public static HttpRequest<TSuccess, TError> Get<TSuccess, TError>(string url, MarkUpType markUpType = MarkUpType.Json)
 			where TSuccess : class where TError : class
 		{
 			return new HttpRequest<TSuccess, TError>(UnityWebRequest.Get(url), markUpType);
+		}
+
+		public static HttpRequest Post(string url, string payload)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, payload));
+		}
+
+		public static HttpRequest Post(string url, WWWForm form)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, form));
+		}
+
+		public static HttpRequest Post(string url, Dictionary<string, string> formFields)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, formFields));
+		}
+
+		public static HttpRequest Post(string url, List<IMultipartFormSection> multipartForm)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, multipartForm));
 		}
 
 		public static HttpRequest<TSuccess, TError> Post<TSuccess, TError, TSend>(string url, TSend payload,
