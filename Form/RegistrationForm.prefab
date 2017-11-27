@@ -41,6 +41,7 @@ GameObject:
   - component: {fileID: 114520412046999590}
   - component: {fileID: 114191316373933310}
   - component: {fileID: 114550201962061944}
+  - component: {fileID: 114826696559454006}
   - component: {fileID: 114634640471773624}
   m_Layer: 5
   m_Name: ConfirmPassword
@@ -59,7 +60,6 @@ GameObject:
   - component: {fileID: 224235477421498396}
   - component: {fileID: 222035591721758400}
   - component: {fileID: 114847023451072706}
-  - component: {fileID: 114222400898745268}
   - component: {fileID: 114812794113972194}
   - component: {fileID: 114198700820856784}
   m_Layer: 5
@@ -81,6 +81,7 @@ GameObject:
   - component: {fileID: 114473230521451006}
   - component: {fileID: 114641610729833784}
   - component: {fileID: 114990736161541852}
+  - component: {fileID: 114477095820534806}
   - component: {fileID: 114184758355079704}
   m_Layer: 5
   m_Name: PasswordField
@@ -100,8 +101,9 @@ GameObject:
   - component: {fileID: 222335382175973522}
   - component: {fileID: 114899138141904238}
   - component: {fileID: 114110195827760030}
+  - component: {fileID: 114225200826571522}
   m_Layer: 5
-  m_Name: LayoutGroup
+  m_Name: Form
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,7 +262,7 @@ GameObject:
   - component: {fileID: 114076237139078716}
   - component: {fileID: 114766770966404984}
   m_Layer: 5
-  m_Name: RegisterView
+  m_Name: RegistrationForm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -313,6 +315,7 @@ GameObject:
   - component: {fileID: 114970075437811516}
   - component: {fileID: 114998327514908996}
   - component: {fileID: 114335836960546570}
+  - component: {fileID: 114745986426341370}
   - component: {fileID: 114333466703838514}
   m_Layer: 5
   m_Name: UsernameField
@@ -675,7 +678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9919b95d38e4d42eabf908f83185ec2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldName: 
+  fieldName: email
   formMessage: {fileID: 114441806490961950}
   clearOnReset: 0
 --- !u!114 &114198700820856784
@@ -697,23 +700,23 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &114222400898745268
+--- !u!114 &114225200826571522
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1121487001564182}
+  m_GameObject: {fileID: 1195477406422456}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 559762bb16d2242d69cbbbc283f04022, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  submitButton: {fileID: 114812794113972194}
   formFields:
   - {fileID: 114191482811159402}
   - {fileID: 114335836960546570}
   - {fileID: 114990736161541852}
   - {fileID: 114550201962061944}
-  submitButton: {fileID: 0}
 --- !u!114 &114255422877043794
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -777,7 +780,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9919b95d38e4d42eabf908f83185ec2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldName: 
+  fieldName: username
   formMessage: {fileID: 114389350594256496}
   clearOnReset: 0
 --- !u!114 &114389350594256496
@@ -895,6 +898,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114477095820534806
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1193442311365006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5503872069ea046edb8f79ae49596a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  errorMessage: Password must be bettwen 6 and 20 characters
+  min: 6
+  max: 20
 --- !u!114 &114520412046999590
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -933,7 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9919b95d38e4d42eabf908f83185ec2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldName: 
+  fieldName: confirm_password
   formMessage: {fileID: 114882103568275176}
   clearOnReset: 1
 --- !u!114 &114553745863402528
@@ -1133,6 +1150,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &114745986426341370
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1799256245574200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5503872069ea046edb8f79ae49596a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  errorMessage: Username must be between 6 and 20 characters
+  min: 6
+  max: 20
 --- !u!114 &114766770966404984
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1195,6 +1226,19 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114826696559454006
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1048381701008016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df3ba083e8bde41b3ad7ea7e78a518a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  errorMessage: Passwords do not match
+  textFieldToMatch: {fileID: 114990736161541852}
 --- !u!114 &114836970755829936
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1452,7 +1496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9919b95d38e4d42eabf908f83185ec2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fieldName: 
+  fieldName: password
   formMessage: {fileID: 114084763452287584}
   clearOnReset: 1
 --- !u!114 &114998327514908996
