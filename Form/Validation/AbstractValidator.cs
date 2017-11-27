@@ -10,5 +10,10 @@ namespace DUCK.Form.Validation
 		private string errorMessage;
 
 		public abstract bool Validate();
+
+		public void SetErrorMessage(string errorMessage)
+		{
+			this.errorMessage = errorMessage;
+		}
 	}
 }
