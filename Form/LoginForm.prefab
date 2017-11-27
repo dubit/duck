@@ -58,9 +58,8 @@ GameObject:
   - component: {fileID: 114855494239933772}
   - component: {fileID: 114043984215332926}
   - component: {fileID: 114493376176591754}
-  - component: {fileID: 114166697502672900}
-  - component: {fileID: 114358836534022682}
   - component: {fileID: 114708684485916874}
+  - component: {fileID: 114166697502672900}
   m_Layer: 5
   m_Name: PasswordField
   m_TagString: Untagged
@@ -133,8 +132,8 @@ GameObject:
   - component: {fileID: 114395713805675086}
   - component: {fileID: 114955430410439246}
   - component: {fileID: 114803501993586892}
-  - component: {fileID: 114761522195768994}
   - component: {fileID: 114438054629414096}
+  - component: {fileID: 114761522195768994}
   m_Layer: 5
   m_Name: UsernameField
   m_TagString: Untagged
@@ -172,7 +171,7 @@ GameObject:
   - component: {fileID: 114689367781616538}
   - component: {fileID: 114473467122947750}
   m_Layer: 5
-  m_Name: LoginView
+  m_Name: LoginForm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,19 +488,6 @@ MonoBehaviour:
   - {fileID: 114803501993586892}
   - {fileID: 114493376176591754}
   submitButton: {fileID: 114306773233870172}
---- !u!114 &114358836534022682
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1173835282171722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df3ba083e8bde41b3ad7ea7e78a518a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  errorMessage: Password does not match Username
-  textFieldToMatch: {fileID: 114803501993586892}
 --- !u!114 &114395713805675086
 MonoBehaviour:
   m_ObjectHideFlags: 1
