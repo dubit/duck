@@ -17,13 +17,13 @@ namespace DUCK.Http
 			{ResponseType.ServerError, "The server encounted an error and responded with code: {0} - {1}"}
 		};
 
-		public static string GetResponseTypeMessage(HttpResponse response, string url)
+		public static string GetResponseTypeMessage(HttpResponse response)
 		{
 			if (!responseTypeMessages.ContainsKey(response.ResponseType))
 			{
-				return string.Format(responseTypeMessages[ResponseType.Unknown], response.ResponseCode, url);
+				return string.Format(responseTypeMessages[ResponseType.Unknown], response.ResponseCode, response.Url);
 			}
-			return string.Format(responseTypeMessages[response.ResponseType], response.ResponseCode, url);
+			return string.Format(responseTypeMessages[response.ResponseType], response.ResponseCode, response.Url);
 		}
 
 		public static ResponseType GetResponseType(long responseCode)
