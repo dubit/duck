@@ -5,6 +5,7 @@ namespace DUCK.Http
 {
 	public class HttpResponse
 	{
+		public string Url { get; private set; }
 		public bool Ok { get; private set; }
 		public bool IsHttpError { get; private set; }
 		public bool IsNetworkError { get; private set; }
@@ -16,6 +17,7 @@ namespace DUCK.Http
 
 		public HttpResponse(UnityWebRequest unityWebRequest)
 		{
+			Url = unityWebRequest.url;
 			Bytes = unityWebRequest.downloadHandler.data;
 			Text = unityWebRequest.downloadHandler.text;
 
