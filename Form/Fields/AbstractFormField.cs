@@ -23,6 +23,11 @@ namespace DUCK.Form.Fields
 
 		public abstract object GetValue();
 
+		public string GetStringValue()
+		{
+			return GetValue().ToString();
+		}
+
 		public bool Validate()
 		{
 			foreach (var validator in validators)
