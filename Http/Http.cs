@@ -180,8 +180,6 @@ namespace DUCK.Http
 			yield return unityWebRequest.SendWebRequest();
 			var response = new HttpResponse(request.UnityWebRequest);
 
-			Debug.Log(HttpUtils.GetResponseTypeMessage(response, unityWebRequest.url));
-
 			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
 			{
 				var error = HttpUtils.TryParse<TError>(unityWebRequest.downloadHandler.text, request.MarkUpType);
