@@ -261,6 +261,9 @@ GameObject:
   - component: {fileID: 223605114551484882}
   - component: {fileID: 114076237139078716}
   - component: {fileID: 114766770966404984}
+  - component: {fileID: 222573600457078800}
+  - component: {fileID: 114422128900158900}
+  - component: {fileID: 114448127937013414}
   m_Layer: 5
   m_Name: RegistrationForm
   m_TagString: Untagged
@@ -506,6 +509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c01b187d0a3848dea0d035077ee279c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  field: {fileID: 114990736161541852}
 --- !u!114 &114110195827760030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -679,7 +683,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: email
-  formMessage: {fileID: 114441806490961950}
   clearOnReset: 0
 --- !u!114 &114198700820856784
 MonoBehaviour:
@@ -781,7 +784,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: username
-  formMessage: {fileID: 114389350594256496}
   clearOnReset: 0
 --- !u!114 &114389350594256496
 MonoBehaviour:
@@ -794,6 +796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c01b187d0a3848dea0d035077ee279c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  field: {fileID: 114335836960546570}
 --- !u!114 &114393690963835198
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -827,6 +830,39 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114422128900158900
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1717097238873452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 14
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 
 --- !u!114 &114441806490961950
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -838,6 +874,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c01b187d0a3848dea0d035077ee279c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  field: {fileID: 114191482811159402}
+--- !u!114 &114448127937013414
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1717097238873452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c01b187d0a3848dea0d035077ee279c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  field: {fileID: 0}
 --- !u!114 &114450379627976658
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -951,7 +1000,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: confirm_password
-  formMessage: {fileID: 114882103568275176}
   clearOnReset: 1
 --- !u!114 &114553745863402528
 MonoBehaviour:
@@ -1304,6 +1352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c01b187d0a3848dea0d035077ee279c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  field: {fileID: 114550201962061944}
 --- !u!114 &114882714504586270
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1497,7 +1546,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: password
-  formMessage: {fileID: 114084763452287584}
   clearOnReset: 1
 --- !u!114 &114998327514908996
 MonoBehaviour:
@@ -1616,6 +1664,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1048381701008016}
+--- !u!222 &222573600457078800
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1717097238873452}
 --- !u!222 &222596767664245076
 CanvasRenderer:
   m_ObjectHideFlags: 1

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DUCK.Form.Fields;
 using DUCK.Utils;
 using UnityEngine;
@@ -31,11 +30,6 @@ namespace DUCK.Form
 			}
 		}
 
-		private void Start()
-		{
-			formFields.ForEach(field => field.RemoveMessage());
-		}
-
 		private void HandleSubmitClicked()
 		{
 			var isValid = true;
@@ -44,24 +38,20 @@ namespace DUCK.Form
 			{
 				var isFormValid = formField.Validate();
 
-				if (isFormValid)
-				{
-					formField.RemoveMessage();
-				}
-				else if (isValid)
+				if (!isFormValid && isValid)
 				{
 					isValid = false;
 				}
 			}
 
-			foreach (var formField in formFields)
-			{
-				formField.ResetField();
-			}
-
 			if (isValid)
 			{
 				OnSubmitForm.SafeInvoke(fields);
+			}
+
+			foreach (var formField in formFields)
+			{
+				formField.ResetField();
 			}
 		}
 

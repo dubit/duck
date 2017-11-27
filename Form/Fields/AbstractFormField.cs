@@ -1,4 +1,6 @@
-﻿using DUCK.Form.Validation;
+﻿using System;
+using DUCK.Form.Validation;
+using DUCK.Utils;
 using UnityEngine;
 
 namespace DUCK.Form.Fields
@@ -12,9 +14,11 @@ namespace DUCK.Form.Fields
 
 		[SerializeField]
 		private string fieldName;
-		[SerializeField]
-		private FormMessage formMessage;
 		private AbstractValidator[] validators;
+
+		public event Action OnReset;
+		public event Action OnValidationSuccess;
+		public event Action<AbstractValidator> OnValidationFailed;
 
 		protected virtual void Awake()
 		{
@@ -32,35 +36,20 @@ namespace DUCK.Form.Fields
 		{
 			foreach (var validator in validators)
 			{
-				var isValid = validator.Validate();
-				if (!isValid)
+				if(!validator.Validate())
 				{
-					ShowMessage(validator.Error);
+					OnValidationFailed.SafeInvoke(validator);
 					return false;
 				}
 			}
 
+			OnValidationSuccess.SafeInvoke();
 			return true;
 		}
 
 		public virtual void ResetField()
 		{
-		}
-
-		public void RemoveMessage()
-		{
-			if (formMessage != null)
-			{
-				formMessage.RemoveMessage();
-			}
-		}
-
-		public void ShowMessage(string message)
-		{
-			if (formMessage != null)
-			{
-				formMessage.DisplayMessage(message);
-			}
+			OnReset.SafeInvoke();
 		}
 	}
 }
