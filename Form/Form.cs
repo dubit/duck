@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DUCK.Form.Fields;
 using DUCK.Utils;
 using UnityEngine;
@@ -53,6 +54,11 @@ namespace DUCK.Form
 			{
 				formField.ResetField();
 			}
+		}
+
+		public AbstractFormField[] GetAllFields()
+		{
+			return formFields.ToArray();
 		}
 
 		public AbstractFormField GetField(string fieldName)
