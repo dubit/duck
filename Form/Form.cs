@@ -11,9 +11,9 @@ namespace DUCK.Form
 	public class Form : MonoBehaviour
 	{
 		[SerializeField]
-		private AbstractFormField[] formFields;
-		[SerializeField]
 		private Button submitButton;
+		[SerializeField]
+		private AbstractFormField[] formFields;
 
 		private Dictionary<string, AbstractFormField> fields;
 
@@ -44,7 +44,6 @@ namespace DUCK.Form
 			{
 				var isFormValid = formField.Validate();
 
-				formField.ResetField();
 				if (isFormValid)
 				{
 					formField.RemoveMessage();
@@ -53,6 +52,11 @@ namespace DUCK.Form
 				{
 					isValid = false;
 				}
+			}
+
+			foreach (var formField in formFields)
+			{
+				formField.ResetField();
 			}
 
 			if (isValid)
