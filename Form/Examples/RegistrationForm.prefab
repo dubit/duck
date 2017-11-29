@@ -435,6 +435,7 @@ GameObject:
   - component: {fileID: 114745629980051962}
   - component: {fileID: 114191482811159402}
   - component: {fileID: 114553745863402528}
+  - component: {fileID: 114214904782520416}
   m_Layer: 5
   m_Name: EmailField
   m_TagString: Untagged
@@ -1328,6 +1329,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &114214904782520416
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1665225264000634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ee69209aaa864052ab224695a7be158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  errorMessage: Email is invlaid
+  pattern: ^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$
 --- !u!114 &114225200826571522
 MonoBehaviour:
   m_ObjectHideFlags: 1
