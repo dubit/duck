@@ -56,10 +56,10 @@ namespace DUCK.Tween
 
 		public override bool IsValid { get { return TargetObject != null || TargetRectTransform != null; } }
 
-		protected bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1f; } }
-		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
-
 		protected Func<float, float> easingFunction;
+
+		private bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1f; } }
+		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
 
 		protected TimedAnimation() {}
 
@@ -102,6 +102,7 @@ namespace DUCK.Tween
 			}
 			else
 			{
+				// If the duration <= 0 we immediately finish the animation
 				base.Play(onComplete);
 				Refresh(1f);
 				NotifyAnimationComplete();
