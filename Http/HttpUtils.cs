@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DUCK.Http
@@ -17,22 +18,34 @@ namespace DUCK.Http
 			{ResponseType.ServerError, "The server encounted an error and responded with code: {0} - {1}"}
 		};
 
+		private static readonly Dictionary<long, string> customResponseTypeMessages = new Dictionary<long, string>();
+
 		public static string GetResponseTypeMessage(HttpResponse response)
 		{
 			if (!responseTypeMessages.ContainsKey(response.ResponseType))
 			{
 				return string.Format(responseTypeMessages[ResponseType.Unknown], response.ResponseCode, response.Url);
 			}
+			if(customResponseTypeMessages.ContainsKey(response.ResponseCode))
+			{
+				return customResponseTypeMessages[response.ResponseCode];
+			}
 			return string.Format(responseTypeMessages[response.ResponseType], response.ResponseCode, response.Url);
 		}
 
 		public static ResponseType GetResponseType(long responseCode)
 		{
+			if (CheckIsCustomResponseCode(responseCode)) return ResponseType.Custom;
 			if (CheckIsSuccessful(responseCode)) return ResponseType.Successful;
 			if (CheckIsError(responseCode)) return ResponseType.Error;
 			if (CheckIsServerError(responseCode)) return ResponseType.ServerError;
 
 			return ResponseType.Unknown;
+		}
+
+		private static bool CheckIsCustomResponseCode(long responseCode)
+		{
+			return customResponseTypeMessages.Any(customResponseTypeMessage => responseCode == customResponseTypeMessage.Key);
 		}
 
 		private static bool CheckIsSuccessful(long responseCode)

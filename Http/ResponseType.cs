@@ -5,6 +5,7 @@
 		Unknown,
 		Successful,
 		Error,
-		ServerError
+		ServerError,
+		Custom
 	}
 }
