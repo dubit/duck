@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace DUCK.Form.Fields
 {
+	[DisallowMultipleComponent]
 	public abstract class AbstractFormField : MonoBehaviour
 	{
 		public string FieldName
