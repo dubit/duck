@@ -23,9 +23,28 @@ namespace DUCK.Http
 			}
 		}
 
+		private Dictionary<string, string> headers;
+
 		private void Awake()
 		{
 			instance = this;
+
+			headers = new Dictionary<string, string>();
+		}
+
+		public void SetSuperHeader(string key, string value)
+		{
+			headers[key] = value;
+		}
+
+		public Dictionary<string, string> GetSuperHeaders()
+		{
+			return headers;
+		}
+
+		public bool RemoveSuperHeader(string key)
+		{
+			return headers.Remove(key);
 		}
 
 		#region Creation Helpers
@@ -58,6 +77,26 @@ namespace DUCK.Http
 		public static HttpRequest Post<T>(string url, T payload)
 		{
 			return Post(url, JsonUtility.ToJson(payload));
+		}
+
+		public static HttpRequest Put(string url, byte[] rawData)
+		{
+			return new HttpRequest(UnityWebRequest.Put(url, rawData));
+		}
+
+		public static HttpRequest Put(string url, string bodyData)
+		{
+			return new HttpRequest(UnityWebRequest.Put(url, bodyData));
+		}
+
+		public static HttpRequest Delete(string url)
+		{
+			return new HttpRequest(UnityWebRequest.Delete(url));
+		}
+
+		public static HttpRequest Head(string url)
+		{
+			return new HttpRequest(UnityWebRequest.Head(url));
 		}
 
 		#endregion
