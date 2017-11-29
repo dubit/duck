@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DUCK.Form.Fields;
 using UnityEngine;
 
@@ -7,10 +8,15 @@ namespace DUCK.Form.Validation
 	[RequireComponent(typeof(AbstractFormField))]
 	public class BlackListValidator : AbstractValidator
 	{
+		public List<string> BlackList
+		{
+			get { return blackListedWords; }
+		}
+
 		[SerializeField]
 		private bool caseSensitive = true;
 		[SerializeField]
-		private string[] blackListedWords;
+		private List<string> blackListedWords;
 
 		private AbstractFormField formField;
 
@@ -20,7 +26,7 @@ namespace DUCK.Form.Validation
 
 			if (!caseSensitive)
 			{
-				for (var i = 0; i < blackListedWords.Length; i++)
+				for (var i = 0; i < blackListedWords.Count; i++)
 				{
 					blackListedWords[i] = blackListedWords[i].ToLower();
 				}
