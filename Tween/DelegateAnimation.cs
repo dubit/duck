@@ -32,20 +32,20 @@ namespace DUCK.Tween
 			this.animationCreationFunction = animationCreationFunction;
 		}
 
-		public override void Play(Action onComplete)
+		public override void Play(Action onComplete = null, Action onAbort = null)
 		{
-			base.Play(onComplete);
+			base.Play(onComplete, onAbort);
 
 			try
 			{
 				Animation = animationCreationFunction();
 				if (Animation.IsValid)
 				{
-					Animation.Play(NotifyAnimationComplete);
+					Animation.Play(NotifyAnimationComplete, base.Abort);
 				}
 				else
 				{
-					base.FastForward();
+					base.Abort();
 				}
 			}
 			catch (MissingReferenceException e)
@@ -67,7 +67,6 @@ namespace DUCK.Tween
 			{
 				Animation.Abort();
 			}
-			base.Abort();
 		}
 
 		public override void FastForward()

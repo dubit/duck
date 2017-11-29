@@ -25,14 +25,12 @@ namespace DUCK.Tween
 				{
 					nextAnimation.Play(() =>
 					{
-						if (!nextAnimation.IsValid)
-						{
-							Animations.Remove(nextAnimation);
-						}
-						else
-						{
-							NumberOfAnimationsCompleted++;
-						}
+						NumberOfAnimationsCompleted++;
+						PlayQueuedAnimations();
+					},
+					() =>
+					{
+						Animations.Remove(nextAnimation);
 						PlayQueuedAnimations();
 					});
 				}

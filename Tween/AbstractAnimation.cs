@@ -31,20 +31,14 @@ namespace DUCK.Tween
 		public abstract bool IsValid { get; }
 
 		private Action onCompleteCallback;
-
-		/// <summary>
-		/// Starts playback of the animation without any callbacks.
-		/// </summary>
-		public void Play()
-		{
-			Play(null);
-		}
+		private Action onAbortCallback;
 
 		/// <summary>
 		/// Starts playback of the animation
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the animation is complete</param>
-		public virtual void Play(Action onComplete)
+		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
+		public virtual void Play(Action onComplete = null, Action onAbort = null)
 		{
 			if (!IsValid)
 			{
@@ -53,6 +47,7 @@ namespace DUCK.Tween
 			}
 
 			onCompleteCallback = onComplete;
+			onAbortCallback = onAbort;
 			IsPlaying = true;
 		}
 
@@ -62,7 +57,8 @@ namespace DUCK.Tween
 		/// <param name="repeat">The repeat times for the animation. 0 (or less than -1) means no repeat; -1 means infinite loop.</param>
 		/// <param name="onRepeat">An optional callback invoked on each repeat is complete</param>
 		/// <param name="onAllComplete">An optional callback invoked when all repeats are finished (will call once only)</param>
-		public void Play(int repeat, Action onRepeat = null, Action onAllComplete = null)
+		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
+		public void Play(int repeat, Action onRepeat = null, Action onAllComplete = null, Action onAbort = null)
 		{
 			if (!IsValid)
 			{
@@ -81,7 +77,7 @@ namespace DUCK.Tween
 
 				if (IsLooping)
 				{
-					Play(repeat == -1 ? -1 : --repeat, onRepeat, onAllComplete);
+					Play(repeat == -1 ? -1 : --repeat, onRepeat, onAllComplete, onAbort);
 				}
 				// This will only occur when the user called FastForward().
 				// Abort an animation wouldn't get this delegate called anyway.
@@ -91,7 +87,7 @@ namespace DUCK.Tween
 				}
 			};
 
-			Play(IsLooping ? onRepeatComplete : onAllComplete);
+			Play(IsLooping ? onRepeatComplete : onAllComplete, onAbort);
 		}
 
 		/// <summary>
@@ -102,6 +98,11 @@ namespace DUCK.Tween
 			IsPlaying = false;
 			IsLooping = false;
 			IsPaused = false;
+
+			if (onAbortCallback != null)
+			{
+				onAbortCallback();
+			}
 		}
 
 		/// <summary>

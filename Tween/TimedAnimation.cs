@@ -81,7 +81,8 @@ namespace DUCK.Tween
 		/// Call it again (anytime) will simply replay the animation.
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the animation is complete</param>
-		public override void Play(Action onComplete)
+		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
+		public override void Play(Action onComplete = null, Action onAbort = null)
 		{
 			if (!IsValid)
 			{
@@ -97,13 +98,13 @@ namespace DUCK.Tween
 					AnimationDriver.Add(Update);
 				}
 
-				base.Play(onComplete);
+				base.Play(onComplete, onAbort);
 				Refresh(CurrentTime = IsReversed ? Duration : 0f);
 			}
 			else
 			{
 				// If the duration <= 0 we immediately finish the animation
-				base.Play(onComplete);
+				base.Play(onComplete, onAbort);
 				Refresh(1f);
 				NotifyAnimationComplete();
 			}
@@ -167,7 +168,6 @@ namespace DUCK.Tween
 			{
 				CurrentTime = Duration;
 				Abort();
-				NotifyAnimationComplete();
 				return;
 			}
 
