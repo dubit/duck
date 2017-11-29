@@ -34,12 +34,12 @@ namespace DUCK.Http
 			ResponseType = HttpUtils.GetResponseType(ResponseCode);
 		}
 
-		public T ParseBodyAs<T>(MarkUpType markUpType = MarkUpType.Json)
+		public T ParseBodyAs<T>()
 		{
-			return HttpUtils.TryParse<T>(Text, markUpType);
+			return HttpUtils.TryParse<T>(Text);
 		}
 
-		public object ParseBodyAs(Type type, MarkUpType markUpType = MarkUpType.Json)
+		public object ParseBodyAs(Type type)
 		{
 			return JsonUtility.FromJson(Text, type);
 		}

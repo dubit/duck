@@ -63,16 +63,11 @@ namespace DUCK.Http
 			return responseCode >= 500 && responseCode <= 511;
 		}
 
-		public static T TryParse<T>(string text, MarkUpType markUpType)
+		public static T TryParse<T>(string text)
 		{
 			try
 			{
-				switch (markUpType)
-				{
-					case MarkUpType.Json: return JsonUtility.FromJson<T>(text);
-					case MarkUpType.Xml: return default(T);
-					default: return default(T);
-				}
+				return JsonUtility.FromJson<T>(text);
 			}
 			catch
 			{
