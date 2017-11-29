@@ -6,7 +6,7 @@ namespace DUCK.Form.Fields
 	[RequireComponent(typeof(Toggle))]
 	public class CheckboxField : AbstractFormField
 	{
-		public bool Checked
+		public bool IsChecked
 		{
 			get { return toggleField.isOn; }
 		}
@@ -24,7 +24,7 @@ namespace DUCK.Form.Fields
 
 		public override object GetValue()
 		{
-			return Checked;
+			return IsChecked;
 		}
 
 		public override void ResetField()

@@ -9,7 +9,7 @@ namespace DUCK.Form.Validation
 
 		public override bool Validate()
 		{
-			return isOn == checkboxField.Checked;
+			return isOn == checkboxField.IsChecked;
 		}
 	}
 }
