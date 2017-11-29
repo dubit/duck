@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -27,63 +28,91 @@ namespace DUCK.Http
 			instance = this;
 		}
 
+		#region Creation Helpers
+
+		public static HttpRequest Get(string url)
+		{
+			return new HttpRequest(UnityWebRequest.Get(url));
+		}
+
+		public static HttpRequest Post(string url, string payload)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, payload));
+		}
+
+		public static HttpRequest Post(string url, WWWForm form)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, form));
+		}
+
+		public static HttpRequest Post(string url, Dictionary<string, string> formFields)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, formFields));
+		}
+
+		public static HttpRequest Post(string url, List<IMultipartFormSection> multipartForm)
+		{
+			return new HttpRequest(UnityWebRequest.Post(url, multipartForm));
+		}
+
+		public static HttpRequest Post<T>(string url, T payload)
+		{
+			return Post(url, JsonUtility.ToJson(payload));
+		}
+
+		#endregion
+
+		#region None Static Send Methods
+
 		public void Send(HttpRequest request, Action<HttpResponse> onSuccess = null, Action<HttpResponse> onError = null)
 		{
 			StartCoroutine(SendCoroutine(request, onSuccess, onError));
 		}
 
-		public void Send<TSuccess, TError>(HttpRequest<TSuccess, TError> request, Action<TSuccess> onSuccess = null,
-			Action<TError> onError = null) where TSuccess : class where TError : class
-		{
-			StartCoroutine(SendCoroutine(request, (response, success) =>
-			{
-				if (onSuccess != null)
-				{
-					onSuccess.Invoke(success);
-				}
-			}, (response, error) =>
-			{
-				if (onError != null)
-				{
-					onError.Invoke(error);
-				}
-			}));
-		}
-
-		/// <summary>
-		/// Send a HttpRequest with callbacks for onSuccess and onError with templatized
-		/// </summary>
-		public void Send<TSuccess, TError>(HttpRequest<TSuccess, TError> request, Action<HttpResponse, TSuccess> onSuccess,
-			Action<HttpResponse, TError> onError) where TSuccess : class where TError : class
-		{
-			StartCoroutine(SendCoroutine(request, onSuccess, onError));
-		}
-
-		/// <summary>
-		/// Send a unity web request with callbacks for onSuccess, onError and onNetworkError
-		/// </summary>
 		public void Send(UnityWebRequest unityWebRequest, Action<UnityWebRequest> onSuccess = null,
 			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
 		{
-			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
+			StartCoroutine(SendCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
 		}
 
 		public void Send(UnityWebRequest unityWebRequest, Action onSuccess = null,
 			Action onError = null, Action onNetworkError = null)
 		{
-			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
+			StartCoroutine(SendCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
 		}
 
-		/// <summary>
-		/// Send a Unity web request with callbacks for onSuccess and onError with an HttpResponse
-		/// </summary>
 		public void Send(UnityWebRequest unityWebRequest, Action<HttpResponse> onSuccess = null,
 			Action<HttpResponse> onError = null)
 		{
-			StartCoroutine(SendBasicCoroutine(unityWebRequest, onSuccess, onError));
+			StartCoroutine(SendCoroutine(unityWebRequest, onSuccess, onError));
 		}
 
-		private static IEnumerator SendBasicCoroutine(UnityWebRequest unityWebRequest,
+		#endregion
+
+		#region Http Request
+
+		private static IEnumerator SendCoroutine(HttpRequest request, Action<HttpResponse> onSuccess,
+			Action<HttpResponse> onError)
+		{
+			var unityWebRequest = request.UnityWebRequest;
+			yield return unityWebRequest.SendWebRequest();
+			var response = new HttpResponse(unityWebRequest);
+
+			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
+			{
+				onError.Invoke(response);
+			}
+			else if (onSuccess != null)
+			{
+				onSuccess.Invoke(response);
+			}
+		}
+
+		#endregion
+
+		#region Unity Web Request
+
+		private static IEnumerator SendCoroutine(UnityWebRequest unityWebRequest,
 			Action onSuccess = null, Action onError = null, Action onNetworkError = null)
 		{
 			yield return unityWebRequest.SendWebRequest();
@@ -110,7 +139,7 @@ namespace DUCK.Http
 			}
 		}
 
-		private static IEnumerator SendBasicCoroutine(UnityWebRequest unityWebRequest,
+		private static IEnumerator SendCoroutine(UnityWebRequest unityWebRequest,
 			Action<UnityWebRequest> onSuccess = null,
 			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
 		{
@@ -138,24 +167,7 @@ namespace DUCK.Http
 			}
 		}
 
-		private static IEnumerator SendCoroutine(HttpRequest request, Action<HttpResponse> onSuccess,
-			Action<HttpResponse> onError)
-		{
-			var unityWebRequest = request.UnityWebRequest;
-			yield return unityWebRequest.SendWebRequest();
-			var response = new HttpResponse(unityWebRequest);
-
-			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
-			{
-				onError.Invoke(response);
-			}
-			else if (onSuccess != null)
-			{
-				onSuccess.Invoke(response);
-			}
-		}
-
-		private static IEnumerator SendBasicCoroutine(UnityWebRequest request,
+		private static IEnumerator SendCoroutine(UnityWebRequest request,
 			Action<HttpResponse> onSuccess,
 			Action<HttpResponse> onError)
 		{
@@ -172,38 +184,6 @@ namespace DUCK.Http
 			}
 		}
 
-		private static IEnumerator SendCoroutine<TSuccess, TError>(HttpRequest<TSuccess, TError> request,
-			Action<HttpResponse, TSuccess> onSuccess,
-			Action<HttpResponse, TError> onError) where TSuccess : class where TError : class
-		{
-			var unityWebRequest = request.UnityWebRequest;
-			yield return unityWebRequest.SendWebRequest();
-			var response = new HttpResponse(request.UnityWebRequest);
-
-			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
-			{
-				var error = HttpUtils.TryParse<TError>(unityWebRequest.downloadHandler.text, request.MarkUpType);
-				onError.Invoke(response, error);
-			}
-			else if (onSuccess != null)
-			{
-				if (typeof(TSuccess) == typeof(Texture2D))
-				{
-					var downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
-					if (downloadHandlerTexture != null && downloadHandlerTexture.texture != null)
-					{
-						onSuccess.Invoke(response, downloadHandlerTexture.texture as TSuccess);
-					}
-					else
-						throw new NullReferenceException("Http was successful with code " + response.ResponseCode +
-						                                 " but could not cast to Texture2D");
-				}
-				else
-				{
-					var success = HttpUtils.TryParse<TSuccess>(request.UnityWebRequest.downloadHandler.text, request.MarkUpType);
-					onSuccess.Invoke(response, success);
-				}
-			}
-		}
+		#endregion
 	}
 }

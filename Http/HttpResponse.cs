@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DUCK.Http
@@ -31,6 +32,16 @@ namespace DUCK.Http
 			ResponseCode = unityWebRequest.responseCode;
 			Ok = HttpUtils.GetResponseType(ResponseCode) == ResponseType.Successful;
 			ResponseType = HttpUtils.GetResponseType(ResponseCode);
+		}
+
+		public T ParseBodyAs<T>(MarkUpType markUpType = MarkUpType.Json)
+		{
+			return HttpUtils.TryParse<T>(Text, markUpType);
+		}
+
+		public object ParseBodyAs(Type type, MarkUpType markUpType = MarkUpType.Json)
+		{
+			return JsonUtility.FromJson(Text, type);
 		}
 	}
 }
