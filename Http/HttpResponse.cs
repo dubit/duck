@@ -36,12 +36,26 @@ namespace DUCK.Http
 
 		public T ParseBodyAs<T>()
 		{
-			return HttpUtils.TryParse<T>(Text);
+			try
+			{
+				return JsonUtility.FromJson<T>(Text);
+			}
+			catch
+			{
+				return default(T);
+			}
 		}
 
 		public object ParseBodyAs(Type type)
 		{
-			return JsonUtility.FromJson(Text, type);
+			try
+			{
+				return JsonUtility.FromJson(Text, type);
+			}
+			catch
+			{
+				return default(Type);
+			}
 		}
 	}
 }

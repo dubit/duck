@@ -62,17 +62,5 @@ namespace DUCK.Http
 		{
 			return responseCode >= 500 && responseCode <= 511;
 		}
-
-		public static T TryParse<T>(string text)
-		{
-			try
-			{
-				return JsonUtility.FromJson<T>(text);
-			}
-			catch
-			{
-				return default(T);
-			}
-		}
 	}
 }
