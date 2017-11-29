@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -101,9 +102,20 @@ namespace DUCK.Http
 		/// </returns>
 		public static HttpRequest PostAsJson(string uri, string json)
 		{
-			var request = new HttpRequest(UnityWebRequest.Post(uri, json));
-			request.UnityWebRequest.uploadHandler.contentType = "application/json";
-			return request;
+			var unityWebRequest = new UnityWebRequest(uri, UnityWebRequest.kHttpVerbPOST)
+			{
+				uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json))
+				{
+					contentType = "application/json"
+				},
+				downloadHandler = new DownloadHandlerBuffer()
+			};
+			return new HttpRequest(unityWebRequest);
+		}
+
+		public static HttpRequest PostAsJson<T>(string uri, T payload)
+		{
+			return PostAsJson(uri, JsonUtility.ToJson(payload));
 		}
 
 		/// <summary>
@@ -135,11 +147,6 @@ namespace DUCK.Http
 		public static HttpRequest Post(string uri, List<IMultipartFormSection> multipartForm)
 		{
 			return new HttpRequest(UnityWebRequest.Post(uri, multipartForm));
-		}
-
-		public static HttpRequest PostAsJson<T>(string uri, T payload)
-		{
-			return PostAsJson(uri, JsonUtility.ToJson(payload));
 		}
 
 		/// <summary>
