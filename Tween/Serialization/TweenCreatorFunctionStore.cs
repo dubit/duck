@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DUCK.Serialization;
 using DUCK.Tween.Easings;
 using DUCK.Tween.Extensions;
 using DUCK.Utils;
@@ -25,6 +26,16 @@ namespace DUCK.Tween.Serialization
 		{
 			tweenCreatorFunctionInfos = new Dictionary<string, TweenCreatorFunctionInfo>();
 
+			Func<MethodBase, bool> filterMethods = method =>
+			{
+				var parameters = method.GetParameters();
+				return parameters.All(p =>
+				{
+					// All types must supported by Args list or be a Func<float,float> (easing function) 
+					return ArgsList.IsSupportedType(p.ParameterType) || p.ParameterType == typeof(Func<float, float>);
+				});
+			};
+			
 			// Grab all constructors of listed types and use these.
 			new[]
 			{
@@ -37,9 +48,11 @@ namespace DUCK.Tween.Serialization
 				typeof(UIFadeAnimation),
 			}.ForEach(t =>
 			{
-				t.GetConstructors().ForEach(c =>
+				t.GetConstructors()
+					.Where(filterMethods)
+					.ForEach(c =>
 				{
-					var key = StringifyConstructor(c);
+					var key = StringifyConstructor((ConstructorInfo)c);
 					var func = TweenCreatorFunctionInfo.FromMethod(c);
 					tweenCreatorFunctionInfos.Add(key, func);
 				});
@@ -55,9 +68,10 @@ namespace DUCK.Tween.Serialization
 			}.ForEach(t =>
 			{
 				t.GetMethods(BindingFlags.Public | BindingFlags.Static)
+					.Where(filterMethods)
 					.ForEach(m =>
 					{
-						var key = StringifyExtMethod(m);
+						var key = StringifyExtMethod((MethodInfo)m);
 						var func = TweenCreatorFunctionInfo.FromMethod(m);
 						tweenCreatorFunctionInfos.Add(key, func);
 					});
