@@ -36,8 +36,8 @@ namespace DUCK.Tween.Serialization
 		public void Play()
 		{
 			var config = useReferencedConfig ? tweenConfigScriptableObject.Config : TweenConfig;
-			var animation = BuildTween(config, gameObject);
-			animation.Play();
+			var tween = BuildTween(config, gameObject);
+			tween.Play();
 		}
 
 #if UNITY_EDITOR
