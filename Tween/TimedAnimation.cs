@@ -35,24 +35,12 @@ namespace DUCK.Tween
 
 		/// <summary>
 		/// The duration of the timed animation
-		/// When it sets to less or equal 0, it will act as FastForward.
+		/// Duration will always clamp to >= 0
 		/// </summary>
 		public float Duration
 		{
 			get { return duration; }
-			set
-			{
-				if (value <= 0)
-				{
-					Debug.LogError("Animation duration cannot set to zero!");
-					duration = 1.0f; // Make sure not divide by 0
-					FastForward();
-				}
-				else
-				{
-					duration = value;
-				}
-			}
+			set { duration = Mathf.Max(0f, value); }
 		}
 		private float duration;
 
@@ -68,10 +56,10 @@ namespace DUCK.Tween
 
 		public override bool IsValid { get { return TargetObject != null || TargetRectTransform != null; } }
 
-		protected bool IsComplete { get { return IsReversed ? Progress <= 0 : Progress >= 1.0f; } }
-		protected float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
-
 		protected Func<float, float> easingFunction;
+
+		private bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1f; } }
+		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
 
 		protected TimedAnimation() {}
 
@@ -93,7 +81,8 @@ namespace DUCK.Tween
 		/// Call it again (anytime) will simply replay the animation.
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the animation is complete</param>
-		public override void Play(Action onComplete)
+		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
+		public override void Play(Action onComplete = null, Action onAbort = null)
 		{
 			if (!IsValid)
 			{
@@ -101,14 +90,25 @@ namespace DUCK.Tween
 				return;
 			}
 
-			// A little guard for unnecessary adding to the update list
-			if (!IsPlaying)
+			if (Duration > 0f)
 			{
-				AnimationDriver.Add(Update);
+				// A little guard for unnecessary adding to the update list
+				if (!IsPlaying)
+				{
+					AnimationDriver.Add(Update);
+				}
+
+				base.Play(onComplete, onAbort);
+				Refresh(CurrentTime = IsReversed ? Duration : 0f);
+			}
+			else
+			{
+				// If the duration <= 0 we immediately finish the animation
+				base.Play(onComplete, onAbort);
+				Refresh(1f);
+				NotifyAnimationComplete();
 			}
 
-			base.Play(onComplete);
-			Refresh(CurrentTime = IsReversed ? Duration : 0);
 		}
 
 		public override void Abort()
@@ -168,7 +168,6 @@ namespace DUCK.Tween
 			{
 				CurrentTime = Duration;
 				Abort();
-				NotifyAnimationComplete();
 				return;
 			}
 
