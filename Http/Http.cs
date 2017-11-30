@@ -41,28 +41,42 @@ namespace DUCK.Http
 			}
 		}
 
-		private Dictionary<string, string> headers;
+		private Dictionary<string, string> superHeaders;
 
 		private void Awake()
 		{
 			instance = this;
 
-			headers = new Dictionary<string, string>();
+			superHeaders = new Dictionary<string, string>();
 		}
 
-		public void SetSuperHeader(string key, string value)
-		{
-			headers[key] = value;
-		}
-
+		/// <summary>
+		/// Super headers are key value pairs that will be added to every subsequent HttpRequest.
+		/// </summary>
+		/// <returns></returns>
 		public Dictionary<string, string> GetSuperHeaders()
 		{
-			return headers;
+			return superHeaders;
 		}
 
+		/// <summary>
+		/// Adds a header to the SuperHeaders key value pair, if the header key already exists, the value will be replaced.
+		/// </summary>
+		/// <param name="key">The header key to be added.</param>
+		/// <param name="value">The header value to be assigned.</param>
+		public void AddSuperHeader(string key, string value)
+		{
+			superHeaders[key] = value;
+		}
+
+		/// <summary>
+		/// Removes a header from the SuperHeaders list.
+		/// </summary>
+		/// <param name="key">The header key to be removed.</param>
+		/// <returns></returns>
 		public bool RemoveSuperHeader(string key)
 		{
-			return headers.Remove(key);
+			return superHeaders.Remove(key);
 		}
 
 		#region Creation Helpers
@@ -93,9 +107,9 @@ namespace DUCK.Http
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send form data to a server via HTTP POST.</para>
+		///   <para>Create a HttpRequest configured to send json data to a server via HTTP POST.</para>
 		/// </summary>
-		/// <param name="uri">The target URI to which form data will be transmitted.</param>
+		/// <param name="uri">The target URI to which json data will be transmitted.</param>
 		/// <param name="json">Json body data.</param>
 		/// <returns>
 		///   <para>A HttpRequest configured to send json data to uri via POST.</para>
@@ -113,7 +127,15 @@ namespace DUCK.Http
 			return new HttpRequest(unityWebRequest);
 		}
 
-		public static HttpRequest PostAsJson<T>(string uri, T payload)
+		/// <summary>
+		///   <para>Create a HttpRequest configured to send json data to a server via HTTP POST.</para>
+		/// </summary>
+		/// <param name="uri">The target URI to which json data will be transmitted.</param>
+		/// <param name="payload">The object to be parsed to json data.</param>
+		/// <returns>
+		///   <para>A HttpRequest configured to send json data to uri via POST.</para>
+		/// </returns>
+		public static HttpRequest PostAsJson<T>(string uri, T payload) where T : class
 		{
 			return PostAsJson(uri, JsonUtility.ToJson(payload));
 		}
