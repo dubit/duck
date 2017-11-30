@@ -9,6 +9,11 @@ namespace DUCK.Serialization
 	[Serializable]
 	public partial class ArgsList : ISerializationCallbackReceiver
 	{
+		public static bool IsSupportedType(Type type)
+		{
+			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
+		}
+
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
 		private static readonly Type[] supportedTypesArray;
 		private static readonly Dictionary<string, Type> componentTypes;
@@ -86,7 +91,7 @@ namespace DUCK.Serialization
 
 			foreach (var argType in types)
 			{
-				if (!ValidateArgType(argType))
+				if (!IsSupportedType(argType))
 				{
 					throw new ArgumentException("Cannot handle arguments of type: " + argType.Name);
 				}
@@ -193,11 +198,6 @@ namespace DUCK.Serialization
 		private bool ValidateArgTypeForIndex(Type type, int index)
 		{
 			return argTypes.Count > index && argTypes[index] == type;
-		}
-
-		private bool ValidateArgType(Type type)
-		{
-			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
 		}
 	}
 }
