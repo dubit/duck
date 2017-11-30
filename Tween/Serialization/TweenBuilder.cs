@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace DUCK.Tween.Serialization
 {
 	public class TweenBuilder : MonoBehaviour
 	{
+		private const string NULL_COMPONENT_ERROR = "Cannot build tween for {0}. Argument {1} ({2}) was not serialized and could not find the component on the TweenBuilder";
+
 		[SerializeField]
 		private bool playOnStart;
 
@@ -33,11 +36,7 @@ namespace DUCK.Tween.Serialization
 		public void Play()
 		{
 			var config = useReferencedConfig ? tweenConfigScriptableObject.Config : TweenConfig;
-			var creatorFunction = TweenCreatorFunctionStore.Get(config.CreatorFunctionKey);
-			
-			// TODO: catch null targets and try to use this object
-
-			var animation = creatorFunction.CreationMethod.Invoke(config.Args.AllArgs.ToArray());
+			var animation = BuildTween(config, gameObject);
 			animation.Play();
 		}
 
@@ -60,5 +59,38 @@ namespace DUCK.Tween.Serialization
 			set { tweenConfigScriptableObject = value; }
 		}
 #endif
+
+		public static AbstractAnimation BuildTween(TweenConfig config, GameObject defaultTarget)
+		{
+			var creatorFunction = TweenCreatorFunctionStore.Get(config.CreatorFunctionKey);
+
+			// For any null args that are game objects or components, let's try to use this object
+			var args = config.Args.AllArgs.ToArray();
+
+			for (int i = 0; i < args.Length; i++)
+			{
+				var argType = creatorFunction.RealArgTypes[i];
+				if (args[i] == null)
+				{
+					if (argType == typeof(GameObject))
+					{
+						args[i] = defaultTarget;
+					}
+
+					if (argType.IsSubclassOf(typeof(Component)))
+					{
+						var component = defaultTarget.GetComponent(argType);
+						if (component == null)
+						{
+							throw new Exception(string.Format(NULL_COMPONENT_ERROR, config.CreatorFunctionKey, i, argType.Name));
+						}
+						args[i] = component;
+					}
+				}
+			}
+
+			var tween = creatorFunction.CreationMethod.Invoke(args);
+			return tween;
+		}
 	}
 }
