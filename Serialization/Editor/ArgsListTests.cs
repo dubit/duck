@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DUCK.Serialization.Editor
 {
@@ -411,6 +412,32 @@ namespace DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectPolymorphicComponentSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			argsList.SetTypes(new List<Type>
+			{
+				typeof(Renderer),
+				typeof(Graphic),
+			});
+
+			// Add some data, serialize and deserialize
+			var gameObjectA = new GameObject();
+			var spriteRenderer = gameObjectA.AddComponent<SpriteRenderer>();
+			var image = gameObjectA.AddComponent<Image>();
+
+			argsList.Set(0, spriteRenderer);
+			argsList.Set(1, image);
+
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+
+			Assert.AreEqual(spriteRenderer, resultArgsList[0]);
+			Assert.AreEqual(image, resultArgsList[1]);
+		}
+
+		[Test]
 		public void ExpectSerializationOfMultipleTypesToBeSupported()
 		{
 			var argsList = new ArgsList();
@@ -510,7 +537,7 @@ namespace DUCK.Serialization.Editor
 			argsList.Set(6, spriteRenderer);
 
 			var allArgs = argsList.AllArgs;
-			
+
 			// Now test the value is what it should be
 			Assert.AreEqual(argsList.Get<string>(0), allArgs[0]);
 			Assert.AreEqual(argsList.Get<int>(1), allArgs[1]);

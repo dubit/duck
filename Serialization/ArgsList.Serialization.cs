@@ -68,12 +68,12 @@ namespace DUCK.Serialization
 				{
 					var arg = args[i];
 					list.Add(arg);
-					typeOrderList.Add(COMPONENT_PREFIX + argType.Name);
+					typeOrderList.Add(COMPONENT_PREFIX + argType.FullName);
 				}
 				else
 				{
 					list.Add(args[i]);
-					typeOrderList.Add(argType.Name);
+					typeOrderList.Add(argType.FullName);
 				}
 			}
 
@@ -95,7 +95,7 @@ namespace DUCK.Serialization
 			foreach (var supportedType in supportedTypes.Values)
 			{
 				var list = supportedType.GetList(this);
-				serializedLists.Add(supportedType.Type.Name, list);
+				serializedLists.Add(supportedType.Type.FullName, list);
 			}
 
 			for (var i = 0; i < typeOrder.Length; i++)
@@ -117,7 +117,7 @@ namespace DUCK.Serialization
 
 					argType = componentTypes[typeName];
 					localArgTypes.Add(argType);
-					list = serializedLists[typeof(GameObject).Name];
+					list = serializedLists[typeof(GameObject).FullName];
 				}
 				else
 				{
