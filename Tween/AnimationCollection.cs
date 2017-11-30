@@ -8,7 +8,7 @@ namespace DUCK.Tween
 	/// When played, each animation will play in sequence/parallel until all have been completed. An Animation in
 	/// an AnimationCollection can also be itself an AnimationCollection
 	/// </summary>
-	public abstract class AnimationCollection : AbstractAnimation
+	public abstract class AnimationCollection : AbstractAnimation, IAnimationPlaybackControl
 	{
 		public override bool IsValid { get { return Animations.Count > 0; } }
 
@@ -96,6 +96,44 @@ namespace DUCK.Tween
 				if (animation.IsPlaying)
 				{
 					animation.Resume();
+				}
+			}
+		}
+
+		public void ScaleTime(float duration)
+		{
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.ScaleTime(duration);
+				}
+			}
+		}
+
+		public void ChangeSpeed(float multiplier)
+		{
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.ChangeSpeed(multiplier);
+				}
+			}
+		}
+
+		public virtual void Reverse()
+		{
+			Animations.Reverse();
+
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.Reverse();
 				}
 			}
 		}

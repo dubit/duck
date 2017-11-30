@@ -45,5 +45,11 @@ namespace DUCK.Tween
 				NotifyAnimationComplete();
 			}
 		}
+
+		public override void Reverse()
+		{
+			base.Reverse();
+			NumberOfAnimationsCompleted = Animations.Count - 1 - NumberOfAnimationsCompleted;
+		}
 	}
 }

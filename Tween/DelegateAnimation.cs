@@ -3,13 +3,33 @@ using UnityEngine;
 
 namespace DUCK.Tween
 {
+	public abstract class DelegateAnimation : AbstractAnimation
+	{
+		/// <summary>
+		/// The embeded animation.
+		/// </summary>
+		public AbstractAnimation Animation { get; protected set; }
+
+		/// <summary>
+		/// The simple callback when the animation has been created.
+		/// </summary>
+		public Action<AbstractAnimation> OnAnimationCreated { protected get; set; }
+
+		/// <summary>
+		/// Returns the type of the inner animation.
+		/// </summary>
+		public abstract Type InnerAnimationType { get; }
+	}
+
 	/// <summary>
 	/// Encapsulates an AbstractAnimation, which is only created at the time it is requested to play.
 	/// Useful for AbstractAnimations which depend on an object being in a certain state other than the state in which the abstractAnimations are originally created
 	/// </summary>
-	public class DelegateAnimation<T> : AbstractAnimation where T : AbstractAnimation
+	public sealed class DelegateAnimation<T> : DelegateAnimation, IAnimationPlaybackControl where T : AbstractAnimation
 	{
-		public T Animation { get; private set; }
+		public new T Animation { get { return (T)base.Animation; } set { base.Animation = value; } }
+
+		public override Type InnerAnimationType { get { return typeof(T); } }
 
 		/// <summary>
 		/// Delegate animation is always valid before you created the child animation;
@@ -18,6 +38,10 @@ namespace DUCK.Tween
 		public override bool IsValid { get { return Animation == null || Animation.IsValid; } }
 
 		private readonly Func<T> animationCreationFunction;
+
+		// Both ScaleTime() and ChangeSpeed() are doing the same thing, so they are sharing this callback
+		private Action speedChangeRequest;
+		private Action reverseChangeRequest;
 
 		/// <summary>
 		/// Creates a new DelegateAnimation
@@ -39,6 +63,22 @@ namespace DUCK.Tween
 			try
 			{
 				Animation = animationCreationFunction();
+
+				if (speedChangeRequest != null)
+				{
+					speedChangeRequest.Invoke();
+				}
+
+				if (reverseChangeRequest != null)
+				{
+					reverseChangeRequest.Invoke();
+				}
+
+				if (OnAnimationCreated != null)
+				{
+					OnAnimationCreated.Invoke(Animation);
+				}
+
 				if (Animation.IsValid)
 				{
 					Animation.Play(NotifyAnimationComplete, base.Abort);
@@ -101,6 +141,69 @@ namespace DUCK.Tween
 			else
 			{
 				Debug.LogError("DelegateAnimation: You cannot resume this animation because you haven't started your delegate animation yet!");
+			}
+		}
+
+		public void ScaleTime(float duration)
+		{
+			if (Animation == null)
+			{
+				speedChangeRequest = () => ScaleInnerAnimationTime(duration);
+			}
+			else
+			{
+				ScaleInnerAnimationTime(duration);
+			}
+		}
+
+		public void ChangeSpeed(float multiplier)
+		{
+			if (Animation == null)
+			{
+				speedChangeRequest = () => ChangeInnerAnimationSpeed(multiplier);
+			}
+			else
+			{
+				ChangeInnerAnimationSpeed(multiplier);
+			}
+		}
+
+		public void Reverse()
+		{
+			if (Animation == null)
+			{
+				reverseChangeRequest = ReverseInnerAnimation;
+			}
+			else
+			{
+				ReverseInnerAnimation();
+			}
+		}
+
+		private void ScaleInnerAnimationTime(float duration)
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.ScaleTime(duration);
+			}
+		}
+
+		private void ChangeInnerAnimationSpeed(float multiplier)
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.ChangeSpeed(multiplier);
+			}
+		}
+
+		private void ReverseInnerAnimation()
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.Reverse();
 			}
 		}
 	}
