@@ -60,11 +60,11 @@ namespace DUCK.Http
 		}
 
 		/// <summary>
-		/// Adds a header to the SuperHeaders key value pair, if the header key already exists, the value will be replaced.
+		/// Sets a header to the SuperHeaders key value pair, if the header key already exists, the value will be replaced.
 		/// </summary>
-		/// <param name="key">The header key to be added.</param>
+		/// <param name="key">The header key to be set.</param>
 		/// <param name="value">The header value to be assigned.</param>
-		public void AddSuperHeader(string key, string value)
+		public void SetSuperHeader(string key, string value)
 		{
 			superHeaders[key] = value;
 		}
