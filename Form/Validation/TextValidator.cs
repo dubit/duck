@@ -8,9 +8,10 @@ namespace DUCK.Form.Validation
 	{
 		protected TextField textField;
 
-		protected virtual void Awake()
+		protected override void Awake()
 		{
-			textField = GetComponent<TextField>();
+			base.Awake();
+			textField = (TextField)FormField;
 		}
 	}
 }

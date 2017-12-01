@@ -11,6 +11,9 @@ namespace DUCK.Form.Fields
 
 		private RadioButton selectedRadioButton;
 
+		[SerializeField, Tooltip("Enable to select the first option on awake.")]
+		private bool firstIsDefault;
+
 		protected override void Awake()
 		{
 			base.Awake();
@@ -20,9 +23,26 @@ namespace DUCK.Form.Fields
 				throw new Exception("Radio field needs to have atleast one radio button.");
 			}
 
-			radioButtons.ForEach(radioButton => radioButton.OnSelected += () => SelectRadio(radioButton));
+			radioButtons.ForEach(radioButton =>
+			{
+				radioButton.SetSelected(false);
+				radioButton.OnSelected += () => SelectRadio(radioButton);
+			});
 
-			SelectRadio(radioButtons[0]);
+			if (firstIsDefault)
+			{
+				SelectFirstOption();
+			}
+		}
+
+		public override object GetValue()
+		{
+			return selectedRadioButton ? selectedRadioButton.Id : null;
+		}
+
+		protected override void OnClear()
+		{
+			SelectFirstOption();
 		}
 
 		private void SelectRadio(RadioButton selected)
@@ -31,9 +51,16 @@ namespace DUCK.Form.Fields
 			selectedRadioButton = selected;
 		}
 
-		public override object GetValue()
+		private void SelectFirstOption()
 		{
-			return selectedRadioButton.Id;
+			if (firstIsDefault)
+			{
+				SelectRadio(radioButtons[0]);
+			}
+			else
+			{
+				radioButtons.ForEach(radioButton => { radioButton.SetSelected(false); });
+			}
 		}
 	}
 }

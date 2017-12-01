@@ -9,10 +9,8 @@ namespace DUCK.Form.Fields
 		public string Text
 		{
 			get { return inputField.text; }
+			private set { inputField.text = value; }
 		}
-
-		[SerializeField]
-		private bool clearOnReset;
 
 		private InputField inputField;
 
@@ -27,14 +25,9 @@ namespace DUCK.Form.Fields
 			return Text;
 		}
 
-		public override void ResetField()
+		protected override void OnClear()
 		{
-			base.ResetField();
-
-			if (clearOnReset)
-			{
-				inputField.text = string.Empty;
-			}
+			Text = string.Empty;
 		}
 	}
 }

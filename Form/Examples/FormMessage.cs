@@ -16,6 +16,7 @@ namespace DUCK.Form.Examples
 		{
 			textElement = GetComponent<Text>();
 
+			field.OnFieldCleared += RemoveMessage;
 			field.OnValidationFailed += validator => DisplayMessage(validator.Error);
 			field.OnValidationSuccess += RemoveMessage;
 		}

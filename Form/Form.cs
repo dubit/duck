@@ -43,15 +43,15 @@ namespace DUCK.Form
 					isValid = false;
 				}
 			}
+			
+			foreach (var formField in formFields)
+			{
+				formField.HandleFormSubmit();
+			}
 
 			if (isValid)
 			{
 				OnSubmitForm.SafeInvoke(fields);
-			}
-
-			foreach (var formField in formFields)
-			{
-				formField.ResetField();
 			}
 		}
 
@@ -63,6 +63,11 @@ namespace DUCK.Form
 		public AbstractFormField GetField(string fieldName)
 		{
 			return fields.ContainsKey(fieldName) ? fields[fieldName] : null;
+		}
+
+		public void Clear()
+		{
+			formFields.ForEach(formField => formField.Clear());
 		}
 	}
 }

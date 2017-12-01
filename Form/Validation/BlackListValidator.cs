@@ -18,12 +18,9 @@ namespace DUCK.Form.Validation
 		[SerializeField]
 		private List<string> blackListedWords;
 
-		private AbstractFormField formField;
-
-		private void Awake()
+		protected override void Awake()
 		{
-			formField = GetComponent<AbstractFormField>();
-
+			base.Awake();
 			if (!caseSensitive)
 			{
 				for (var i = 0; i < blackListedWords.Count; i++)
@@ -35,7 +32,7 @@ namespace DUCK.Form.Validation
 
 		public override bool Validate()
 		{
-			var value = formField.GetStringValue();
+			var value = FormField.GetStringValue();
 			if (!caseSensitive)
 			{
 				value = value.ToLower();

@@ -8,9 +8,10 @@ namespace DUCK.Form.Validation
 	{
 		protected CheckboxField checkboxField;
 
-		protected virtual void Awake()
+		protected override void Awake()
 		{
-			checkboxField = GetComponent<CheckboxField>();
+			base.Awake();
+			checkboxField = (CheckboxField)FormField;
 		}
 	}
 }

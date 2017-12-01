@@ -11,9 +11,6 @@ namespace DUCK.Form.Fields
 			get { return toggleField.isOn; }
 		}
 
-		[SerializeField]
-		private bool clearOnReset;
-
 		private Toggle toggleField;
 
 		protected override void Awake()
@@ -27,14 +24,9 @@ namespace DUCK.Form.Fields
 			return IsChecked;
 		}
 
-		public override void ResetField()
+		protected override void OnClear()
 		{
-			base.ResetField();
-
-			if (clearOnReset)
-			{
-				toggleField.isOn = false;
-			}
+			toggleField.isOn = false;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using DUCK.Form.Examples;
 using DUCK.Form.Validation;
 using DUCK.Utils;
 using UnityEngine;
@@ -15,9 +16,12 @@ namespace DUCK.Form.Fields
 
 		[SerializeField]
 		private string fieldName;
+		[SerializeField]
+		private bool clearOnSubmit;
+
 		private AbstractValidator[] validators;
 
-		public event Action OnReset;
+		public event Action OnFieldCleared;
 		public event Action OnValidationSuccess;
 		public event Action<AbstractValidator> OnValidationFailed;
 
@@ -27,17 +31,25 @@ namespace DUCK.Form.Fields
 		}
 
 		public abstract object GetValue();
+		protected abstract void OnClear();
 
-		public string GetStringValue()
+		public void Clear()
 		{
-			return GetValue().ToString();
+			OnClear();
+			OnFieldCleared.SafeInvoke();
+		}
+
+		public virtual string GetStringValue()
+		{
+			var value = GetValue();
+			return value != null ? value.ToString() : string.Empty;
 		}
 
 		public bool Validate()
 		{
 			foreach (var validator in validators)
 			{
-				if(!validator.Validate())
+				if (!validator.Validate())
 				{
 					OnValidationFailed.SafeInvoke(validator);
 					return false;
@@ -48,9 +60,12 @@ namespace DUCK.Form.Fields
 			return true;
 		}
 
-		public virtual void ResetField()
+		public virtual void HandleFormSubmit()
 		{
-			OnReset.SafeInvoke();
+			if (clearOnSubmit)
+			{
+				Clear();
+			}
 		}
 	}
 }
