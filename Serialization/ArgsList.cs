@@ -56,7 +56,6 @@ namespace DUCK.Serialization
 				// (it can happen, since some types are shipped in multiple assemblies)
 				if (!componentTypes.ContainsKey(type.FullName))
 				{
-					Debug.Log(type.FullName);
 					componentTypes.Add(type.FullName, type);
 				}
 			}
