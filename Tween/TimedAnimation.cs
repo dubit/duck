@@ -113,8 +113,8 @@ namespace DUCK.Tween
 
 		public override void Abort()
 		{
-			base.Abort();
 			AnimationDriver.Remove(Update);
+			base.Abort();
 		}
 
 		public override void FastForward()
@@ -123,7 +123,6 @@ namespace DUCK.Tween
 			CurrentTime = Duration;
 			Refresh(Progress);
 			AnimationDriver.Remove(Update);
-
 			base.FastForward();
 		}
 

@@ -63,11 +63,21 @@ namespace DUCK.Tween
 		/// </summary>
 		public override void FastForward()
 		{
-			foreach (var animation in Animations)
+			if (NumberOfAnimationsCompleted < Animations.Count)
 			{
-				animation.FastForward();
+				for (var i = NumberOfAnimationsCompleted; i < Animations.Count; ++i)
+				{
+					Animations[i].FastForward();
+				}
+
+				IsPlaying = false;
+				IsLooping = false;
+				IsPaused = false;
 			}
-			base.FastForward();
+			else
+			{
+				base.FastForward();
+			}
 		}
 
 		/// <summary>
