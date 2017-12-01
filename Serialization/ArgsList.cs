@@ -42,8 +42,11 @@ namespace DUCK.Serialization
 			// Get every type that extends component
 			var assemblies = new []
 			{
+				// Project assembly
 				Assembly.GetExecutingAssembly(),
+				// UnityEngine Assembly
 				typeof(Component).Assembly,
+				// UnityEngine.UI Assembly
 				typeof(Graphic).Assembly,
 			};
 
