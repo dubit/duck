@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DUCK.Form.Validation
 {
-	public class TextMatchValidator : TextValidator
+	public abstract class TextMatchValidator : TextValidator
 	{
 		[SerializeField]
 		private TextField textFieldToMatch;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DUCK.Form.Fields;
 using UnityEngine;
@@ -14,30 +15,19 @@ namespace DUCK.Form.Validation
 		}
 
 		[SerializeField]
-		private bool caseSensitive = true;
+		private bool ignoreCase = true;
 		[SerializeField]
 		private List<string> blackListedWords;
 
-		protected override void Awake()
-		{
-			base.Awake();
-			if (!caseSensitive)
-			{
-				for (var i = 0; i < blackListedWords.Count; i++)
-				{
-					blackListedWords[i] = blackListedWords[i].ToLower();
-				}
-			}
-		}
-
 		public override bool Validate()
 		{
-			var value = FormField.GetStringValue();
-			if (!caseSensitive)
-			{
-				value = value.ToLower();
-			}
-			return blackListedWords.All(word => word != value);
+			return !CheckIsBlackListed(blackListedWords, FormField.GetStringValue(), ignoreCase);
+		}
+
+		public static bool CheckIsBlackListed(IEnumerable<string> blacklist, string wordToCheck, bool ignoreCase = false)
+		{
+			var culture = ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture;
+			return blacklist.Any(word => wordToCheck.Equals(word, culture));
 		}
 	}
 }
