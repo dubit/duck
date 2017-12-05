@@ -42,7 +42,7 @@ namespace DUCK.Http
 			stringBuilder.Append("=");
 			stringBuilder.Append(firstElement.Value);
 
-			for(var i = 1; i < properties.Count; i++)
+			for (var i = 1; i < properties.Count; i++)
 			{
 				var element = properties.ElementAt(i);
 				stringBuilder.Append("&");
@@ -82,7 +82,7 @@ namespace DUCK.Http
 		public static string GetResponseTypeMessage(long responseCode, string url)
 		{
 			var responseType = GetResponseType(responseCode);
-			if(customResponseTypeMessages.ContainsKey(responseCode))
+			if (customResponseTypeMessages.ContainsKey(responseCode))
 			{
 				return customResponseTypeMessages[responseCode];
 			}
