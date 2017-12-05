@@ -6,7 +6,7 @@ using UnityEngine;
 namespace DUCK.Http
 {
 	/// <summary>
-	/// A utility class for webserivce, deals with response codes and error messages.
+	/// A utility class for http, deals with response codes and error messages.
 	/// <see cref="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status"/>
 	/// </summary>
 	public static class HttpUtils
@@ -54,17 +54,43 @@ namespace DUCK.Http
 			return stringBuilder.ToString();
 		}
 
+		/// <summary>
+		/// Sets a custom response message
+		/// Setting a responseCode that is within the utilities defailt range will override the default message.
+		/// </summary>
+		/// <param name="responseCode">The response code</param>
+		/// <param name="responseMessage">The message regarding the response code</param>
+		public static void SetCustomResponseMessage(long responseCode, string responseMessage)
+		{
+			customResponseTypeMessages[responseCode] = responseMessage;
+		}
+
+		/// <summary>
+		/// Removed a custom response code message.
+		/// </summary>
+		/// <param name="responseCode">The response code to remove</param>
+		public static void RemoveCustomResponseMessage(long responseCode)
+		{
+			customResponseTypeMessages.Remove(responseCode);
+		}
+
 		public static string GetResponseTypeMessage(HttpResponse response)
 		{
-			if (!responseTypeMessages.ContainsKey(response.ResponseType))
+			return GetResponseTypeMessage(response.ResponseCode, response.Url);
+		}
+
+		public static string GetResponseTypeMessage(long responseCode, string url)
+		{
+			var responseType = GetResponseType(responseCode);
+			if(customResponseTypeMessages.ContainsKey(responseCode))
 			{
-				return string.Format(responseTypeMessages[ResponseType.Unknown], response.ResponseCode, response.Url);
+				return customResponseTypeMessages[responseCode];
 			}
-			if(customResponseTypeMessages.ContainsKey(response.ResponseCode))
+			if (!responseTypeMessages.ContainsKey(responseType))
 			{
-				return customResponseTypeMessages[response.ResponseCode];
+				return string.Format(responseTypeMessages[ResponseType.Unknown], responseCode, url);
 			}
-			return string.Format(responseTypeMessages[response.ResponseType], response.ResponseCode, response.Url);
+			return string.Format(responseTypeMessages[responseType], responseCode, url);
 		}
 
 		public static ResponseType GetResponseType(long responseCode)
