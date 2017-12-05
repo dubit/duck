@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace DUCK.Http
@@ -19,6 +20,39 @@ namespace DUCK.Http
 		};
 
 		private static readonly Dictionary<long, string> customResponseTypeMessages = new Dictionary<long, string>();
+
+		/// <summary>
+		/// Append properties onto the uri in the correct format
+		/// </summary>
+		/// <param name="uri">The uri to append the properties to.</param>
+		/// <param name="properties">A dictionary of properties to append to the uri.</param>
+		/// <returns></returns>
+		public static string FormatUrlProperties(string uri, Dictionary<string, string> properties)
+		{
+			if (properties == null || properties.Count == 0)
+			{
+				return uri;
+			}
+
+			var stringBuilder = new StringBuilder(uri);
+
+			var firstElement = properties.ElementAt(0);
+			stringBuilder.Append("?");
+			stringBuilder.Append(firstElement.Key);
+			stringBuilder.Append("=");
+			stringBuilder.Append(firstElement.Value);
+
+			for(var i = 1; i < properties.Count; i++)
+			{
+				var element = properties.ElementAt(i);
+				stringBuilder.Append("&");
+				stringBuilder.Append(element.Key);
+				stringBuilder.Append("=");
+				stringBuilder.Append(element.Value);
+			}
+
+			return stringBuilder.ToString();
+		}
 
 		public static string GetResponseTypeMessage(HttpResponse response)
 		{
