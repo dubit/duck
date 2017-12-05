@@ -10,7 +10,7 @@ namespace DUCK.Tween
 	/// Progress is expressed as a float between 0.0f and 1.0f, where 0.0f is the start and 1.0f is the end. The subclass will use this opportunity to manipulate it's state.
 	/// TimedAnimation also provides helpers that track the target object, and the ability to retreive it as a Transform/RecTransform as well as InterpolationHelpers that take care of easing
 	/// </summary>
-	public abstract class TimedAnimation : AbstractAnimation
+	public abstract class TimedAnimation : AbstractAnimation, IAnimationPlaybackControl
 	{
 		/// <summary>
 		/// The animation driver has the responsibility that updating all TimedAnimation.
@@ -56,7 +56,7 @@ namespace DUCK.Tween
 
 		public override bool IsValid { get { return TargetObject != null || TargetRectTransform != null; } }
 
-		protected Func<float, float> easingFunction;
+		private readonly Func<float, float> easingFunction;
 
 		private bool IsComplete { get { return IsReversed ? Progress <= 0f : Progress >= 1f; } }
 		private float Progress { get { return Mathf.Clamp01(CurrentTime / Duration); } }
@@ -113,8 +113,8 @@ namespace DUCK.Tween
 
 		public override void Abort()
 		{
-			base.Abort();
 			AnimationDriver.Remove(Update);
+			base.Abort();
 		}
 
 		public override void FastForward()
@@ -123,21 +123,19 @@ namespace DUCK.Tween
 			CurrentTime = Duration;
 			Refresh(Progress);
 			AnimationDriver.Remove(Update);
-
 			base.FastForward();
 		}
 
-		/// <summary>
-		/// Set the timed animation duration and also keep the current progress.
-		/// i.e. ScaleTime(5.0f) will change a 1.0s/2.0s animation to a 2.5s/5.0s animation.
-		/// This function having very similar effect of "change the animation playback speed".
-		/// </summary>
-		/// <param name="duration">The new duration of the animation.</param>
 		public void ScaleTime(float duration)
 		{
 			var currentProgress = Progress;
 			Duration = duration;
 			CurrentTime = Duration * currentProgress;
+		}
+
+		public void ChangeSpeed(float multiplier)
+		{
+			ScaleTime(Duration / multiplier);
 		}
 
 		/// <summary>
