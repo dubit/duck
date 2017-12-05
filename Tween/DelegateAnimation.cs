@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DUCK.Tween
 {
-	public abstract class DelegateAnimation : AbstractAnimation
+	public abstract class DelegateAnimation : AbstractAnimation, IAnimationPlaybackControl
 	{
 		/// <summary>
 		/// The embeded animation.
@@ -19,13 +19,80 @@ namespace DUCK.Tween
 		/// Returns the type of the inner animation.
 		/// </summary>
 		public abstract Type InnerAnimationType { get; }
+
+		// Both ScaleTime() and ChangeSpeed() are doing the same thing, so they are sharing this callback
+		protected Action speedChangeRequest;
+		protected Action reverseChangeRequest;
+
+		public void ScaleTime(float duration)
+		{
+			if (Animation == null)
+			{
+				speedChangeRequest = () => ScaleInnerAnimationTime(duration);
+			}
+			else
+			{
+				ScaleInnerAnimationTime(duration);
+			}
+		}
+
+		public void ChangeSpeed(float multiplier)
+		{
+			if (Animation == null)
+			{
+				speedChangeRequest = () => ChangeInnerAnimationSpeed(multiplier);
+			}
+			else
+			{
+				ChangeInnerAnimationSpeed(multiplier);
+			}
+		}
+
+		public void Reverse()
+		{
+			if (Animation == null)
+			{
+				reverseChangeRequest = ReverseInnerAnimation;
+			}
+			else
+			{
+				ReverseInnerAnimation();
+			}
+		}
+
+		private void ScaleInnerAnimationTime(float duration)
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.ScaleTime(duration);
+			}
+		}
+
+		private void ChangeInnerAnimationSpeed(float multiplier)
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.ChangeSpeed(multiplier);
+			}
+		}
+
+		private void ReverseInnerAnimation()
+		{
+			var playbackControl = Animation as IAnimationPlaybackControl;
+			if (playbackControl != null)
+			{
+				playbackControl.Reverse();
+			}
+		}
 	}
 
 	/// <summary>
 	/// Encapsulates an AbstractAnimation, which is only created at the time it is requested to play.
 	/// Useful for AbstractAnimations which depend on an object being in a certain state other than the state in which the abstractAnimations are originally created
 	/// </summary>
-	public sealed class DelegateAnimation<T> : DelegateAnimation, IAnimationPlaybackControl where T : AbstractAnimation
+	public sealed class DelegateAnimation<T> : DelegateAnimation where T : AbstractAnimation
 	{
 		public new T Animation { get { return (T)base.Animation; } set { base.Animation = value; } }
 
@@ -38,10 +105,6 @@ namespace DUCK.Tween
 		public override bool IsValid { get { return Animation == null || Animation.IsValid; } }
 
 		private readonly Func<T> animationCreationFunction;
-
-		// Both ScaleTime() and ChangeSpeed() are doing the same thing, so they are sharing this callback
-		private Action speedChangeRequest;
-		private Action reverseChangeRequest;
 
 		/// <summary>
 		/// Creates a new DelegateAnimation
@@ -141,69 +204,6 @@ namespace DUCK.Tween
 			else
 			{
 				Debug.LogError("DelegateAnimation: You cannot resume this animation because you haven't started your delegate animation yet!");
-			}
-		}
-
-		public void ScaleTime(float duration)
-		{
-			if (Animation == null)
-			{
-				speedChangeRequest = () => ScaleInnerAnimationTime(duration);
-			}
-			else
-			{
-				ScaleInnerAnimationTime(duration);
-			}
-		}
-
-		public void ChangeSpeed(float multiplier)
-		{
-			if (Animation == null)
-			{
-				speedChangeRequest = () => ChangeInnerAnimationSpeed(multiplier);
-			}
-			else
-			{
-				ChangeInnerAnimationSpeed(multiplier);
-			}
-		}
-
-		public void Reverse()
-		{
-			if (Animation == null)
-			{
-				reverseChangeRequest = ReverseInnerAnimation;
-			}
-			else
-			{
-				ReverseInnerAnimation();
-			}
-		}
-
-		private void ScaleInnerAnimationTime(float duration)
-		{
-			var playbackControl = Animation as IAnimationPlaybackControl;
-			if (playbackControl != null)
-			{
-				playbackControl.ScaleTime(duration);
-			}
-		}
-
-		private void ChangeInnerAnimationSpeed(float multiplier)
-		{
-			var playbackControl = Animation as IAnimationPlaybackControl;
-			if (playbackControl != null)
-			{
-				playbackControl.ChangeSpeed(multiplier);
-			}
-		}
-
-		private void ReverseInnerAnimation()
-		{
-			var playbackControl = Animation as IAnimationPlaybackControl;
-			if (playbackControl != null)
-			{
-				playbackControl.Reverse();
 			}
 		}
 	}
