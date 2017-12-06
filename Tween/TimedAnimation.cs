@@ -16,12 +16,12 @@ namespace DUCK.Tween
 		/// The animation driver has the responsibility that updating all TimedAnimation.
 		/// You can also assign a customised Animation Driver to replace the default one.
 		/// </summary>
-		public static IAnimationDriver AnimationDriver
+		public IAnimationDriver AnimationDriver
 		{
 			get { return animationDriver ?? (animationDriver = DefaultAnimationDriver.Instance); }
 			set { animationDriver = value; }
 		}
-		private static IAnimationDriver animationDriver;
+		private IAnimationDriver animationDriver;
 
 		/// <summary>
 		/// The target gameobject of the this animation
