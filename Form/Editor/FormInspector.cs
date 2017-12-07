@@ -13,7 +13,7 @@ namespace DUCK.Form.Editor
 		private void OnEnable()
 		{
 			submitButton = serializedObject.FindProperty("submitButton");
-			list = new ReorderableList(serializedObject, serializedObject.FindProperty("formFields"),
+			list = new ReorderableList(serializedObject, serializedObject.FindProperty("serializedFormFields"),
 				true, true, true, true)
 			{
 				drawHeaderCallback = DrawReorderableListHeader,
