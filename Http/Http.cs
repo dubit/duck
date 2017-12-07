@@ -46,6 +46,7 @@ namespace DUCK.Http
 		private void Awake()
 		{
 			instance = this;
+			instance.hideFlags = HideFlags.HideInHierarchy;
 
 			superHeaders = new Dictionary<string, string>();
 		}
