@@ -24,7 +24,7 @@ namespace DUCK.Form.Fields
 			return IsChecked;
 		}
 
-		protected override void OnClear()
+		protected override void SetDefaultValue()
 		{
 			toggleField.isOn = false;
 		}

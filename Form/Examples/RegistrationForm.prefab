@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   submitButton: {fileID: 114812794113972194}
-  formFields:
+  serializedFormFields:
   - {fileID: 114191482811159402}
   - {fileID: 114335836960546570}
   - {fileID: 114594832253543842}

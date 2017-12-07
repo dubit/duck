@@ -29,20 +29,12 @@ namespace DUCK.Form.Fields
 				radioButton.OnSelected += () => SelectRadio(radioButton);
 			});
 
-			if (firstIsDefault)
-			{
-				SelectFirstOption();
-			}
+			SetDefaultValue();
 		}
 
 		public override object GetValue()
 		{
 			return selectedRadioButton ? selectedRadioButton.Id : null;
-		}
-
-		protected override void OnClear()
-		{
-			SelectFirstOption();
 		}
 
 		private void SelectRadio(RadioButton selected)
@@ -51,7 +43,7 @@ namespace DUCK.Form.Fields
 			selectedRadioButton = selected;
 		}
 
-		private void SelectFirstOption()
+		protected override void SetDefaultValue()
 		{
 			if (firstIsDefault)
 			{

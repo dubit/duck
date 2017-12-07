@@ -21,6 +21,7 @@ namespace DUCK.Form.Fields
 		private AbstractValidator[] validators;
 
 		public event Action OnFieldCleared;
+		public event Action OnFieldReset;
 		public event Action OnValidationSuccess;
 		public event Action<AbstractValidator> OnValidationFailed;
 
@@ -30,12 +31,27 @@ namespace DUCK.Form.Fields
 		}
 
 		public abstract object GetValue();
-		protected abstract void OnClear();
+		protected abstract void SetDefaultValue();
 
+		/// <summary>
+		/// Clear on submit if applicable.
+		/// </summary>
 		public void Clear()
 		{
-			OnClear();
+			if (clearOnSubmit)
+			{
+				SetDefaultValue();
+			}
 			OnFieldCleared.SafeInvoke();
+		}
+
+		/// <summary>
+		/// Resets the field to the default value.
+		/// </summary>
+		public void Reset()
+		{
+			SetDefaultValue();
+			OnFieldReset.SafeInvoke();
 		}
 
 		public virtual string GetStringValue()
@@ -57,14 +73,6 @@ namespace DUCK.Form.Fields
 
 			OnValidationSuccess.SafeInvoke();
 			return true;
-		}
-
-		public virtual void HandleFormSubmit()
-		{
-			if (clearOnSubmit)
-			{
-				Clear();
-			}
 		}
 	}
 }

@@ -10,11 +10,6 @@ namespace DUCK.Form
 {
 	public class Form : MonoBehaviour
 	{
-		public int FormFieldsCount
-		{
-			get { return formFields.Count; }
-		}
-
 		[SerializeField]
 		private Button submitButton;
 		[SerializeField]
@@ -39,14 +34,39 @@ namespace DUCK.Form
 			}
 		}
 
+		public void SubmitForm()
+		{
+			var isValid = true;
+
+			foreach (var formField in serializedFormFields)
+			{
+				var isFormValid = formField.Validate();
+
+				if (!isFormValid && isValid)
+				{
+					isValid = false;
+				}
+			}
+
+			foreach (var formField in serializedFormFields)
+			{
+				formField.Clear();
+			}
+
+			if (isValid)
+			{
+				OnSubmitForm.SafeInvoke(formFields);
+			}
+		}
+
 		public void SetSubmitButton(Button button)
 		{
 			if (submitButton != null)
 			{
-				submitButton.onClick.RemoveListener(HandleSubmitClicked);
+				submitButton.onClick.RemoveListener(SubmitForm);
 			}
 			submitButton = button;
-			submitButton.onClick.AddListener(HandleSubmitClicked);
+			submitButton.onClick.AddListener(SubmitForm);
 		}
 
 		public void AddFormField(AbstractFormField formField)
@@ -69,34 +89,9 @@ namespace DUCK.Form
 			return formFields.ContainsKey(fieldName) ? formFields[fieldName] : null;
 		}
 
-		public void Clear()
+		public void Reset()
 		{
-			serializedFormFields.ForEach(formField => formField.Clear());
-		}
-
-		private void HandleSubmitClicked()
-		{
-			var isValid = true;
-
-			foreach (var formField in serializedFormFields)
-			{
-				var isFormValid = formField.Validate();
-
-				if (!isFormValid && isValid)
-				{
-					isValid = false;
-				}
-			}
-
-			foreach (var formField in serializedFormFields)
-			{
-				formField.HandleFormSubmit();
-			}
-
-			if (isValid)
-			{
-				OnSubmitForm.SafeInvoke(formFields);
-			}
+			serializedFormFields.ForEach(formField => formField.Reset());
 		}
 	}
 }

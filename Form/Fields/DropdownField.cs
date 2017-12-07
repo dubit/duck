@@ -25,7 +25,7 @@ namespace DUCK.Form.Fields
 			return dropdownOptionsData.text;
 		}
 
-		protected override void OnClear()
+		protected override void SetDefaultValue()
 		{
 			dropdown.value = 0;
 		}

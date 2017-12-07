@@ -25,7 +25,7 @@ namespace DUCK.Form.Fields
 			return Text;
 		}
 
-		protected override void OnClear()
+		protected override void SetDefaultValue()
 		{
 			Text = string.Empty;
 		}
