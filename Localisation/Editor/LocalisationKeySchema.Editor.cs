@@ -46,9 +46,9 @@ namespace DUCK.Localisation.Editor
 
 				var categoryProperty = categories.GetArrayElementAtIndex(i);
 
-				var nameProperty = categoryProperty.FindPropertyRelative("Name");
-				var typeProperty = categoryProperty.FindPropertyRelative("Type");
-				var keysProperty = categoryProperty.FindPropertyRelative("Keys");
+				var nameProperty = categoryProperty.FindPropertyRelative("name");
+				var typeProperty = categoryProperty.FindPropertyRelative("type");
+				var keysProperty = categoryProperty.FindPropertyRelative("keys");
 
 				var labelContent = string.Format("{0} ({1} : {2})", nameProperty.stringValue,
 					typeProperty.enumDisplayNames[typeProperty.enumValueIndex], keysProperty.arraySize.ToString());
@@ -104,9 +104,9 @@ namespace DUCK.Localisation.Editor
 				categories.InsertArrayElementAtIndex(categories.arraySize);
 
 				var newCategory = categories.GetArrayElementAtIndex(categories.arraySize - 1);
-				newCategory.FindPropertyRelative("Name").stringValue = "NewCategory";
-				newCategory.FindPropertyRelative("Type").enumValueIndex = 0;
-				newCategory.FindPropertyRelative("Keys").arraySize = 0;
+				newCategory.FindPropertyRelative("name").stringValue = "NewCategory";
+				newCategory.FindPropertyRelative("type").enumValueIndex = 0;
+				newCategory.FindPropertyRelative("keys").arraySize = 0;
 			}
 			EditorGUILayout.EndHorizontal();
 
