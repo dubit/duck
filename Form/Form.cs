@@ -13,9 +13,7 @@ namespace DUCK.Form
 		[SerializeField]
 		private Button submitButton;
 		[SerializeField]
-		private List<AbstractFormField> serializedFormFields;
-
-		private Dictionary<string, AbstractFormField> formFields;
+		private List<FieldConfig> fieldConfigs;
 
 		public event Action<Dictionary<string, AbstractFormField>> OnSubmitForm;
 
@@ -25,22 +23,19 @@ namespace DUCK.Form
 			{
 				SetSubmitButton(submitButton);
 			}
-
-			formFields = new Dictionary<string, AbstractFormField>();
-
-			foreach (var formField in serializedFormFields)
-			{
-				formFields.Add(formField.FieldName, formField);
-			}
 		}
 
+		/// <summary>
+		/// Validate the fields and if successful invoke the OnSubmitForm event.
+		/// Also handles clearing fields on submission if applicable.
+		/// </summary>
 		public void SubmitForm()
 		{
 			var isValid = true;
 
-			foreach (var formField in serializedFormFields)
+			foreach (var fieldConfig in fieldConfigs)
 			{
-				var isFormValid = formField.Validate();
+				var isFormValid = fieldConfig.field.Validate();
 
 				if (!isFormValid && isValid)
 				{
@@ -48,17 +43,25 @@ namespace DUCK.Form
 				}
 			}
 
-			foreach (var formField in serializedFormFields)
+			foreach (var fieldConfig in fieldConfigs)
 			{
-				formField.Clear();
+				if (fieldConfig.clearOnSubmit)
+				{
+					fieldConfig.field.Clear();
+				}
 			}
 
 			if (isValid)
 			{
-				OnSubmitForm.SafeInvoke(formFields);
+				OnSubmitForm.SafeInvoke(fieldConfigs.ToDictionary(config => config.field.FieldName, config => config.field));
 			}
 		}
 
+
+		/// <summary>
+		/// Set the submit button
+		/// </summary>
+		/// <param name="button"></param>
 		public void SetSubmitButton(Button button)
 		{
 			if (submitButton != null)
@@ -69,29 +72,60 @@ namespace DUCK.Form
 			submitButton.onClick.AddListener(SubmitForm);
 		}
 
-		public void AddFormField(AbstractFormField formField)
+		/// <summary>
+		/// Add a form field to the form.
+		/// Intended for creating a form at runtime.
+		/// </summary>
+		/// <param name="formField">The form field to add</param>
+		/// <param name="clearOnSubmit">If the field should be cleared on submission</param>
+		public void AddFormField(AbstractFormField formField, bool clearOnSubmit = false)
 		{
-			formFields.Add(formField.FieldName, formField);
+			fieldConfigs.Add(new FieldConfig()
+			{
+				field = formField,
+				clearOnSubmit = clearOnSubmit
+			});
 		}
 
+		/// <summary>
+		/// Remove a form field from the form.
+		/// Intended for creating a form at runtime.
+		/// </summary>
+		/// <param name="formField">The form field to remove.</param>
+		/// <returns>If the field was removed successfully or if the field was not in the form.</returns>
 		public bool RemoveFormField(AbstractFormField formField)
 		{
-			return formFields.Remove(formField.FieldName);
+			var fieldConfig = fieldConfigs.FirstOrDefault(config => config.field == formField);
+			return fieldConfig == null || fieldConfigs.Remove(fieldConfig);
 		}
 
+
+		/// <summary>
+		/// Get all fields in the form.
+		/// </summary>
+		/// <returns>An array of form fields</returns>
 		public AbstractFormField[] GetAllFields()
 		{
-			return formFields.Values.ToArray();
+			return fieldConfigs.Select(config => config.field).ToArray();
 		}
 
+		/// <summary>
+		/// Get a form field by field name.
+		/// </summary>
+		/// <param name="fieldName">The field name</param>
+		/// <returns>The form field matching the field name.</returns>
 		public AbstractFormField GetField(string fieldName)
 		{
-			return formFields.ContainsKey(fieldName) ? formFields[fieldName] : null;
+			var first = fieldConfigs.FirstOrDefault(config => config.field.FieldName == fieldName);
+			return first != null ? first.field : null;
 		}
 
+		/// <summary>
+		/// Set all fields to default state.
+		/// </summary>
 		public void Reset()
 		{
-			serializedFormFields.ForEach(formField => formField.Reset());
+			fieldConfigs.ForEach(config => config.field.Reset());
 		}
 	}
 }

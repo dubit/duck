@@ -1461,7 +1461,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: email
-  clearOnSubmit: 0
 --- !u!114 &114192322950511086
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1571,13 +1570,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   submitButton: {fileID: 114812794113972194}
-  serializedFormFields:
-  - {fileID: 114191482811159402}
-  - {fileID: 114335836960546570}
-  - {fileID: 114594832253543842}
-  - {fileID: 114230512376447120}
-  - {fileID: 114990736161541852}
-  - {fileID: 114550201962061944}
+  fieldConfigs:
+  - field: {fileID: 114191482811159402}
+    clearOnSubmit: 0
+  - field: {fileID: 114335836960546570}
+    clearOnSubmit: 0
+  - field: {fileID: 114594832253543842}
+    clearOnSubmit: 0
+  - field: {fileID: 114230512376447120}
+    clearOnSubmit: 0
+  - field: {fileID: 114990736161541852}
+    clearOnSubmit: 0
+  - field: {fileID: 114550201962061944}
+    clearOnSubmit: 0
 --- !u!114 &114230512376447120
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1590,7 +1595,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: country
-  clearOnSubmit: 0
 --- !u!114 &114255422877043794
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1739,7 +1743,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: username
-  clearOnSubmit: 0
 --- !u!114 &114349214168100550
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2102,7 +2105,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: confirm_password
-  clearOnSubmit: 1
 --- !u!114 &114553745863402528
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2194,7 +2196,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: gender
-  clearOnSubmit: 0
   radioButtons:
   - {fileID: 114973715983550892}
   - {fileID: 114032211214216918}
@@ -2410,7 +2411,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114943838886801004}
   m_HandleRect: {fileID: 224914041769412736}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3260,7 +3261,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: password
-  clearOnSubmit: 1
 --- !u!114 &114998327514908996
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 114361589127865784}
   - component: {fileID: 114041095668700844}
   m_Layer: 5
-  m_Name: CheckboxField
+  m_Name: RememberDetailsField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 222243274343381154}
   - component: {fileID: 114147046223756884}
   - component: {fileID: 114512898058774738}
-  - component: {fileID: 114308496610857600}
+  - component: {fileID: 114695675341134996}
   m_Layer: 5
   m_Name: Form
   m_TagString: Untagged
@@ -561,22 +561,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114308496610857600
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1953119055517806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 559762bb16d2242d69cbbbc283f04022, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  submitButton: {fileID: 114306773233870172}
-  formFields:
-  - {fileID: 114803501993586892}
-  - {fileID: 114493376176591754}
-  - {fileID: 114361589127865784}
 --- !u!114 &114309107989290818
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -616,7 +600,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: remember_me
-  clearOnReset: 0
 --- !u!114 &114395713805675086
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -731,7 +714,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: password
-  clearOnReset: 1
 --- !u!114 &114512898058774738
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -797,6 +779,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   field: {fileID: 114493376176591754}
+--- !u!114 &114695675341134996
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1953119055517806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 559762bb16d2242d69cbbbc283f04022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  submitButton: {fileID: 114306773233870172}
+  fieldConfigs:
+  - field: {fileID: 114803501993586892}
+    clearOnSubmit: 0
+  - field: {fileID: 114493376176591754}
+    clearOnSubmit: 1
+  - field: {fileID: 114361589127865784}
+    clearOnSubmit: 0
 --- !u!114 &114708684485916874
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1013,7 +1014,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldName: username
-  clearOnReset: 0
 --- !u!114 &114855494239933772
 MonoBehaviour:
   m_ObjectHideFlags: 1

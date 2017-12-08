@@ -15,8 +15,6 @@ namespace DUCK.Form.Fields
 
 		[SerializeField]
 		private string fieldName;
-		[SerializeField]
-		private bool clearOnSubmit;
 
 		private AbstractValidator[] validators;
 
@@ -38,10 +36,7 @@ namespace DUCK.Form.Fields
 		/// </summary>
 		public void Clear()
 		{
-			if (clearOnSubmit)
-			{
-				SetDefaultValue();
-			}
+			SetDefaultValue();
 			OnFieldCleared.SafeInvoke();
 		}
 
