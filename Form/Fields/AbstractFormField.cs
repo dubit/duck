@@ -49,12 +49,20 @@ namespace DUCK.Form.Fields
 			OnFieldReset.SafeInvoke();
 		}
 
+		/// <summary>
+		/// Get the field value as a string.
+		/// </summary>
+		/// <returns></returns>
 		public virtual string GetStringValue()
 		{
 			var value = GetValue();
 			return value != null ? value.ToString() : string.Empty;
 		}
 
+		/// <summary>
+		/// Vali
+		/// </summary>
+		/// <returns></returns>
 		public bool Validate()
 		{
 			foreach (var validator in validators)

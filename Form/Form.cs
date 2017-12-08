@@ -59,9 +59,10 @@ namespace DUCK.Form
 
 
 		/// <summary>
-		/// Set the submit button
+		/// Set the submit button.
+		/// if a submit button is already set, it will unscribed and be replaced.
 		/// </summary>
-		/// <param name="button"></param>
+		/// <param name="button">The submit button to be set.</param>
 		public void SetSubmitButton(Button button)
 		{
 			if (submitButton != null)

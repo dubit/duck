@@ -3,9 +3,6 @@ using UnityEngine.UI;
 
 namespace DUCK.Form.Fields
 {
-	/// <summary>
-	/// Text field for Unity's text InputField.
-	/// </summary>
 	[RequireComponent(typeof(InputField))]
 	public class TextField : AbstractFormField
 	{
