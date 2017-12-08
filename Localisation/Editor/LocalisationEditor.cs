@@ -329,7 +329,17 @@ namespace DUCK.Localisation.Editor
 
 		public void GenerateLocalisationTable()
 		{
-			ScriptableObjectUtility.CreateAsset<LocalisationTable>();
+			if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+			{
+				AssetDatabase.CreateFolder("Assets", "Resources");
+			}
+
+			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_DATA_PATH))
+			{
+				AssetDatabase.CreateFolder("Assets/Resources", LOC_DATA_PATH);
+			}
+
+			ScriptableObjectUtility.CreateAsset<LocalisationTable>("Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset");
 		}
 
 		public static int GetCRC(string category, string key)
