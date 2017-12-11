@@ -20,7 +20,7 @@ namespace DUCK.Form.Fields
 
 			if (radioButtons.Length == 0)
 			{
-				throw new Exception("Radio field needs to have atleast one radio button.");
+				throw new Exception("Radio field needs to have at least one radio button.");
 			}
 
 			radioButtons.ForEach(radioButton =>
