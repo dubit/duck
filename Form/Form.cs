@@ -57,7 +57,6 @@ namespace DUCK.Form
 			}
 		}
 
-
 		/// <summary>
 		/// Set the submit button.
 		/// if a submit button is already set, it will unscribed and be replaced.
@@ -100,7 +99,6 @@ namespace DUCK.Form
 			return fieldConfig == null || fieldConfigs.Remove(fieldConfig);
 		}
 
-
 		/// <summary>
 		/// Get all fields in the form.
 		/// </summary>
@@ -127,6 +125,14 @@ namespace DUCK.Form
 		public void Reset()
 		{
 			fieldConfigs.ForEach(config => config.field.Reset());
+		}
+
+		private void OnDestroy()
+		{
+			if (submitButton != null)
+			{
+				submitButton.onClick.RemoveListener(SubmitForm);
+			}
 		}
 	}
 }
