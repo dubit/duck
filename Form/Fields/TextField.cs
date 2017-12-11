@@ -13,11 +13,13 @@ namespace DUCK.Form.Fields
 		}
 
 		private InputField inputField;
+		private string defaultValue;
 
 		protected override void Awake()
 		{
 			base.Awake();
 			inputField = GetComponent<InputField>();
+			defaultValue = inputField.text;
 		}
 
 		public override object GetValue()
@@ -27,7 +29,7 @@ namespace DUCK.Form.Fields
 
 		protected override void SetDefaultValue()
 		{
-			Text = string.Empty;
+			Text = defaultValue;
 		}
 	}
 }
