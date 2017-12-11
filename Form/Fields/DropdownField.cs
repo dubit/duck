@@ -7,11 +7,14 @@ namespace DUCK.Form.Fields
 	public class DropdownField : AbstractFormField
 	{
 		private Dropdown dropdown;
+		[SerializeField]
+		private int defaultValue;
 
 		protected override void Awake()
 		{
 			base.Awake();
 			dropdown = GetComponent<Dropdown>();
+			defaultValue = dropdown.value;
 		}
 
 		public override object GetValue()
@@ -27,7 +30,7 @@ namespace DUCK.Form.Fields
 
 		protected override void SetDefaultValue()
 		{
-			dropdown.value = 0;
+			dropdown.value = defaultValue;
 		}
 	}
 }
