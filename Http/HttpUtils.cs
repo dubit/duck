@@ -26,7 +26,7 @@ namespace DUCK.Http
 		/// </summary>
 		/// <param name="uri">The uri to append the properties to.</param>
 		/// <param name="parameters">A dictionary of parameters to append to the uri.</param>
-		/// <returns></returns>
+		/// <returns>The uri with the appended parameters.</returns>
 		public static string FormatUrlParameters(string uri, Dictionary<string, string> parameters)
 		{
 			if (parameters == null || parameters.Count == 0)
