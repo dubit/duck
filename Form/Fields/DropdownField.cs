@@ -6,9 +6,10 @@ namespace DUCK.Form.Fields
 	[RequireComponent(typeof(Dropdown))]
 	public class DropdownField : AbstractFormField
 	{
-		private Dropdown dropdown;
 		[SerializeField]
 		private int defaultValue;
+
+		private Dropdown dropdown;
 
 		protected override void Awake()
 		{
