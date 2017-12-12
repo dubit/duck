@@ -356,9 +356,12 @@ namespace DUCK.Http
 			yield return request.SendWebRequest();
 			var response = new HttpResponse(request);
 
-			if (onError != null && (request.isNetworkError || request.isHttpError))
+			if (request.isNetworkError || request.isHttpError)
 			{
-				onError.Invoke(response);
+				if (onError != null)
+				{
+					onError.Invoke(response);
+				}
 			}
 			else if (onSuccess != null)
 			{
