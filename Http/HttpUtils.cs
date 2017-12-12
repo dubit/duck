@@ -36,16 +36,10 @@ namespace DUCK.Http
 
 			var stringBuilder = new StringBuilder(uri);
 
-			var firstElement = parameters.ElementAt(0);
-			stringBuilder.Append("?");
-			stringBuilder.Append(firstElement.Key);
-			stringBuilder.Append("=");
-			stringBuilder.Append(firstElement.Value);
-
-			for (var i = 1; i < parameters.Count; i++)
+			for (var i = 0; i < parameters.Count; i++)
 			{
 				var element = parameters.ElementAt(i);
-				stringBuilder.Append("&");
+				stringBuilder.Append(i == 0 ? "?" : "&");
 				stringBuilder.Append(element.Key);
 				stringBuilder.Append("=");
 				stringBuilder.Append(element.Value);
