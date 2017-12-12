@@ -8,13 +8,12 @@ namespace DUCK.Form.Fields
 	{
 		[SerializeField]
 		private RadioButton[] radioButtons;
-
-		private RadioButton selectedRadioButton;
-
 		[SerializeField]
 		private bool hasDefaultValue;
 		[SerializeField]
 		private int defaultValue;
+
+		private RadioButton selectedRadioButton;
 
 		protected override void Awake()
 		{
@@ -53,7 +52,10 @@ namespace DUCK.Form.Fields
 			}
 			else
 			{
-				radioButtons.ForEach(radioButton => { radioButton.SetSelected(false); });
+				foreach (var radioButton in radioButtons)
+				{
+					radioButton.SetSelected(false);
+				}
 			}
 		}
 	}
