@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -67,6 +68,14 @@ namespace DUCK.Http
 		/// <param name="value">The header value to be assigned.</param>
 		public void SetSuperHeader(string key, string value)
 		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("Key cannot be null or empty.");
+			}
+			if (string.IsNullOrEmpty(value))
+			{
+				throw new ArgumentException("Value cannot be null or empty, if you are intending to remove the value, use the RemoveSuperHeader() method.");
+			}
 			superHeaders[key] = value;
 		}
 
@@ -77,6 +86,10 @@ namespace DUCK.Http
 		/// <returns></returns>
 		public bool RemoveSuperHeader(string key)
 		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("Key cannot be null or empty.");
+			}
 			return superHeaders.Remove(key);
 		}
 
