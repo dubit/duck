@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using DUCK.Form.Fields;
+using DUCK.Forms.Fields;
 using UnityEngine;
 
-namespace DUCK.Form.Validation
+namespace DUCK.Forms.Validation
 {
 	[RequireComponent(typeof(TextField))]
 	public sealed class RegexValidator : TextValidator

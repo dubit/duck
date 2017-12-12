@@ -1,8 +1,8 @@
 ﻿using System;
-using DUCK.Form.Fields;
+using DUCK.Forms.Fields;
 using UnityEngine;
 
-namespace DUCK.Form
+namespace DUCK.Forms
 {
 	[Serializable]
 	public class FieldConfig

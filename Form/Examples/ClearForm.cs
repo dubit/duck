@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Form.Examples
+namespace DUCK.Forms.Examples
 {
 	[RequireComponent(typeof(Button))]
 	public sealed class ClearForm : MonoBehaviour

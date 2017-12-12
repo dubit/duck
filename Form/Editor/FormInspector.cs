@@ -2,7 +2,7 @@
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace DUCK.Form.Editor
+namespace DUCK.Forms.Editor
 {
 	/// <summary>
 	/// Custom inspector for Form.cs, easy to use reorderable list for the field configs.

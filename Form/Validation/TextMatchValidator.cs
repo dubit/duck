@@ -1,7 +1,7 @@
-﻿using DUCK.Form.Fields;
+﻿using DUCK.Forms.Fields;
 using UnityEngine;
 
-namespace DUCK.Form.Validation
+namespace DUCK.Forms.Validation
 {
 	public class TextMatchValidator : TextValidator
 	{

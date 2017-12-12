@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DUCK.Form.Fields;
+using DUCK.Forms.Fields;
 using UnityEngine;
 
-namespace DUCK.Form.Validation
+namespace DUCK.Forms.Validation
 {
 	[RequireComponent(typeof(AbstractFormField))]
 	public class BlackListValidator : AbstractValidator

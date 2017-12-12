@@ -1,4 +1,4 @@
-﻿namespace DUCK.Form.Validation
+﻿namespace DUCK.Forms.Validation
 {
 	public class NullOrEmptyValidator : AbstractValidator
 	{

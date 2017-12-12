@@ -1,9 +1,9 @@
 ﻿using System;
-using DUCK.Form.Validation;
+using DUCK.Forms.Validation;
 using DUCK.Utils;
 using UnityEngine;
 
-namespace DUCK.Form.Fields
+namespace DUCK.Forms.Fields
 {
 	[DisallowMultipleComponent]
 	public abstract class AbstractFormField : MonoBehaviour

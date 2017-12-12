@@ -1,7 +1,7 @@
-﻿using DUCK.Form.Validation;
+﻿using DUCK.Forms.Validation;
 using NUnit.Framework;
 
-namespace DUCK.Form.Editor.Tests.Validation
+namespace DUCK.Forms.Editor.Tests.Validation
 {
 	public class FieldValidationTests
 	{

@@ -1,8 +1,8 @@
-﻿using DUCK.Form.Fields;
+﻿using DUCK.Forms.Fields;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Form.Examples
+namespace DUCK.Forms.Examples
 {
 	[RequireComponent(typeof(Text))]
 	public class FormMessage : MonoBehaviour

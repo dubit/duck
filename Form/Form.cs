@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DUCK.Form.Fields;
+using DUCK.Forms.Fields;
 using DUCK.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Form
+namespace DUCK.Forms
 {
 	public class Form : MonoBehaviour
 	{

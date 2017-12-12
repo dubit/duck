@@ -2,7 +2,7 @@
 using DUCK.Utils;
 using UnityEngine;
 
-namespace DUCK.Form.Fields
+namespace DUCK.Forms.Fields
 {
 	public class RadioField : AbstractFormField
 	{

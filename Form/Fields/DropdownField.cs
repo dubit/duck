@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Form.Fields
+namespace DUCK.Forms.Fields
 {
 	[RequireComponent(typeof(Dropdown))]
 	public class DropdownField : AbstractFormField

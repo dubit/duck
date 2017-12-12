@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DUCK.Form.Validation
+namespace DUCK.Forms.Validation
 {
 	public sealed class TextLengthValidator : TextValidator
 	{
