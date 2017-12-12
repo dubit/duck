@@ -7,7 +7,7 @@ namespace DUCK.Http
 	public class HttpResponse
 	{
 		public string Url { get; private set; }
-		public bool Ok { get; private set; }
+		public bool IsSuccessful { get; private set; }
 		public bool IsHttpError { get; private set; }
 		public bool IsNetworkError { get; private set; }
 		public long ResponseCode { get; private set; }
@@ -21,17 +21,17 @@ namespace DUCK.Http
 			Url = unityWebRequest.url;
 			Bytes = unityWebRequest.downloadHandler.data;
 			Text = unityWebRequest.downloadHandler.text;
+			IsSuccessful = !unityWebRequest.isHttpError && !unityWebRequest.isNetworkError;
+			IsHttpError = unityWebRequest.isHttpError;
+			IsNetworkError = unityWebRequest.isNetworkError;
+			ResponseCode = unityWebRequest.responseCode;
+			ResponseType = HttpUtils.GetResponseType(ResponseCode);
 
 			var downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
 			if (downloadHandlerTexture != null)
 			{
 				Texture = downloadHandlerTexture.texture;
 			}
-			IsHttpError = unityWebRequest.isHttpError;
-			IsNetworkError = unityWebRequest.isNetworkError;
-			ResponseCode = unityWebRequest.responseCode;
-			Ok = HttpUtils.GetResponseType(ResponseCode) == ResponseType.Success;
-			ResponseType = HttpUtils.GetResponseType(ResponseCode);
 		}
 
 		public T ParseBodyAs<T>()
