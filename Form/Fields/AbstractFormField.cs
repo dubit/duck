@@ -60,9 +60,9 @@ namespace DUCK.Form.Fields
 		}
 
 		/// <summary>
-		/// Vali
+		/// Validate field
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Is the field valid</returns>
 		public bool Validate()
 		{
 			foreach (var validator in validators)
