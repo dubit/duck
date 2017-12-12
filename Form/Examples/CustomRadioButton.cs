@@ -14,7 +14,7 @@ namespace DUCK.Form.Examples
 
 		private void Awake()
 		{
-			selectButton.onClick.AddListener(InvokeOnSelected);
+			selectButton.onClick.AddListener(NotifySelected);
 		}
 
 		public override void SetSelected(bool selected)

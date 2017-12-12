@@ -22,9 +22,12 @@ namespace DUCK.Form.Fields
 		{
 		}
 
-		protected void InvokeOnSelected()
+		protected void NotifySelected()
 		{
-			OnSelected.SafeInvoke();
+			if (OnSelected != null)
+			{
+				OnSelected.Invoke();
+			}
 		}
 	}
 }
