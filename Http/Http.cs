@@ -55,7 +55,7 @@ namespace DUCK.Http
 		/// <summary>
 		/// Super headers are key value pairs that will be added to every subsequent HttpRequest.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>A dictionary of headers.</returns>
 		public Dictionary<string, string> GetSuperHeaders()
 		{
 			return superHeaders;
@@ -83,7 +83,7 @@ namespace DUCK.Http
 		/// Removes a header from the SuperHeaders list.
 		/// </summary>
 		/// <param name="key">The header key to be removed.</param>
-		/// <returns></returns>
+		/// <returns>If the removal of the element was successful</returns>
 		public bool RemoveSuperHeader(string key)
 		{
 			if (string.IsNullOrEmpty(key))
@@ -96,38 +96,32 @@ namespace DUCK.Http
 		#region Creation Helpers
 
 		/// <summary>
-		///   <para>Creates a HttpRequest configured for HTTP GET.</para>
+		/// Creates a HttpRequest configured for HTTP GET.
 		/// </summary>
 		/// <param name="uri">The URI of the resource to retrieve via HTTP GET.</param>
-		/// <returns>
-		///   <para>A HttpRequest object configured to retrieve data from uri.</para>
-		/// </returns>
+		/// <returns>A HttpRequest object configured to retrieve data from uri.</returns>
 		public static HttpRequest Get(string uri)
 		{
 			return new HttpRequest(UnityWebRequest.Get(uri));
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send form data to a server via HTTP POST.</para>
+		/// Create a HttpRequest configured to send form data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which form data will be transmitted.</param>
 		/// <param name="postData">Form body data. Will be URLEncoded via WWWTranscoder.URLEncode prior to transmission.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send form data to uri via POST.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to send form data to uri via POST.</returns>
 		public static HttpRequest Post(string uri, string postData)
 		{
 			return new HttpRequest(UnityWebRequest.Post(uri, postData));
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send json data to a server via HTTP POST.</para>
+		/// Create a HttpRequest configured to send json data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which json data will be transmitted.</param>
 		/// <param name="json">Json body data.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send json data to uri via POST.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to send json data to uri via POST.</returns>
 		public static HttpRequest PostAsJson(string uri, string json)
 		{
 			var unityWebRequest = new UnityWebRequest(uri, UnityWebRequest.kHttpVerbPOST)
@@ -142,39 +136,33 @@ namespace DUCK.Http
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send json data to a server via HTTP POST.</para>
+		/// Create a HttpRequest configured to send json data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which json data will be transmitted.</param>
 		/// <param name="payload">The object to be parsed to json data.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send json data to uri via POST.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to send json data to uri via POST.</returns>
 		public static HttpRequest PostAsJson<T>(string uri, T payload) where T : class
 		{
 			return PostAsJson(uri, JsonUtility.ToJson(payload));
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send form data to a server via HTTP POST.</para>
+		/// Create a HttpRequest configured to send form data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which form data will be transmitted.</param>
 		/// <param name="formData">Form fields or files encapsulated in a WWWForm object, for formatting and transmission to the remote server.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send form data to uri via POST.</para>
-		/// </returns>
+		/// <returns> A HttpRequest configured to send form data to uri via POST. </returns>
 		public static HttpRequest Post(string uri, WWWForm formData)
 		{
 			return new HttpRequest(UnityWebRequest.Post(uri, formData));
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to send form data to a server via HTTP POST.</para>
+		/// Create a HttpRequest configured to send form data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which form data will be transmitted.</param>
 		/// <param name="formData">Form fields in the form of a Key Value Pair, for formatting and transmission to the remote server.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send form data to uri via POST.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to send form data to uri via POST.</returns>
 		public static HttpRequest Post(string uri, Dictionary<string, string> formData)
 		{
 			return new HttpRequest(UnityWebRequest.Post(uri, formData));
@@ -186,51 +174,43 @@ namespace DUCK.Http
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to upload raw data to a remote server via HTTP PUT.</para>
+		/// Create a HttpRequest configured to upload raw data to a remote server via HTTP PUT.
 		/// </summary>
 		/// <param name="uri">The URI to which the data will be sent.</param>
 		/// <param name="bodyData">The data to transmit to the remote server.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to transmit bodyData to uri via HTTP PUT.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to transmit bodyData to uri via HTTP PUT.</returns>
 		public static HttpRequest Put(string uri, byte[] bodyData)
 		{
 			return new HttpRequest(UnityWebRequest.Put(uri, bodyData));
 		}
 
 		/// <summary>
-		///   <para>Create a HttpRequest configured to upload raw data to a remote server via HTTP PUT.</para>
+		/// Create a HttpRequest configured to upload raw data to a remote server via HTTP PUT.
 		/// </summary>
 		/// <param name="uri">The URI to which the data will be sent.</param>
 		/// <param name="bodyData">The data to transmit to the remote server.
 		/// The string will be converted to raw bytes via &lt;a href="http:msdn.microsoft.comen-uslibrarysystem.text.encoding.utf8"&gt;System.Text.Encoding.UTF8&lt;a&gt;.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to transmit bodyData to uri via HTTP PUT.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to transmit bodyData to uri via HTTP PUT.</returns>
 		public static HttpRequest Put(string uri, string bodyData)
 		{
 			return new HttpRequest(UnityWebRequest.Put(uri, bodyData));
 		}
 
 		/// <summary>
-		///   <para>Creates a HttpRequest configured for HTTP DELETE.</para>
+		/// Creates a HttpRequest configured for HTTP DELETE.
 		/// </summary>
 		/// <param name="uri">The URI to which a DELETE request should be sent.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to send an HTTP DELETE request.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to send an HTTP DELETE request.</returns>
 		public static HttpRequest Delete(string uri)
 		{
 			return new HttpRequest(UnityWebRequest.Delete(uri));
 		}
 
 		/// <summary>
-		///   <para>Creates a HttpRequest configured to send a HTTP HEAD request.</para>
+		/// Creates a HttpRequest configured to send a HTTP HEAD request.
 		/// </summary>
 		/// <param name="uri">The URI to which to send a HTTP HEAD request.</param>
-		/// <returns>
-		///   <para>A HttpRequest configured to transmit a HTTP HEAD request.</para>
-		/// </returns>
+		/// <returns>A HttpRequest configured to transmit a HTTP HEAD request.</returns>
 		public static HttpRequest Head(string uri)
 		{
 			return new HttpRequest(UnityWebRequest.Head(uri));
