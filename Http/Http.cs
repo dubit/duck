@@ -280,9 +280,12 @@ namespace DUCK.Http
 			yield return unityWebRequest.SendWebRequest();
 			var response = new HttpResponse(unityWebRequest);
 
-			if (onError != null && (unityWebRequest.isNetworkError || unityWebRequest.isHttpError))
+			if (unityWebRequest.isNetworkError || unityWebRequest.isHttpError)
 			{
-				onError.Invoke(response);
+				if (onError != null)
+				{
+					onError.Invoke(response);
+				}
 			}
 			else if (onSuccess != null)
 			{
