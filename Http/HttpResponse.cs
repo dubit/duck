@@ -30,7 +30,7 @@ namespace DUCK.Http
 			IsHttpError = unityWebRequest.isHttpError;
 			IsNetworkError = unityWebRequest.isNetworkError;
 			ResponseCode = unityWebRequest.responseCode;
-			Ok = HttpUtils.GetResponseType(ResponseCode) == ResponseType.Successful;
+			Ok = HttpUtils.GetResponseType(ResponseCode) == ResponseType.Success;
 			ResponseType = HttpUtils.GetResponseType(ResponseCode);
 		}
 

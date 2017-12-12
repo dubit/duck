@@ -3,7 +3,7 @@
 	public enum ResponseType
 	{
 		Unknown,
-		Successful,
+		Success,
 		Error,
 		ServerError,
 		Custom

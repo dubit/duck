@@ -14,7 +14,7 @@ namespace DUCK.Http
 		private static readonly Dictionary<ResponseType, string> responseTypeMessages = new Dictionary<ResponseType, string>
 		{
 			{ResponseType.Unknown, "Cannot find server - {1}"},
-			{ResponseType.Successful, "Request successful with code: {0} - {1}"},
+			{ResponseType.Success, "Request successful with code: {0} - {1}"},
 			{ResponseType.Error, "The client encounted an error with code: {0} - {1}"},
 			{ResponseType.ServerError, "The server encounted an error and responded with code: {0} - {1}"}
 		};
@@ -96,7 +96,7 @@ namespace DUCK.Http
 		public static ResponseType GetResponseType(long responseCode)
 		{
 			if (CheckIsCustomResponseCode(responseCode)) return ResponseType.Custom;
-			if (CheckIsSuccessful(responseCode)) return ResponseType.Successful;
+			if (CheckIsSuccessful(responseCode)) return ResponseType.Success;
 			if (CheckIsError(responseCode)) return ResponseType.Error;
 			if (CheckIsServerError(responseCode)) return ResponseType.ServerError;
 
