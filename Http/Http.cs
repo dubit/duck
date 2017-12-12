@@ -240,23 +240,49 @@ namespace DUCK.Http
 
 		#region None Static Send Methods
 
+		/// <summary>
+		/// Transmit a HTTP request to the remote server at the target URL and process the server’s response.
+		/// </summary>
+		/// <param name="request">The request to transmit</param>
+		/// <param name="onSuccess">The callback for on success response from the server</param>
+		/// <param name="onError">The callback for on error with the request or response.</param>
 		public void Send(HttpRequest request, Action<HttpResponse> onSuccess = null, Action<HttpResponse> onError = null)
 		{
 			StartCoroutine(SendCoroutine(request, onSuccess, onError));
 		}
 
+		/// <summary>
+		/// Transmit a HTTP request to the remote server at the target URL and process the server’s response.
+		/// </summary>
+		/// <param name="unityWebRequest">The request to transmit</param>
+		/// <param name="onSuccess">The callback for on success response from the server</param>
+		/// <param name="onError">THe callback for on error with the request or response.</param>
+		/// <param name="onNetworkError">The callback for on network error with the request.</param>
 		public void Send(UnityWebRequest unityWebRequest, Action<UnityWebRequest> onSuccess = null,
 			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
 		{
 			StartCoroutine(SendCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
 		}
 
+		/// <summary>
+		/// Transmit a HTTP request to the remote server at the target URL and process the server’s response.
+		/// </summary>
+		/// <param name="unityWebRequest">The request to transmit</param>
+		/// <param name="onSuccess">The callback for on success response from the server</param>
+		/// <param name="onError">The callback for on error with the request or response.</param>
+		/// <param name="onNetworkError">The callback for on network error with the request.</param>
 		public void Send(UnityWebRequest unityWebRequest, Action onSuccess = null,
 			Action onError = null, Action onNetworkError = null)
 		{
 			StartCoroutine(SendCoroutine(unityWebRequest, onSuccess, onError, onNetworkError));
 		}
 
+		/// <summary>
+		/// Transmit a HTTP request to the remote server at the target URL and process the server’s response.
+		/// </summary>
+		/// <param name="unityWebRequest">The request to transmit</param>
+		/// <param name="onSuccess">The callback for on success response from the server</param>
+		/// <param name="onError">The callback for on error with the request or response.</param>
 		public void Send(UnityWebRequest unityWebRequest, Action<HttpResponse> onSuccess = null,
 			Action<HttpResponse> onError = null)
 		{
