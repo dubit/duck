@@ -11,7 +11,7 @@ namespace DUCK.Forms.Validation
 
 		public override bool Validate()
 		{
-			return CheckStringLengthIsWithRange(textField.Text, min, max);
+			return CheckStringLengthIsWithRange(TextField.Text, min, max);
 		}
 
 		public static bool CheckStringLengthIsWithRange(string text, int min, int max)

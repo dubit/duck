@@ -6,12 +6,12 @@ namespace DUCK.Forms.Validation
 	[RequireComponent(typeof(TextField))]
 	public abstract class TextValidator : AbstractValidator
 	{
-		protected TextField textField;
+		protected TextField TextField { get; private set; }
 
 		protected override void Awake()
 		{
 			base.Awake();
-			textField = (TextField)FormField;
+			TextField = (TextField)FormField;
 		}
 	}
 }

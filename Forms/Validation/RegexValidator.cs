@@ -12,7 +12,7 @@ namespace DUCK.Forms.Validation
 
 		public override bool Validate()
 		{
-			return new Regex(pattern).Match(textField.Text).Success;
+			return new Regex(pattern).Match(TextField.Text).Success;
 		}
 	}
 }

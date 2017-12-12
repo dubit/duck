@@ -10,7 +10,7 @@ namespace DUCK.Forms.Validation
 
 		public override bool Validate()
 		{
-			return textField.Text == textFieldToMatch.Text;
+			return TextField.Text == textFieldToMatch.Text;
 		}
 	}
 }
