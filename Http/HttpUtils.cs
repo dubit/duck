@@ -63,9 +63,9 @@ namespace DUCK.Http
 		/// Removed a custom response code message.
 		/// </summary>
 		/// <param name="responseCode">The response code to remove</param>
-		public static void RemoveCustomResponseMessage(long responseCode)
+		public static bool RemoveCustomResponseMessage(long responseCode)
 		{
-			customResponseTypeMessages.Remove(responseCode);
+			return customResponseTypeMessages.Remove(responseCode);
 		}
 
 		public static string GetResponseTypeMessage(HttpResponse response)
