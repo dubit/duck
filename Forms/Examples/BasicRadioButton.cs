@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace DUCK.Forms.Examples
 {
-	public class CustomRadioButton : RadioButton
+	public class BasicRadioButton : RadioButton
 	{
 		[SerializeField]
 		private Button selectButton;
