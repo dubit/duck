@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace DUCK.Forms.Examples
 {
 	[RequireComponent(typeof(Button))]
-	public sealed class ClearForm : MonoBehaviour
+	public sealed class ClearFormBehaviour : MonoBehaviour
 	{
 		[SerializeField]
 		private Form form;
