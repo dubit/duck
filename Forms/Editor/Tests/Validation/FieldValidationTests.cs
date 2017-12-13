@@ -14,9 +14,9 @@ namespace DUCK.Forms.Editor.Tests.Validation
 		[Test]
 		public void ExpectTextLengthReturnTheCorrectResults()
 		{
-			Assert.False(TextLengthValidator.CheckStringLengthIsWithRange("test", 1, 2));
-			Assert.False(TextLengthValidator.CheckStringLengthIsWithRange("test", 6, 8));
-			Assert.True(TextLengthValidator.CheckStringLengthIsWithRange("test", 2, 6));
+			Assert.False(TextLengthValidator.CheckStringLengthIsWithinRange("test", 1, 2));
+			Assert.False(TextLengthValidator.CheckStringLengthIsWithinRange("test", 6, 8));
+			Assert.True(TextLengthValidator.CheckStringLengthIsWithinRange("test", 2, 6));
 		}
 
 		[Test]
