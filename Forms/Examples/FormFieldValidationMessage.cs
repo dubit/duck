@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace DUCK.Forms.Examples
 {
 	[RequireComponent(typeof(Text))]
-	public class FormMessage : MonoBehaviour
+	public class FormFieldValidationMessage : MonoBehaviour
 	{
 		[SerializeField]
 		private AbstractFormField field;
