@@ -28,9 +28,9 @@ namespace DUCK.Tween
 			this.action = action;
 		}
 
-		public override void Play(Action onComplete)
+		public override void Play(Action onComplete = null, Action onAbort = null)
 		{
-			base.Play(onComplete);
+			base.Play(onComplete, onAbort);
 			action();
 			// During the action() above, this animation may get aborted.
 			if (IsPlaying)

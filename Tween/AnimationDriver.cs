@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DUCK.Utils;
 using UnityEngine;
 
 namespace DUCK.Tween
@@ -27,11 +28,7 @@ namespace DUCK.Tween
 		public static DefaultAnimationDriver Instance { get { return instance == null ? CreateInstance() : instance; } }
 		private static DefaultAnimationDriver instance;
 
-		private static readonly List<Action<float>> updateFunctions = new List<Action<float>>();
-		private static readonly List<int> deadFunctionIndices = new List<int>();
-
-		private bool isUpdating;
-		private int currentUpdateID;
+		private static readonly UpdateList UpdateList = new UpdateList();
 
 		private static DefaultAnimationDriver CreateInstance()
 		{
@@ -42,70 +39,17 @@ namespace DUCK.Tween
 
 		public void Add(Action<float> updateFunction)
 		{
-			if (updateFunctions.Contains(updateFunction))
-			{
-				Debug.LogWarning("You should not add the same update function more than once into the animation drive.");
-				return;
-			}
-
-			updateFunctions.Add(updateFunction);
+			UpdateList.Add(updateFunction);
 		}
 
 		public void Remove(Action<float> updateFunction)
 		{
-			var index = updateFunctions.IndexOf(updateFunction);
-			if (index < 0) return;
-
-			// If it's updating and not a self-destroy request (stop itself during update)
-			// Then we push it into the removal list
-			if (isUpdating && currentUpdateID != index)
-			{
-				if (!deadFunctionIndices.Contains(index))
-				{
-					deadFunctionIndices.Add(index);
-				}
-			}
-			else
-			{
-				updateFunctions.RemoveAt(index);
-			}
+			UpdateList.Remove(updateFunction);
 		}
 
 		private void Update()
 		{
-			isUpdating = true;
-			for (currentUpdateID = updateFunctions.Count - 1; currentUpdateID >= 0; --currentUpdateID)
-			{
-				if (deadFunctionIndices.Remove(currentUpdateID))
-				{
-					updateFunctions.RemoveAt(currentUpdateID);
-				}
-				else
-				{
-					updateFunctions[currentUpdateID](Time.deltaTime);
-				}
-			}
-			isUpdating = false;
-
-			// Clean up the rest of the dead update functions (have to do this in one frame)
-			if (deadFunctionIndices.Count > 0)
-			{
-				// We have to remove the function descendingly or sort the indices by descending order
-				// Because if you remove the function in the middle of the list, the rest part of functions indecies will be changed.
-				for (var i = updateFunctions.Count - 1; i >= 0; --i)
-				{
-					if (deadFunctionIndices.Remove(i))
-					{
-						updateFunctions.RemoveAt(i);
-					}
-				}
-				// We should have nothing left... or something must went wrong seriously.
-				if (deadFunctionIndices.Count > 0)
-				{
-					Debug.LogError("This should never happen! Please investigate the Default Animation Driver.");
-					deadFunctionIndices.Clear();
-				}
-			}
+			UpdateList.Update(Time.unscaledDeltaTime);
 		}
 	}
 }

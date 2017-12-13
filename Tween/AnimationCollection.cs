@@ -8,7 +8,7 @@ namespace DUCK.Tween
 	/// When played, each animation will play in sequence/parallel until all have been completed. An Animation in
 	/// an AnimationCollection can also be itself an AnimationCollection
 	/// </summary>
-	public abstract class AnimationCollection : AbstractAnimation
+	public abstract class AnimationCollection : AbstractAnimation, IAnimationPlaybackControl
 	{
 		public override bool IsValid { get { return Animations.Count > 0; } }
 
@@ -36,9 +36,10 @@ namespace DUCK.Tween
 		/// Starts playback of the AnimationCollection starting at the first animation
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the AnimationCollection is complete</param>
-		public override void Play(Action onComplete)
+		/// <param name="onAbort">An optional callback invoked if the AnimationCollection is aborted</param>
+		public override void Play(Action onComplete = null, Action onAbort = null)
 		{
-			base.Play(onComplete);
+			base.Play(onComplete, onAbort);
 			NumberOfAnimationsCompleted = 0;
 			PlayQueuedAnimations();
 		}
@@ -62,11 +63,21 @@ namespace DUCK.Tween
 		/// </summary>
 		public override void FastForward()
 		{
-			foreach (var animation in Animations)
+			if (NumberOfAnimationsCompleted < Animations.Count)
 			{
-				animation.FastForward();
+				for (var i = NumberOfAnimationsCompleted; i < Animations.Count; ++i)
+				{
+					Animations[i].FastForward();
+				}
+
+				IsPlaying = false;
+				IsLooping = false;
+				IsPaused = false;
 			}
-			base.FastForward();
+			else
+			{
+				base.FastForward();
+			}
 		}
 
 		/// <summary>
@@ -95,6 +106,44 @@ namespace DUCK.Tween
 				if (animation.IsPlaying)
 				{
 					animation.Resume();
+				}
+			}
+		}
+
+		public void ScaleTime(float duration)
+		{
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.ScaleTime(duration);
+				}
+			}
+		}
+
+		public void ChangeSpeed(float multiplier)
+		{
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.ChangeSpeed(multiplier);
+				}
+			}
+		}
+
+		public virtual void Reverse()
+		{
+			Animations.Reverse();
+
+			foreach (var animation in Animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.Reverse();
 				}
 			}
 		}

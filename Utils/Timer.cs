@@ -63,7 +63,7 @@ namespace DUCK.Utils
 		/// <summary>
 		/// Creates a new timer but does not start it.
 		/// </summary>
-		public Timer(float duration)
+		public Timer(float duration = 0f)
 		{
 			TimeLeft = Duration = duration;
 			monoService = MonoBehaviourService.Instance;
