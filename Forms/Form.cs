@@ -43,6 +43,8 @@ namespace DUCK.Forms
 				}
 			}
 
+			// Fields need to be validated before the fields get cleared.
+			// This is because vildation components may require values from other fields.
 			foreach (var fieldConfig in fieldConfigs)
 			{
 				if (fieldConfig.clearOnSubmit)
