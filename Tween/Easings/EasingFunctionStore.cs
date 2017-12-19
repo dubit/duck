@@ -5,7 +5,7 @@ namespace DUCK.Tween.Easings
 {
 	public class EasingFunctionStore
 	{
-		public static Dictionary<string, Func<float, float>> EasingFunctions { get; set; }
+		public static Dictionary<string, Func<float, float>> EasingFunctions { get; private set; }
 		static EasingFunctionStore()
 		{
 			// Reflection could get all these but the invoke would be a lot slower at runtime
