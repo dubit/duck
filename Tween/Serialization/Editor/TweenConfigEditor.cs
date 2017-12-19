@@ -5,6 +5,7 @@ using DUCK.Serialization;
 using DUCK.Serialization.Editor;
 using DUCK.Tween.Easings;
 using DUCK.Utils.Editor.EditorGUIHelpers;
+using UnityEditor;
 
 namespace DUCK.Tween.Serialization.Editor
 {
@@ -13,20 +14,28 @@ namespace DUCK.Tween.Serialization.Editor
 		public static void Draw(TweenConfig tweenConfig)
 		{
 			ArgsList args = tweenConfig.Args;
-			
+
 			tweenConfig.CreatorFunctionKey = EditorGUILayoutHelpers.OptionSelectorField(
 				"Creator Function",
 				tweenConfig.CreatorFunctionKey,
 				TweenCreatorFunctionStore.Keys);
 
-			if (string.IsNullOrEmpty(tweenConfig.CreatorFunctionKey))
+			var creatorFunctionKey = tweenConfig.CreatorFunctionKey;
+
+			if (string.IsNullOrEmpty(creatorFunctionKey))
 			{
-				// TODO: draw warning
+				EditorGUILayout.HelpBox("No creator function selected, nothing will be executed!", MessageType.Info);
 				return;
 			}
 
-			var creatorFunction = TweenCreatorFunctionStore.Get(tweenConfig.CreatorFunctionKey);
-			// TODO: catch if function cannot be found
+			if (!TweenCreatorFunctionStore.Exists(creatorFunctionKey))
+			{
+				var message = "Creator function with the key " + creatorFunctionKey + " could not be found!";
+				EditorGUILayout.HelpBox(message, MessageType.Error);
+				return;
+			}
+
+			var creatorFunction = TweenCreatorFunctionStore.Get(creatorFunctionKey);
 
 			if (tweenConfig.Args == null) tweenConfig.Args = args = new ArgsList();
 			args.SetTypes(creatorFunction.SerializedArgTypes);

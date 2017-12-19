@@ -37,7 +37,10 @@ namespace DUCK.Tween.Serialization
 		{
 			var config = useReferencedConfig ? tweenConfigScriptableObject.Config : TweenConfig;
 			var tween = BuildTween(config, gameObject);
-			tween.Play();
+			if (tween != null)
+			{
+				tween.Play();
+			}
 		}
 
 #if UNITY_EDITOR
@@ -62,7 +65,13 @@ namespace DUCK.Tween.Serialization
 
 		public static AbstractAnimation BuildTween(TweenConfig config, GameObject defaultTarget)
 		{
-			var creatorFunction = TweenCreatorFunctionStore.Get(config.CreatorFunctionKey);
+			var creatorFunctionKey = config.CreatorFunctionKey;
+			if (!TweenCreatorFunctionStore.Exists(creatorFunctionKey))
+			{
+				Debug.LogError("Cannot build tween: Creator function `" + creatorFunctionKey + "` could not be found!");
+				return null;
+			}
+			var creatorFunction = TweenCreatorFunctionStore.Get(creatorFunctionKey);
 
 			// For any null args that are game objects or components, let's try to use this object
 			var args = config.Args.AllArgs.ToArray();

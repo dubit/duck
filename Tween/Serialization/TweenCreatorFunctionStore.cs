@@ -31,11 +31,11 @@ namespace DUCK.Tween.Serialization
 				var parameters = method.GetParameters();
 				return parameters.All(p =>
 				{
-					// All types must supported by Args list or be a Func<float,float> (easing function) 
+					// All types must supported by Args list or be a Func<float,float> (easing function)
 					return ArgsList.IsSupportedType(p.ParameterType) || p.ParameterType == typeof(Func<float, float>);
 				});
 			};
-			
+
 			// Grab all constructors of listed types and use these.
 			new[]
 			{
@@ -76,6 +76,11 @@ namespace DUCK.Tween.Serialization
 						tweenCreatorFunctionInfos.Add(key, func);
 					});
 			});
+		}
+
+		public static bool Exists(string key)
+		{
+			return tweenCreatorFunctionInfos.ContainsKey(key);
 		}
 
 		public static TweenCreatorFunctionInfo Get(string key)
