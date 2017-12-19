@@ -78,6 +78,11 @@ namespace DUCK.Tween.Serialization
 			});
 		}
 
+		public static void Add(string key, TweenCreatorFunctionInfo functionInfo)
+		{
+			tweenCreatorFunctionInfos.Add(key, functionInfo);
+		}
+
 		public static bool Exists(string key)
 		{
 			return tweenCreatorFunctionInfos.ContainsKey(key);
