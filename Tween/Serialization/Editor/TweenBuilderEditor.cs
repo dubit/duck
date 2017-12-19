@@ -16,6 +16,13 @@ namespace DUCK.Tween.Serialization.Editor
 		{
 			tweenBuilder.PlayOnStart = EditorGUILayout.Toggle("Play on Start", tweenBuilder.PlayOnStart);
 
+			tweenBuilder.Repeat = EditorGUILayout.Toggle("Repeat?", tweenBuilder.Repeat);
+
+			if (tweenBuilder.Repeat)
+			{
+				tweenBuilder.RepeatCount = EditorGUILayout.IntField("Repeat Count", tweenBuilder.RepeatCount);
+			}
+
 			tweenBuilder.UseReferencedConfig = EditorGUILayout.Toggle("Use referenced Config", tweenBuilder.UseReferencedConfig);
 
 			if (tweenBuilder.UseReferencedConfig)

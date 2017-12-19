@@ -12,6 +12,12 @@ namespace DUCK.Tween.Serialization
 		private bool playOnStart;
 
 		[SerializeField]
+		private bool repeat;
+
+		[SerializeField]
+		private int repeatCount;
+
+		[SerializeField]
 		private bool useReferencedConfig;
 
 		[SerializeField]
@@ -39,7 +45,14 @@ namespace DUCK.Tween.Serialization
 			var tween = BuildTween(config, gameObject);
 			if (tween != null)
 			{
-				tween.Play();
+				if (Repeat)
+				{
+					tween.Play(RepeatCount);
+				}
+				else
+				{
+					tween.Play();
+				}
 			}
 		}
 
@@ -48,6 +61,18 @@ namespace DUCK.Tween.Serialization
 		{
 			get { return playOnStart; }
 			set { playOnStart = value; }
+		}
+
+		public bool Repeat
+		{
+			get { return repeat; }
+			set { repeat = value; }
+		}
+
+		public int RepeatCount
+		{
+			get { return repeatCount; }
+			set { repeatCount = value; }
 		}
 
 		public bool UseReferencedConfig
