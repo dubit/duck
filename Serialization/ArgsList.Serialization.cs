@@ -9,7 +9,7 @@ namespace DUCK.Serialization
 	public partial class ArgsList
 	{
 		private const string COMPONENT_PREFIX = "c:";
-		
+
 		[SerializeField]
 		private string[] typeOrder;
 
@@ -110,8 +110,6 @@ namespace DUCK.Serialization
 					typeName = typeName.Replace(COMPONENT_PREFIX, "");
 					if (!componentTypes.ContainsKey(typeName))
 					{
-						// TODO: How to handle this error (found a component type not in the assemblies on deserialize)
-						// for now let's throw, but we may want to handle it more elegantly
 						throw new Exception("ArgsList cannot deserialize component item of type: " + typeName + ", it was not found in the assemblies");
 					}
 
