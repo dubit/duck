@@ -9,7 +9,7 @@ namespace DUCK.Forms
 		public static int[] Years { get; private set; }
 		public static string[] Months { get; private set; }
 
-		public enum MonthType
+		public enum Month
 		{
 			January,
 			Febuary,
@@ -34,7 +34,7 @@ namespace DUCK.Forms
 				Days[day] = day + 1;
 			}
 
-			Months = Enum.GetNames(typeof(MonthType));
+			Months = Enum.GetNames(typeof(Month));
 
 			const int years = 100;
 			var currentYear = DateTime.Now.Year;
