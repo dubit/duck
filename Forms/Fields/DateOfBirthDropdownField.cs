@@ -13,12 +13,11 @@ namespace DUCK.Forms.Fields
 		private Dropdown monthDropdown;
 		[SerializeField]
 		private Dropdown yearDropdown;
-
 		[SerializeField]
 		private Color onValueChangedColor;
 
+		private Color originalCaptionColor;
 		private int currentYear;
-
 		private int defaultDay;
 		private int defaultMonth;
 		private int defaultYear;
@@ -27,20 +26,22 @@ namespace DUCK.Forms.Fields
 		{
 			base.Awake();
 
+			originalCaptionColor = dayDropdown.captionText.color;
+
 			defaultDay = dayDropdown.value;
 			defaultMonth = monthDropdown.value;
 			defaultYear = yearDropdown.value;
 
-			dayDropdown.onValueChanged.AddListener(value => { dayDropdown.captionText.color = onValueChangedColor; });
+			dayDropdown.onValueChanged.AddListener(value => { HandleValueChanged(dayDropdown); });
 			monthDropdown.onValueChanged.AddListener(value =>
 			{
-				monthDropdown.captionText.color = onValueChangedColor;
-				HandleValueChanged();
+				HandleValueChanged(monthDropdown);
+				UpdateDays();
 			});
 			yearDropdown.onValueChanged.AddListener(value =>
 			{
-				yearDropdown.captionText.color = onValueChangedColor;
-				HandleValueChanged();
+				HandleValueChanged(yearDropdown);
+				UpdateDays();
 			});
 
 			monthDropdown.AddOptions(DateOfBirthUtils.Months.ToList());
@@ -49,7 +50,7 @@ namespace DUCK.Forms.Fields
 
 			currentYear = DateTime.Now.Year;
 
-			HandleValueChanged();
+			UpdateDays();
 		}
 
 		public override object GetValue()
@@ -64,22 +65,34 @@ namespace DUCK.Forms.Fields
 			yearDropdown.value = defaultYear;
 		}
 
-		private void HandleValueChanged()
+		private void HandleValueChanged(Dropdown dropdown)
 		{
+			dropdown.captionText.color = onValueChangedColor;
+		}
+
+		private void UpdateDays()
+		{
+			var daysInMonth = DateTime.DaysInMonth(GetYear(), GetMonth());
+			if (daysInMonth == dayDropdown.options.Count) return;
+
 			var dayValue = dayDropdown.value;
 			dayDropdown.ClearOptions();
-			var daysInMonth = DateTime.DaysInMonth(GetYear(), GetMonth());
 			var days = new int[daysInMonth];
 			for (var i = 0; i < daysInMonth; i++)
 			{
 				days[i] = i + 1;
 			}
 			dayDropdown.AddOptions(days.Select(day => day.ToString()).ToList());
-			// Fixes Unity issues where it will auto select the last value.
-			// This will check if our original value is still in range of the new value, if it is then assign it back.
-			if (daysInMonth > dayValue)
+
+			// Update the value to be within the new range of days or reset it if its invalid.
+			if (dayValue < daysInMonth)
 			{
 				dayDropdown.value = dayValue;
+			}
+			else
+			{
+				dayDropdown.value = 0;
+				dayDropdown.captionText.color = originalCaptionColor;
 			}
 		}
 
