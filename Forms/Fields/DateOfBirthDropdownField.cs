@@ -52,6 +52,13 @@ namespace DUCK.Forms.Fields
 		{
 			return new DateOfBirth(GetDay(), GetMonth(), GetYear());
 		}
+		
+		protected override void SetDefaultValue()
+		{
+			dayDropdown.value = defaultDay;
+			monthDropdown.value = defaultMonth;
+			yearDropdown.value = defaultYear;
+		}
 
 		private void HandleValueChanged(int value)
 		{
@@ -83,13 +90,6 @@ namespace DUCK.Forms.Fields
 		private int GetDay()
 		{
 			return int.Parse(dayDropdown.captionText.text);
-		}
-
-		protected override void SetDefaultValue()
-		{
-			dayDropdown.value = defaultDay;
-			monthDropdown.value = defaultMonth;
-			yearDropdown.value = defaultYear;
 		}
 	}
 }
