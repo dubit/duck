@@ -4,15 +4,15 @@ namespace DUCK.Forms.Fields
 {
 	public struct DateOfBirth
 	{
-		public int day;
-		public int month;
 		public int year;
+		public int month;
+		public int day;
 
-		public DateOfBirth(int day, int month, int year)
+		public DateOfBirth(int year, int month, int day)
 		{
-			this.day = day;
-			this.month = month;
 			this.year = year;
+			this.month = month;
+			this.day = day;
 		}
 
 		public DateTime ToDateTime()
