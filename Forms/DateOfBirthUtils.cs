@@ -11,7 +11,7 @@ namespace DUCK.Forms
 
 		public enum Month
 		{
-			January,
+			January = 1,
 			Febuary,
 			March,
 			April,
