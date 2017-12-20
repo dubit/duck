@@ -29,9 +29,9 @@ namespace DUCK.Forms
 		{
 			const int days = 31;
 			Days = new int[days];
-			for (var day = 0; day < days; day++)
+			for (var i = 0; i < days; i++)
 			{
-				Days[day] = day + 1;
+				Days[i] = i + 1;
 			}
 
 			Months = Enum.GetNames(typeof(Month));
@@ -39,9 +39,9 @@ namespace DUCK.Forms
 			const int years = 100;
 			var currentYear = DateTime.Now.Year;
 			Years = new int[years];
-			for (var year = 0; year < years; year++)
+			for (var i = 0; i < years; i++)
 			{
-				Years[year] = currentYear - year;
+				Years[i] = currentYear - i;
 			}
 		}
 	}
