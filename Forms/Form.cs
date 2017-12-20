@@ -124,7 +124,7 @@ namespace DUCK.Forms
 		/// <summary>
 		/// Set all fields to default state.
 		/// </summary>
-		public void Reset()
+		public void ResetFields()
 		{
 			fieldConfigs.ForEach(config => config.field.Reset());
 		}
