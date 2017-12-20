@@ -52,7 +52,7 @@ namespace DUCK.Forms.Fields
 		{
 			return new DateOfBirth(GetDay(), GetMonth(), GetYear());
 		}
-		
+
 		protected override void SetDefaultValue()
 		{
 			dayDropdown.value = defaultDay;
