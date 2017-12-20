@@ -17,6 +17,8 @@ namespace DUCK.Forms.Fields
 		[SerializeField]
 		private Color onValueChangedColor;
 
+		private int currentYear;
+
 		private int defaultDay;
 		private int defaultMonth;
 		private int defaultYear;
@@ -44,6 +46,8 @@ namespace DUCK.Forms.Fields
 			monthDropdown.AddOptions(DateOfBirthUtils.Months.ToList());
 			dayDropdown.AddOptions(DateOfBirthUtils.Days.Select(day => day.ToString()).ToList());
 			yearDropdown.AddOptions(DateOfBirthUtils.Years.Select(year => year.ToString()).ToList());
+
+			currentYear = DateTime.Now.Year;
 
 			HandleValueChanged(monthDropdown.value);
 		}
@@ -79,7 +83,7 @@ namespace DUCK.Forms.Fields
 
 		private int GetYear()
 		{
-			return int.Parse(yearDropdown.captionText.text);
+			return currentYear - yearDropdown.value;
 		}
 
 		private int GetMonth()
@@ -89,7 +93,7 @@ namespace DUCK.Forms.Fields
 
 		private int GetDay()
 		{
-			return int.Parse(dayDropdown.captionText.text);
+			return dayDropdown.value + 1;
 		}
 	}
 }
