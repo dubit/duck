@@ -35,12 +35,12 @@ namespace DUCK.Forms.Fields
 			monthDropdown.onValueChanged.AddListener(value =>
 			{
 				monthDropdown.captionText.color = onValueChangedColor;
-				HandleValueChanged(value);
+				HandleValueChanged();
 			});
 			yearDropdown.onValueChanged.AddListener(value =>
 			{
 				yearDropdown.captionText.color = onValueChangedColor;
-				HandleValueChanged(value);
+				HandleValueChanged();
 			});
 
 			monthDropdown.AddOptions(DateOfBirthUtils.Months.ToList());
@@ -49,12 +49,12 @@ namespace DUCK.Forms.Fields
 
 			currentYear = DateTime.Now.Year;
 
-			HandleValueChanged(monthDropdown.value);
+			HandleValueChanged();
 		}
 
 		public override object GetValue()
 		{
-			return new DateOfBirth(GetDay(), GetMonth(), GetYear());
+			return new DateOfBirth(GetYear(), GetMonth(), GetDay());
 		}
 
 		protected override void SetDefaultValue()
@@ -64,17 +64,19 @@ namespace DUCK.Forms.Fields
 			yearDropdown.value = defaultYear;
 		}
 
-		private void HandleValueChanged(int value)
+		private void HandleValueChanged()
 		{
 			var dayValue = dayDropdown.value;
 			dayDropdown.ClearOptions();
 			var daysInMonth = DateTime.DaysInMonth(GetYear(), GetMonth());
 			var days = new int[daysInMonth];
-			for (var day = 0; day < daysInMonth; day++)
+			for (var i = 0; i < daysInMonth; i++)
 			{
-				days[day] = day + 1;
+				days[i] = i + 1;
 			}
 			dayDropdown.AddOptions(days.Select(day => day.ToString()).ToList());
+			// Fixes Unity issues where it will auto select the last value.
+			// This will check if our original value is still in range of the new value, if it is then assign it back.
 			if (daysInMonth > dayValue)
 			{
 				dayDropdown.value = dayValue;
