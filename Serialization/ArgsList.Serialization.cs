@@ -9,7 +9,7 @@ namespace DUCK.Serialization
 	public partial class ArgsList
 	{
 		private const string COMPONENT_PREFIX = "c:";
-		
+
 		[SerializeField]
 		private string[] typeOrder;
 
@@ -68,12 +68,12 @@ namespace DUCK.Serialization
 				{
 					var arg = args[i];
 					list.Add(arg);
-					typeOrderList.Add(COMPONENT_PREFIX + argType.Name);
+					typeOrderList.Add(COMPONENT_PREFIX + argType.FullName);
 				}
 				else
 				{
 					list.Add(args[i]);
-					typeOrderList.Add(argType.Name);
+					typeOrderList.Add(argType.FullName);
 				}
 			}
 
@@ -95,7 +95,7 @@ namespace DUCK.Serialization
 			foreach (var supportedType in supportedTypes.Values)
 			{
 				var list = supportedType.GetList(this);
-				serializedLists.Add(supportedType.Type.Name, list);
+				serializedLists.Add(supportedType.Type.FullName, list);
 			}
 
 			for (var i = 0; i < typeOrder.Length; i++)
@@ -110,14 +110,12 @@ namespace DUCK.Serialization
 					typeName = typeName.Replace(COMPONENT_PREFIX, "");
 					if (!componentTypes.ContainsKey(typeName))
 					{
-						// TODO: How to handle this error (found a component type not in the assemblies on deserialize)
-						// for now let's throw, but we may want to handle it more elegantly
 						throw new Exception("ArgsList cannot deserialize component item of type: " + typeName + ", it was not found in the assemblies");
 					}
 
 					argType = componentTypes[typeName];
 					localArgTypes.Add(argType);
-					list = serializedLists[typeof(GameObject).Name];
+					list = serializedLists[typeof(GameObject).FullName];
 				}
 				else
 				{

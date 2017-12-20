@@ -2,20 +2,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DUCK.Serialization
 {
 	[Serializable]
 	public partial class ArgsList : ISerializationCallbackReceiver
 	{
+		public static bool IsSupportedType(Type type)
+		{
+			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
+		}
+
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
 		private static readonly Type[] supportedTypesArray;
 		private static readonly Dictionary<string, Type> componentTypes;
 
 		static ArgsList()
 		{
-			var supportedTypesList = new SupportedType[]
+			var supportedTypesList = new []
 			{
 				SupportedType.Create(i => i.stringValues, (i, v) => i.stringValues = v),
 				SupportedType.Create(i => i.intValues, (i, v) => i.intValues = v),
@@ -29,19 +36,31 @@ namespace DUCK.Serialization
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
-			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.Name, t => t);
+			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.FullName, t => t);
 			componentTypes = new Dictionary<string, Type>();
 
 			// Get every type that extends component
-			var types = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
-				.Where(t => t.IsSubclassOf(typeof(Component)))
-				.Concat(typeof(Component).Assembly.GetTypes()
-					.Where(t => t.IsSubclassOf(typeof(Component)))
-				);
-
-			foreach (var type in types)
+			var assemblies = new []
 			{
-				componentTypes.Add(type.Name, type);
+				// Project assembly
+				Assembly.GetExecutingAssembly(),
+				// UnityEngine Assembly
+				typeof(Component).Assembly,
+				// UnityEngine.UI Assembly
+				typeof(Graphic).Assembly,
+			};
+
+			var componentSubTypes = assemblies.SelectMany(a => a.GetTypes())
+				.Where(t => t.IsSubclassOf(typeof(Component)));
+
+			foreach (var type in componentSubTypes)
+			{
+				// Make sure this type has not been added already 
+				// (it can happen, since some types are shipped in multiple assemblies)
+				if (!componentTypes.ContainsKey(type.FullName))
+				{
+					componentTypes.Add(type.FullName, type);
+				}
 			}
 		}
 
@@ -86,7 +105,7 @@ namespace DUCK.Serialization
 
 			foreach (var argType in types)
 			{
-				if (!ValidateArgType(argType))
+				if (!IsSupportedType(argType))
 				{
 					throw new ArgumentException("Cannot handle arguments of type: " + argType.Name);
 				}
@@ -192,12 +211,7 @@ namespace DUCK.Serialization
 
 		private bool ValidateArgTypeForIndex(Type type, int index)
 		{
-			return argTypes.Count > index && argTypes[index] == type;
-		}
-
-		private bool ValidateArgType(Type type)
-		{
-			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
+			return argTypes.Count > index && argTypes[index].IsAssignableFrom(type);
 		}
 	}
 }

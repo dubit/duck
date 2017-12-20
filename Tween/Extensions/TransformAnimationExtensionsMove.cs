@@ -20,6 +20,28 @@ namespace DUCK.Tween.Extensions
 		}
 
 		/// <summary>
+		/// Creates a new MoveAnimation using 2 transforms
+		/// </summary>
+		/// <param name="transform">The transform that will be used in the MoveAnimation</param>
+		/// <param name="from">The transform to use for the start position of the MoveAnimation</param>
+		/// <param name="to">The transform to use for the end position of the MoveAnimation</param>
+		/// <param name="duration">The duration of the animation in seconds, defaults to 1f</param>
+		/// <param name="easingFunction">The easing function that will be used to interpolate with</param>
+		/// <returns>The newly created move Animation</returns>
+		public static DelegateAnimation<MoveAnimation> MoveBetween(this Transform transform, Transform from, Transform to, float duration = 1f, Func<float, float> easingFunction = null)
+		{
+			var animation = new DelegateAnimation<MoveAnimation>(() =>
+				new MoveAnimation(
+					transform.gameObject,
+					from.position,
+					to.position,
+					duration,
+					easingFunction,
+					false));
+			return animation;
+		}
+
+		/// <summary>
 		/// Creates a new MoveAnimation that uses local position using this transform
 		/// </summary>
 		/// <param name="transform">The transform that will be used in the MoveAnimation</param>
