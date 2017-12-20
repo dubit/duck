@@ -28,7 +28,7 @@ namespace DUCK.Forms
 		static DateOfBirthUtils()
 		{
 			const int days = 31;
-			Days = new int[31];
+			Days = new int[days];
 			for (var day = 0; day < days; day++)
 			{
 				Days[day] = day + 1;
