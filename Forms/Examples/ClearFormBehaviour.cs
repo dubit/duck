@@ -11,7 +11,7 @@ namespace DUCK.Forms.Examples
 
 		private void Awake()
 		{
-			GetComponent<Button>().onClick.AddListener(form.Reset);
+			GetComponent<Button>().onClick.AddListener(form.ResetFields);
 		}
 	}
 }
