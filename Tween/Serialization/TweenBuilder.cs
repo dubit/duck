@@ -45,9 +45,9 @@ namespace DUCK.Tween.Serialization
 			var tween = BuildTween(config, gameObject);
 			if (tween != null)
 			{
-				if (Repeat)
+				if (repeat)
 				{
-					tween.Play(RepeatCount);
+					tween.Play(repeatCount);
 				}
 				else
 				{
