@@ -34,6 +34,7 @@ namespace DUCK.Utils.Editor
 		private static bool hasEditorLagBeenFound;
 		private static Asset[] unusedAssets;
 		private static Vector2 scrollPosition;
+		private static string helpMessage;
 		private static FindUnusedAssetsWindow window;
 
 		[MenuItem("DUCK/Find Unused Assets")]
@@ -78,7 +79,7 @@ namespace DUCK.Utils.Editor
 
 			if (!hasEditorLagBeenFound)
 			{
-				EditorGUILayout.HelpBox("Editor log not found! - You need to build your project before doing this!",
+				EditorGUILayout.HelpBox(helpMessage,
 					MessageType.Warning);
 			}
 			else if (unusedAssets != null)
@@ -86,7 +87,7 @@ namespace DUCK.Utils.Editor
 				GUILayout.Label(string.Format("Found {0} unused assets!", unusedAssets.Length), EditorStyles.boldLabel);
 				var scrollViewHeight = EditorGUIUtility.singleLineHeight * unusedAssets.Length;
 				var scrollViewPositionY = EditorGUIUtility.singleLineHeight * 6;
-				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH, window.position.height - scrollViewPositionY);
+				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH + 20, window.position.height - scrollViewPositionY);
 				var scrollView = new Rect(0, 0, WIDTH, scrollViewHeight);
 				scrollPosition = GUI.BeginScrollView(scrollViewPosition, scrollPosition, scrollView, false, true);
 				for (var i = 0; i < unusedAssets.Length; i++)
@@ -191,6 +192,11 @@ namespace DUCK.Utils.Editor
 				var fileStream = new FileStream(GetEditorLogPath(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 				var streamReader = new StreamReader(fileStream);
 
+				if (!fileStream.CanRead)
+				{
+					helpMessage = "Editor log not found! - You need to build your project before doing this!";
+				}
+
 				var foundAssetsList = false;
 				var reachedEndOfAssetList = false;
 				while (!streamReader.EndOfStream && !foundAssetsList)
@@ -215,10 +221,15 @@ namespace DUCK.Utils.Editor
 						usedAssets.Add(path);
 					}
 				}
+
+				if (!foundAssetsList)
+				{
+					helpMessage = "Could not find Used Assets list in the Editor Log! - Perhaps Unity version mismatch?";
+				}
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Error: " + e);
+				Debug.LogError(e);
 			}
 
 			return usedAssets.Count == 0 ? null : usedAssets;
