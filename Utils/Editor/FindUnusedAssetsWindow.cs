@@ -79,8 +79,7 @@ namespace DUCK.Utils.Editor
 
 			if (!hasEditorLagBeenFound)
 			{
-				EditorGUILayout.HelpBox(helpMessage,
-					MessageType.Warning);
+				EditorGUILayout.HelpBox(helpMessage, MessageType.Warning);
 			}
 			else if (unusedAssets != null)
 			{
