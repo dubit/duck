@@ -32,7 +32,7 @@ namespace DUCK.Utils.Editor
 		private static bool includePlugins;
 		private static bool includeDuck;
 		private static bool hasEditorLagBeenFound;
-		private static List<Asset> unusedAssets;
+		private static Asset[] unusedAssets;
 		private static Vector2 scrollPosition;
 		private static FindUnusedAssetsWindow window;
 
@@ -54,7 +54,7 @@ namespace DUCK.Utils.Editor
 
 			if (usedAssets != null)
 			{
-				unusedAssets = FindUnusedObjects(FindAllProjectAssets(), usedAssets).OrderBy(a => a.Obj != null).ToList();
+				unusedAssets = FindUnusedObjects(FindAllProjectAssets(), usedAssets).OrderBy(a => a.Obj != null);
 				hasEditorLagBeenFound = true;
 			}
 			else
@@ -83,48 +83,52 @@ namespace DUCK.Utils.Editor
 			}
 			else if (unusedAssets != null)
 			{
-				GUILayout.Label(string.Format("Found {0} unused assets!", unusedAssets.Count), EditorStyles.boldLabel);
-				var scrollViewHeight = EditorGUIUtility.singleLineHeight * unusedAssets.Count;
+				GUILayout.Label(string.Format("Found {0} unused assets!", unusedAssets.Length), EditorStyles.boldLabel);
+				var scrollViewHeight = EditorGUIUtility.singleLineHeight * unusedAssets.Length;
 				var scrollViewPositionY = EditorGUIUtility.singleLineHeight * 6;
 				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH, window.position.height - scrollViewPositionY);
 				var scrollView = new Rect(0, 0, WIDTH, scrollViewHeight);
 				scrollPosition = GUI.BeginScrollView(scrollViewPosition, scrollPosition, scrollView, false, true);
-				for (var i = 0; i < unusedAssets.Count; i++)
+				for (var i = 0; i < unusedAssets.Length; i++)
 				{
-					var asset = unusedAssets[i];
-					if (asset != null)
-					{
-						var positionY = EditorGUIUtility.singleLineHeight * i;
-						GUILayout.BeginHorizontal();
-						if (asset.Obj != null)
-						{
-							GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Name);
-							if (GUI.Button(new Rect(260, positionY, 70, EditorGUIUtility.singleLineHeight), "Select"))
-							{
-								Selection.activeObject = asset.Obj;
-							}
-							if (GUI.Button(new Rect(330, positionY, 70, EditorGUIUtility.singleLineHeight), "Delete"))
-							{
-								AssetDatabase.DeleteAsset(asset.Path);
-							}
-						}
-						else
-						{
-							GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Path);
-						}
-						GUILayout.EndHorizontal();
-					}
+					DrawAsset(unusedAssets[i], i);
 				}
 				GUI.EndScrollView();
 			}
 		}
 
-		private static IEnumerable<Asset> FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
+		private static void DrawAsset(Asset asset, int index)
+		{
+			if (asset != null)
+			{
+				var positionY = EditorGUIUtility.singleLineHeight * index;
+				GUILayout.BeginHorizontal();
+				if (asset.Obj != null)
+				{
+					GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Name);
+					if (GUI.Button(new Rect(260, positionY, 70, EditorGUIUtility.singleLineHeight), "Select"))
+					{
+						Selection.activeObject = asset.Obj;
+					}
+					if (GUI.Button(new Rect(330, positionY, 70, EditorGUIUtility.singleLineHeight), "Delete"))
+					{
+						AssetDatabase.DeleteAsset(asset.Path);
+					}
+				}
+				else
+				{
+					GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Path);
+				}
+				GUILayout.EndHorizontal();
+			}
+		}
+
+		private static Asset[] FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
 		{
 			return (from assetPath in assetList
 				where !string.IsNullOrEmpty(assetPath) && !IsEditorPath(assetPath) && !usedAssets.Contains(assetPath)
 				select new Asset(assetPath, AssetDatabase.LoadAssetAtPath(assetPath, typeof(Object))))
-				.ToList();
+				.ToArray();
 		}
 
 		private static bool IsEditorPath(string path)
