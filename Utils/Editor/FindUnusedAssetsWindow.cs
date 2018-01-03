@@ -79,7 +79,8 @@ namespace DUCK.Utils.Editor
 
 			if (!hasEditorLagBeenFound)
 			{
-				EditorGUILayout.HelpBox(helpMessage, MessageType.Warning);
+				EditorGUILayout.HelpBox("Could not find Used Assets list in the Editor Log! - You need to build your project before doing this!", MessageType.Warning);
+				EditorGUILayout.HelpBox("If this problem persists then perhaps there is a Unity version mismatch?", MessageType.Warning);
 			}
 			else if (unusedAssets != null)
 			{
@@ -186,49 +187,33 @@ namespace DUCK.Utils.Editor
 		{
 			var usedAssets = new List<string>();
 
-			try
+
+			var fileStream = new FileStream(GetEditorLogPath(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+			var streamReader = new StreamReader(fileStream);
+
+			var foundAssetsList = false;
+			var reachedEndOfAssetList = false;
+			while (!streamReader.EndOfStream && !foundAssetsList)
 			{
-				var fileStream = new FileStream(GetEditorLogPath(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-				var streamReader = new StreamReader(fileStream);
-
-				if (!fileStream.CanRead)
+				var line = streamReader.ReadLine();
+				if (line != null && line.Contains("Used Assets and files from the Resources folder, sorted by uncompressed size:"))
 				{
-					helpMessage = "Editor log not found! - You need to build your project before doing this!";
-				}
-
-				var foundAssetsList = false;
-				var reachedEndOfAssetList = false;
-				while (!streamReader.EndOfStream && !foundAssetsList)
-				{
-					var line = streamReader.ReadLine();
-					if (line != null && line.Contains("Used Assets and files from the Resources folder, sorted by uncompressed size:"))
-					{
-						foundAssetsList = true;
-					}
-				}
-
-				while (!streamReader.EndOfStream && !reachedEndOfAssetList)
-				{
-					var line = streamReader.ReadLine();
-					if (string.IsNullOrEmpty(line))
-					{
-						reachedEndOfAssetList = true;
-					}
-					else
-					{
-						var path = line.Substring(line.IndexOf("% ", StringComparison.Ordinal) + 2);
-						usedAssets.Add(path);
-					}
-				}
-
-				if (!foundAssetsList)
-				{
-					helpMessage = "Could not find Used Assets list in the Editor Log! - Perhaps Unity version mismatch?";
+					foundAssetsList = true;
 				}
 			}
-			catch (Exception e)
+
+			while (!streamReader.EndOfStream && !reachedEndOfAssetList)
 			{
-				Debug.LogError(e);
+				var line = streamReader.ReadLine();
+				if (string.IsNullOrEmpty(line))
+				{
+					reachedEndOfAssetList = true;
+				}
+				else
+				{
+					var path = line.Substring(line.IndexOf("% ", StringComparison.Ordinal) + 2);
+					usedAssets.Add(path);
+				}
 			}
 
 			return usedAssets.Count == 0 ? null : usedAssets;
