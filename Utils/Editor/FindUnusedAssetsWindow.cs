@@ -138,11 +138,11 @@ namespace DUCK.Utils.Editor
 		private static string[] FindAllProjectAssets()
 		{
 			// Find all assets in the project
-			string[] tmpAssets1 = Directory.GetFiles(Application.dataPath, "*.*", SearchOption.AllDirectories);
+			string[] allAssets = Directory.GetFiles(Application.dataPath, "*.*", SearchOption.AllDirectories);
 			// Filter assets
-			string[] tmpAssets2 = FilterAssets(tmpAssets1);
+			allAssets = FilterAssets(allAssets);
 			// Remove scene files to create the final list of assets.
-			string[] allAssets = Array.FindAll(tmpAssets2, name => !name.EndsWith(".unity"));
+			allAssets = Array.FindAll(allAssets, name => !name.EndsWith(".unity"));
 
 			// Convert directory paths to asset paths
 			for (var i = 0; i < allAssets.Length; i++)
