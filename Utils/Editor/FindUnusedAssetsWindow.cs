@@ -54,7 +54,7 @@ namespace DUCK.Utils.Editor
 
 			if (usedAssets != null)
 			{
-				unusedAssets = FindUnusedObjects(FindAllProjectAssets(), usedAssets).OrderBy(a => a.Obj != null);
+				unusedAssets = FindUnusedObjects(FindAllProjectAssets(), usedAssets).OrderBy(a => a.Obj != null).ToArray();
 				hasEditorLagBeenFound = true;
 			}
 			else
@@ -123,12 +123,11 @@ namespace DUCK.Utils.Editor
 			}
 		}
 
-		private static Asset[] FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
+		private static IEnumerable<Asset> FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
 		{
-			return (from assetPath in assetList
+			return from assetPath in assetList
 				where !string.IsNullOrEmpty(assetPath) && !IsEditorPath(assetPath) && !usedAssets.Contains(assetPath)
-				select new Asset(assetPath, AssetDatabase.LoadAssetAtPath(assetPath, typeof(Object))))
-				.ToArray();
+				select new Asset(assetPath, AssetDatabase.LoadAssetAtPath(assetPath, typeof(Object)));
 		}
 
 		private static bool IsEditorPath(string path)
