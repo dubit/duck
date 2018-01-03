@@ -87,8 +87,8 @@ namespace DUCK.Utils.Editor
 				GUILayout.Label(string.Format("Found {0} unused assets!", unusedAssets.Length), EditorStyles.boldLabel);
 				var scrollViewHeight = EditorGUIUtility.singleLineHeight * unusedAssets.Length;
 				var scrollViewPositionY = EditorGUIUtility.singleLineHeight * 6;
-				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH + 20, window.position.height - scrollViewPositionY);
-				var scrollView = new Rect(0, 0, WIDTH, scrollViewHeight);
+				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH, window.position.height - scrollViewPositionY);
+				var scrollView = new Rect(0, 0, WIDTH - 20, scrollViewHeight);
 				scrollPosition = GUI.BeginScrollView(scrollViewPosition, scrollPosition, scrollView, false, true);
 				for (var i = 0; i < unusedAssets.Length; i++)
 				{
