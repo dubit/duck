@@ -187,7 +187,6 @@ namespace DUCK.Utils.Editor
 		{
 			var usedAssets = new List<string>();
 
-
 			var fileStream = new FileStream(GetEditorLogPath(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			var streamReader = new StreamReader(fileStream);
 
