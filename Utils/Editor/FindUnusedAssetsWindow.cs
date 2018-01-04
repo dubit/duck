@@ -271,6 +271,10 @@ namespace DUCK.Utils.Editor
 				{
 					isValid &= !asset.Contains("Vendor");
 				}
+				if (!includeVendor)
+				{
+					isValid &= !asset.Contains(".git");
+				}
 
 				if (isValid)
 				{
