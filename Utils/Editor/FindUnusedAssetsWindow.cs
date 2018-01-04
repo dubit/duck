@@ -11,6 +11,11 @@ namespace DUCK.Utils.Editor
 {
 	public class FindUnusedAssetsWindow : EditorWindow
 	{
+		private const string EDITOR_PREF_INCLUDE_VENDOR = "includeVendor";
+		private const string EDITOR_PREF_INCLUDE_PLUGINS = "includePlugins";
+		private const string EDITOR_PREF_INCLUDE_DUCK = "includeDuck";
+		private const string EDITOR_PREF_INCLUDE_IGNORED = "includeIgnored";
+
 		private class Asset
 		{
 			public string Extension { get; private set; }
@@ -98,18 +103,18 @@ namespace DUCK.Utils.Editor
 
 		private static void LoadFilters()
 		{
-			includeDuck = EditorPrefs.GetBool("includeDUCK");
-			includePlugins = EditorPrefs.GetBool("includePlugins");
-			includeVendor = EditorPrefs.GetBool("includeVendor");
-			includeIgnored = EditorPrefs.GetBool("includeIgnored");
+			includeVendor = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_VENDOR);
+			includePlugins = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_PLUGINS);
+			includeDuck = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_DUCK);
+			includeIgnored = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_IGNORED);
 		}
 
 		private static void SaveFilters()
 		{
-			EditorPrefs.SetBool("includeDUCK", includeDuck);
-			EditorPrefs.SetBool("includePlugins", includePlugins);
-			EditorPrefs.SetBool("includeVendor", includeVendor);
-			EditorPrefs.SetBool("includeIgnored", includeIgnored);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_VENDOR, includeVendor);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_PLUGINS, includePlugins);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_DUCK, includeDuck);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_IGNORED, includeIgnored);
 		}
 
 		private void OnGUI()
