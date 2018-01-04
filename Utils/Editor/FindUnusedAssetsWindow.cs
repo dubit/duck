@@ -216,7 +216,7 @@ namespace DUCK.Utils.Editor
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.Space(0.1f);
-			GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
+			GUILayout.Box(string.Empty, GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
 		}
 
 		private static IEnumerable<Asset> FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
