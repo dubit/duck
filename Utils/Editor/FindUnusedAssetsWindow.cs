@@ -255,6 +255,8 @@ namespace DUCK.Utils.Editor
 				if (!includeDuck)
 				{
 					isValid &= !asset.Contains("DUCK");
+					isValid &= !asset.Contains("duck");
+					isValid &= !asset.Contains("Duck");
 				}
 				if (!includePlugins)
 				{
