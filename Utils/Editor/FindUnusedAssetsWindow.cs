@@ -220,19 +220,23 @@ namespace DUCK.Utils.Editor
 			GUILayout.EndHorizontal();
 		}
 
-		private static bool IsSearchMatch(string path)
+		private static bool IsSearchMatch(Asset asset)
 		{
-			if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(searchValue))
+			if (string.IsNullOrEmpty(asset.Path) || string.IsNullOrEmpty(searchValue))
 			{
 				return true;
 			}
-			return path.Contains(searchValue);
+			if (asset.IsIgnored)
+			{
+				return false;
+			}
+			return asset.Path.IndexOf(searchValue, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
 		private static void DrawAsset(Asset asset)
 		{
 			if (asset == null || !includeIgnored && asset.IsIgnored) return;
-			if (!IsSearchMatch(asset.Path)) return;
+			if (!IsSearchMatch(asset)) return;
 
 			GUILayout.BeginHorizontal();
 			if (asset.Obj != null)
