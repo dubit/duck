@@ -11,6 +11,7 @@ namespace DUCK.Utils.Editor
 {
 	public class FindUnusedAssetsWindow : EditorWindow
 	{
+		private const string EDITOR_PREF_SEEN_WARNING_ASSETS = "warningAssets";
 		private const string EDITOR_PREF_INCLUDE_VENDOR = "includeVendor";
 		private const string EDITOR_PREF_INCLUDE_PLUGINS = "includePlugins";
 		private const string EDITOR_PREF_INCLUDE_DUCK = "includeDuck";
@@ -45,6 +46,7 @@ namespace DUCK.Utils.Editor
 			}
 		}
 
+		private static bool seenWarningAssets;
 		private static bool includeVendor;
 		private static bool includePlugins;
 		private static bool includeDuck;
@@ -57,6 +59,7 @@ namespace DUCK.Utils.Editor
 		private static FindUnusedAssetsWindow window;
 		private static int gridSelectionIndex;
 		private static string[] gridSelectionButtonNames;
+		private static string searchValue;
 
 		[MenuItem("DUCK/Find Unused Assets")]
 		private static void Init()
@@ -69,6 +72,12 @@ namespace DUCK.Utils.Editor
 		}
 
 		[DidReloadScripts]
+		private static void ReloadWindow()
+		{
+			LoadFilters();
+			Search();
+		}
+
 		private static void Search()
 		{
 			List<string> usedAssets = FindUsedAssets();
@@ -107,6 +116,7 @@ namespace DUCK.Utils.Editor
 			includePlugins = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_PLUGINS);
 			includeDuck = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_DUCK);
 			includeIgnored = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_IGNORED);
+			seenWarningAssets = EditorPrefs.GetBool(EDITOR_PREF_SEEN_WARNING_ASSETS);
 		}
 
 		private static void SaveFilters()
@@ -119,6 +129,7 @@ namespace DUCK.Utils.Editor
 
 		private void OnGUI()
 		{
+			DrawNotifications();
 			EditorGUILayout.HelpBox("Does not include Scenes or Meta data.", MessageType.Info);
 			GUILayout.BeginHorizontal();
 			includeDuck = GUILayout.Toggle(includeDuck, "Include DUCK");
@@ -152,6 +163,10 @@ namespace DUCK.Utils.Editor
 				var extension = extensionIndex >= 0 ? assetsByExtension.ElementAt(extensionIndex).Key : string.Empty;
 				gridSelectionIndex = extensionIndex + 1;
 				var assetsListToShow = string.IsNullOrEmpty(extension) ? unusedAssets : assetsByExtension[extension].ToArray();
+				// Search bar
+				DrawSearchBar();
+				// Seperator
+				GUILayout.Box(string.Empty, GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
 				// Draw assets in a scroll view
 				scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 				foreach (var asset in assetsListToShow)
@@ -160,6 +175,31 @@ namespace DUCK.Utils.Editor
 				}
 				GUILayout.EndScrollView();
 			}
+		}
+
+		private static void DrawNotifications()
+		{
+			if (!seenWarningAssets)
+			{
+				GUILayout.BeginHorizontal();
+				EditorGUILayout.HelpBox(
+					"Assets that are not directly referenced via an inspector but are used in a scene will not get used by the build but still might be required by the project as a template asset.",
+					MessageType.Warning);
+				if (GUILayout.Button("Confirm", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2)))
+				{
+					EditorPrefs.SetBool(EDITOR_PREF_SEEN_WARNING_ASSETS, true);
+					seenWarningAssets = true;
+				}
+				GUILayout.EndHorizontal();
+			}
+		}
+
+		private static void DrawSearchBar()
+		{
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Search", GUILayout.ExpandWidth(false));
+			searchValue = GUILayout.TextField(searchValue, GUILayout.ExpandWidth(true));
+			GUILayout.EndHorizontal();
 		}
 
 		private static void IgnoreAsset(Asset asset, bool ignore)
@@ -176,14 +216,23 @@ namespace DUCK.Utils.Editor
 		private void DrawExtensionTabs()
 		{
 			gridSelectionIndex = GUILayout.SelectionGrid(gridSelectionIndex, gridSelectionButtonNames, 3);
-
 			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
+		}
+
+		private static bool IsSearchMatch(string path)
+		{
+			if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(searchValue))
+			{
+				return true;
+			}
+			return path.Contains(searchValue);
 		}
 
 		private static void DrawAsset(Asset asset)
 		{
 			if (asset == null || !includeIgnored && asset.IsIgnored) return;
+			if (!IsSearchMatch(asset.Path)) return;
 
 			GUILayout.BeginHorizontal();
 			if (asset.Obj != null)
