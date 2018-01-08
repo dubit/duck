@@ -27,7 +27,7 @@ namespace DUCK.Utils.Editor.Tests
 			var obj = new GameObject();
 			var behaviour = obj.AddComponent<TestBehaviour>();
 
-			Broadcaster.BroadcastTo<IEventHandler>(obj, testBehaviour => testBehaviour.HandleTheEvent());
+			Broadcaster.BroadcastTo<IEventHandler>(obj, o => o.HandleTheEvent());
 
 			Assert.IsTrue(behaviour.WasCalled);
 
@@ -41,7 +41,7 @@ namespace DUCK.Utils.Editor.Tests
 			var behaviour = obj.AddComponent<TestBehaviour>();
 			var behaviour2 = obj.AddComponent<TestBehaviour>();
 
-			Broadcaster.BroadcastTo<IEventHandler>(obj, testBehaviour => testBehaviour.HandleTheEvent());
+			Broadcaster.BroadcastTo<IEventHandler>(obj, o => o.HandleTheEvent());
 
 			Assert.IsTrue(behaviour.WasCalled);
 			Assert.IsTrue(behaviour2.WasCalled);
@@ -57,7 +57,7 @@ namespace DUCK.Utils.Editor.Tests
 			child.transform.SetParent(obj.transform);
 			var behaviour = child.AddComponent<TestBehaviour>();
 
-			Broadcaster.BroadcastTo<IEventHandler>(obj, testBehaviour => testBehaviour.HandleTheEvent());
+			Broadcaster.BroadcastTo<IEventHandler>(obj, o => o.HandleTheEvent());
 
 			Assert.IsTrue(behaviour.WasCalled);
 
@@ -72,7 +72,7 @@ namespace DUCK.Utils.Editor.Tests
 			child.transform.SetParent(obj.transform);
 			var behaviour = child.AddComponent<TestBehaviour>();
 
-			Broadcaster.BroadcastTo<IEventHandler>(obj, testBehaviour => testBehaviour.HandleTheEvent(), false);
+			Broadcaster.BroadcastTo<IEventHandler>(obj, o => o.HandleTheEvent(), false);
 
 			Assert.IsFalse(behaviour.WasCalled);
 
