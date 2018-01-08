@@ -24,7 +24,7 @@ namespace DUCK.Utils
 		/// rotation and scale as before.</param>
 		/// <typeparam name="TComponent">The component to add to the child game object</typeparam>
 		/// <returns>The newly created component</returns>
-		public static TComponent AddChildObjectWithComponent<TComponent>(this GameObject obj, bool worldPositionStays = true)
+		public static TComponent AddChildWithComponent<TComponent>(this GameObject obj, bool worldPositionStays = true)
 			where TComponent : Component
 		{
 			var component = new GameObject(typeof(TComponent).Name).AddComponent<TComponent>();
@@ -33,7 +33,7 @@ namespace DUCK.Utils
 		}
 
 		/// <summary>
-		/// Instantiates a prefab and adds it as a child of this game object
+		/// Instantiates a prefab from resources and adds it as a child of this game object
 		/// </summary>
 		/// <param name="obj">The target game object</param>
 		/// <param name="path">The path of the resource to load</param>
@@ -42,7 +42,7 @@ namespace DUCK.Utils
 		/// rotation and scale as before.</param>
 		/// <typeparam name="TComponent">The type of component expected on the prefab and that will be returned</typeparam>
 		/// <returns>The TComponent found on the prefab</returns>
-		public static TComponent AddInstantiatedChild<TComponent>(this GameObject obj, string path,
+		public static TComponent AddResourceChild<TComponent>(this GameObject obj, string path,
 			bool worldPositionStays = true)
 			where TComponent : Component
 		{
