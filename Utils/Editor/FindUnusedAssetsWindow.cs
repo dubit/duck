@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,11 +11,19 @@ namespace DUCK.Utils.Editor
 {
 	public class FindUnusedAssetsWindow : EditorWindow
 	{
+		private const string EDITOR_PREF_SEEN_WARNING_ASSETS = "warningAssets";
+		private const string EDITOR_PREF_INCLUDE_VENDOR = "includeVendor";
+		private const string EDITOR_PREF_INCLUDE_PLUGINS = "includePlugins";
+		private const string EDITOR_PREF_INCLUDE_DUCK = "includeDuck";
+		private const string EDITOR_PREF_INCLUDE_IGNORED = "includeIgnored";
+
 		private class Asset
 		{
+			public string Extension { get; private set; }
 			public string Path { get; private set; }
 			public string Name { get; private set; }
 			public Object Obj { get; private set; }
+			public bool IsIgnored { get; set; }
 
 			public Asset(string path, Object obj)
 			{
@@ -24,29 +33,49 @@ namespace DUCK.Utils.Editor
 				{
 					Name = obj.name;
 				}
+				var indexOfPoint = path.LastIndexOf('.');
+				var length = path.Length - indexOfPoint;
+				if (indexOfPoint >= 0 && length >= 0)
+				{
+					Extension = path.Substring(indexOfPoint, length);
+				}
+				else
+				{
+					Extension = "Unknown";
+				}
 			}
 		}
 
-		private const float WIDTH = 420;
+		private static bool seenWarningAssets;
 		private static bool includeVendor;
 		private static bool includePlugins;
 		private static bool includeDuck;
+		private static bool includeIgnored;
 		private static bool hasEditorLagBeenFound;
+		private static Dictionary<string, List<Asset>> assetsByExtension;
 		private static Asset[] unusedAssets;
 		private static Vector2 scrollPosition;
 		private static string helpMessage;
 		private static FindUnusedAssetsWindow window;
+		private static int gridSelectionIndex;
+		private static string[] gridSelectionButtonNames;
+		private static string searchValue;
 
 		[MenuItem("DUCK/Find Unused Assets")]
 		private static void Init()
 		{
 			window = (FindUnusedAssetsWindow) GetWindow(typeof(FindUnusedAssetsWindow));
 			window.Show();
-			window.maxSize = new Vector2(WIDTH, 1080);
-			window.minSize = new Vector2(100, WIDTH);
 			window.titleContent = new GUIContent("Find Unused Assets");
-
+			LoadFilters();
 			hasEditorLagBeenFound = true;
+		}
+
+		[DidReloadScripts]
+		private static void ReloadWindow()
+		{
+			LoadFilters();
+			Search();
 		}
 
 		private static void Search()
@@ -56,6 +85,23 @@ namespace DUCK.Utils.Editor
 			if (usedAssets != null)
 			{
 				unusedAssets = FindUnusedObjects(FindAllProjectAssets(), usedAssets).OrderBy(a => a.Obj != null).ToArray();
+				assetsByExtension = new Dictionary<string, List<Asset>>();
+				unusedAssets.ForEach(a =>
+				{
+					a.IsIgnored = IsAssetIgnored(a);
+					if (!assetsByExtension.ContainsKey(a.Extension))
+					{
+						assetsByExtension[a.Extension] = new List<Asset>();
+					}
+					assetsByExtension[a.Extension].Add(a);
+				});
+				gridSelectionButtonNames = new string[assetsByExtension.Keys.Count + 1];
+				gridSelectionButtonNames[0] = string.Format("({0}) {1}", unusedAssets.Length, "All");
+				for (var i = 0; i < assetsByExtension.Count; i++)
+				{
+					var element = assetsByExtension.ElementAt(i);
+					gridSelectionButtonNames[i + 1] = string.Format("({0}) {1}", element.Value.Count, element.Key);
+				}
 				hasEditorLagBeenFound = true;
 			}
 			else
@@ -64,64 +110,166 @@ namespace DUCK.Utils.Editor
 			}
 		}
 
+		private static void LoadFilters()
+		{
+			includeVendor = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_VENDOR);
+			includePlugins = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_PLUGINS);
+			includeDuck = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_DUCK);
+			includeIgnored = EditorPrefs.GetBool(EDITOR_PREF_INCLUDE_IGNORED);
+			seenWarningAssets = EditorPrefs.GetBool(EDITOR_PREF_SEEN_WARNING_ASSETS);
+		}
+
+		private static void SaveFilters()
+		{
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_VENDOR, includeVendor);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_PLUGINS, includePlugins);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_DUCK, includeDuck);
+			EditorPrefs.SetBool(EDITOR_PREF_INCLUDE_IGNORED, includeIgnored);
+		}
+
 		private void OnGUI()
 		{
+			DrawNotifications();
 			EditorGUILayout.HelpBox("Does not include Scenes or Meta data.", MessageType.Info);
 			GUILayout.BeginHorizontal();
 			includeDuck = GUILayout.Toggle(includeDuck, "Include DUCK");
 			includePlugins = GUILayout.Toggle(includePlugins, "Include Plugins");
 			includeVendor = GUILayout.Toggle(includeVendor, "Include Vendor");
+			includeIgnored = GUILayout.Toggle(includeIgnored, "Include Ignored");
+
 			if (GUILayout.Button("Search"))
 			{
 				Search();
+				SaveFilters();
 			}
 			GUILayout.EndHorizontal();
 
 			if (!hasEditorLagBeenFound)
 			{
-				EditorGUILayout.HelpBox("Could not find Used Assets list in the Editor Log! - You need to build your project before doing this!", MessageType.Warning);
-				EditorGUILayout.HelpBox("If this problem persists then perhaps there is a Unity version mismatch?", MessageType.Warning);
+				EditorGUILayout.HelpBox(
+					"Could not find Used Assets list in the Editor Log! - You need to build your project before doing this!",
+					MessageType.Warning);
+				EditorGUILayout.HelpBox("If this problem persists then perhaps there is a Unity version mismatch?",
+					MessageType.Warning);
 			}
 			else if (unusedAssets != null)
 			{
-				GUILayout.Label(string.Format("Found {0} unused assets!", unusedAssets.Length), EditorStyles.boldLabel);
-				var scrollViewHeight = EditorGUIUtility.singleLineHeight * unusedAssets.Length;
-				var scrollViewPositionY = EditorGUIUtility.singleLineHeight * 6;
-				var scrollViewPosition = new Rect(0, scrollViewPositionY, WIDTH, window.position.height - scrollViewPositionY);
-				var scrollView = new Rect(0, 0, WIDTH - 20, scrollViewHeight);
-				scrollPosition = GUI.BeginScrollView(scrollViewPosition, scrollPosition, scrollView, false, true);
-				for (var i = 0; i < unusedAssets.Length; i++)
+				// Draw total unused assets found.
+				GUILayout.Label(string.Format("Found a total of {0} unused assets!", unusedAssets.Length), EditorStyles.boldLabel);
+				// Draw Extension Tabs
+				DrawExtensionTabs();
+				var extensionIndex = gridSelectionIndex - 1;
+				extensionIndex = Mathf.Clamp(extensionIndex, -1, assetsByExtension.Count - 1);
+				var extension = extensionIndex >= 0 ? assetsByExtension.ElementAt(extensionIndex).Key : string.Empty;
+				gridSelectionIndex = extensionIndex + 1;
+				var assetsListToShow = string.IsNullOrEmpty(extension) ? unusedAssets : assetsByExtension[extension].ToArray();
+				// Search bar
+				DrawSearchBar();
+				// Seperator
+				GUILayout.Box(string.Empty, GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
+				// Draw assets in a scroll view
+				scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+				foreach (var asset in assetsListToShow)
 				{
-					DrawAsset(unusedAssets[i], i);
+					DrawAsset(asset);
 				}
-				GUI.EndScrollView();
+				GUILayout.EndScrollView();
 			}
 		}
 
-		private static void DrawAsset(Asset asset, int index)
+		private static void DrawNotifications()
 		{
-			if (asset != null)
+			if (!seenWarningAssets)
 			{
-				var positionY = EditorGUIUtility.singleLineHeight * index;
 				GUILayout.BeginHorizontal();
-				if (asset.Obj != null)
+				EditorGUILayout.HelpBox(
+					"Assets that are not directly referenced via an inspector but are used in a scene will not get used by the build but still might be required by the project as a template asset.",
+					MessageType.Warning);
+				if (GUILayout.Button("Confirm", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2)))
 				{
-					GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Name);
-					if (GUI.Button(new Rect(260, positionY, 70, EditorGUIUtility.singleLineHeight), "Select"))
-					{
-						Selection.activeObject = asset.Obj;
-					}
-					if (GUI.Button(new Rect(330, positionY, 70, EditorGUIUtility.singleLineHeight), "Delete"))
-					{
-						AssetDatabase.DeleteAsset(asset.Path);
-					}
-				}
-				else
-				{
-					GUI.Label(new Rect(10, positionY, 250, EditorGUIUtility.singleLineHeight), asset.Path);
+					EditorPrefs.SetBool(EDITOR_PREF_SEEN_WARNING_ASSETS, true);
+					seenWarningAssets = true;
 				}
 				GUILayout.EndHorizontal();
 			}
+		}
+
+		private static void DrawSearchBar()
+		{
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("Search", GUILayout.ExpandWidth(false));
+			searchValue = GUILayout.TextField(searchValue, GUILayout.ExpandWidth(true));
+			GUILayout.EndHorizontal();
+		}
+
+		private static void IgnoreAsset(Asset asset, bool ignore)
+		{
+			asset.IsIgnored = ignore;
+			EditorPrefs.SetBool(asset.Path, ignore);
+		}
+
+		private static bool IsAssetIgnored(Asset asset)
+		{
+			return EditorPrefs.HasKey(asset.Path) && EditorPrefs.GetBool(asset.Path);
+		}
+
+		private void DrawExtensionTabs()
+		{
+			gridSelectionIndex = GUILayout.SelectionGrid(gridSelectionIndex, gridSelectionButtonNames, 3);
+			GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+			GUILayout.EndHorizontal();
+		}
+
+		private static bool IsSearchMatch(Asset asset)
+		{
+			if (string.IsNullOrEmpty(asset.Path) || string.IsNullOrEmpty(searchValue))
+			{
+				return true;
+			}
+			if (asset.IsIgnored)
+			{
+				return false;
+			}
+			return asset.Path.IndexOf(searchValue, StringComparison.InvariantCultureIgnoreCase) >= 0;
+		}
+
+		private static void DrawAsset(Asset asset)
+		{
+			if (asset == null || !includeIgnored && asset.IsIgnored) return;
+			if (!IsSearchMatch(asset)) return;
+
+			GUILayout.BeginHorizontal();
+			if (asset.Obj != null)
+			{
+				var originalColor = GUI.color;
+				if (asset.IsIgnored)
+				{
+					GUI.color = Color.green;
+				}
+				GUILayout.Label(asset.Name);
+				GUI.color = originalColor;
+				GUILayout.FlexibleSpace();
+				if (GUILayout.Button(asset.IsIgnored ? "Unignore" : "Ignore"))
+				{
+					IgnoreAsset(asset, !asset.IsIgnored);
+				}
+				if (GUILayout.Button("Select"))
+				{
+					Selection.activeObject = asset.Obj;
+				}
+				if (GUILayout.Button("Delete"))
+				{
+					AssetDatabase.DeleteAsset(asset.Path);
+					Search();
+				}
+			}
+			else
+			{
+				GUILayout.Label(asset.Path);
+			}
+			GUILayout.EndHorizontal();
+			GUILayout.Space(0.1f);
+			GUILayout.Box(string.Empty, GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
 		}
 
 		private static IEnumerable<Asset> FindUnusedObjects(IEnumerable<string> assetList, ICollection<string> usedAssets)
@@ -165,6 +313,8 @@ namespace DUCK.Utils.Editor
 				if (!includeDuck)
 				{
 					isValid &= !asset.Contains("DUCK");
+					isValid &= !asset.Contains("duck");
+					isValid &= !asset.Contains("Duck");
 				}
 				if (!includePlugins)
 				{
@@ -174,6 +324,8 @@ namespace DUCK.Utils.Editor
 				{
 					isValid &= !asset.Contains("Vendor");
 				}
+
+				isValid &= !asset.Contains(".git");
 
 				if (isValid)
 				{
