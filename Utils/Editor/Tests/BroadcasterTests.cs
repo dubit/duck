@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace DUCK.Utils.Editor.Tests
 {
-	interface IEventHandler
+	private interface IEventHandler
 	{
 		void HandleTheEvent();
 	}
 
-	class TestBehaviour : MonoBehaviour, IEventHandler
+	private class TestBehaviour : MonoBehaviour, IEventHandler
 	{
 		public bool WasCalled { get; private set; }
 
