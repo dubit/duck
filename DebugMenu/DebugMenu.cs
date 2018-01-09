@@ -214,7 +214,7 @@ namespace DUCK.DebugMenu
 
 			if (buttons.ContainsKey(text))
 			{
-				Destroy(buttons[text]);
+				Destroy(buttons[text].gameObject);
 				buttons.Remove(text);
 			}
 		}
