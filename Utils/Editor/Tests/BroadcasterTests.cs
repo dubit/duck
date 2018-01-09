@@ -3,24 +3,24 @@ using UnityEngine;
 
 namespace DUCK.Utils.Editor.Tests
 {
-	private interface IEventHandler
-	{
-		void HandleTheEvent();
-	}
-
-	private class TestBehaviour : MonoBehaviour, IEventHandler
-	{
-		public bool WasCalled { get; private set; }
-
-		public void HandleTheEvent()
-		{
-			WasCalled = true;
-		}
-	}
-
 	[TestFixture]
 	public class BroadcasterTests
 	{
+		private interface IEventHandler
+		{
+			void HandleTheEvent();
+		}
+
+		private class TestBehaviour : MonoBehaviour, IEventHandler
+		{
+			public bool WasCalled { get; private set; }
+
+			public void HandleTheEvent()
+			{
+				WasCalled = true;
+			}
+		}
+
 		[Test]
 		public void ExpectBroadcasterToExecuteFunctionOnTargetObject()
 		{
