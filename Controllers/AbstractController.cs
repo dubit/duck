@@ -14,7 +14,7 @@ namespace DUCK.Controllers
 		public bool HasParent { get { return parentController != null; } }
 		public int ChildCount { get { return childControllers.Count; } }
 
-		protected bool IsApplicationQuitting { get; private set; }
+		protected static bool IsApplicationQuitting { get; private set; }
 
 		private bool isInitialized;
 		private bool isDestroyed;
