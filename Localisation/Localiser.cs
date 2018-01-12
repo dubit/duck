@@ -51,7 +51,6 @@ namespace DUCK.Localisation
 
 			foreach (var locTable in localisationTables)
 			{
-				var useThisTable = false;
 				var fullPath = Path.Combine(path, locTable.name);
 
 				allTablePaths.Add(locTable.name, fullPath);
@@ -77,27 +76,20 @@ namespace DUCK.Localisation
 
 						if (localeName == CurrentLocale.Name && Application.isPlaying)
 						{
-							useThisTable = true;
-							SwitchLanguage(localeName);
+							currentLocalisationTable = locTable;
+						}
+						else
+						{
+							Resources.UnloadAsset(locTable);
 						}
 					}
 				}
-
-				if (!useThisTable)
-				{
-					Resources.UnloadAsset(locTable);
-				}
 			}
 
-			if (CurrentLocale != null && Application.isPlaying)
+			if (currentLocalisationTable == null && Application.isPlaying)
 			{
-				Debug.Log(string.Format("Localiser initialised in {0}, current locale is: {1} ({2})", path, CurrentLocale.Name,
-					CurrentLocale.NativeName));
-				if (currentLocalisationTable == null)
-				{
-					Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
-					SwitchLanguage(defaultCulture);
-				}
+				Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
+				SwitchLanguage(defaultCulture);
 			}
 
 			return Initialised;
@@ -115,14 +107,14 @@ namespace DUCK.Localisation
 			}
 		}
 
-		public static void SwitchLanguage(string localeName)
+		public static void SwitchLanguage(string cultureName)
 		{
-			CurrentLocale = new CultureInfo(localeName);
-			currentLocalisationTable = LoadLocalisationTable(localeName);
+			CurrentLocale = new CultureInfo(cultureName);
+			currentLocalisationTable = LoadLocalisationTable(cultureName);
 
 			if (currentLocalisationTable == null)
 			{
-				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", localeName));
+				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", cultureName));
 			}
 
 			OnLocaleChanged.SafeInvoke();
@@ -178,13 +170,10 @@ namespace DUCK.Localisation
 
 		private static LocalisationTable LoadLocalisationTable(string localeName)
 		{
-			if (tablePathsByLocale.ContainsKey(localeName))
-			{
-				var loadPath = tablePathsByLocale[localeName];
-				return Resources.Load<LocalisationTable>(loadPath);
-			}
+			if (!tablePathsByLocale.ContainsKey(localeName)) return null;
 
-			return null;
+			var loadPath = tablePathsByLocale[localeName];
+			return Resources.Load<LocalisationTable>(loadPath);
 		}
 	}
 }
