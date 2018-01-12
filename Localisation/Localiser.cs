@@ -13,8 +13,6 @@ namespace DUCK.Localisation
 	/// </summary>
 	public static class Localiser
 	{
-		public const string DEFAULT_LOCALE = "en-US";
-
 		public static readonly CultureInfo[] SupportedLocales =
 		{
 			new CultureInfo("en-GB"),
@@ -32,6 +30,7 @@ namespace DUCK.Localisation
 		private static readonly Dictionary<string, string> tablePathsByLocale = new Dictionary<string, string>();
 		private static readonly Dictionary<string, string> allTablePaths = new Dictionary<string, string>();
 
+		private static string defaultCulture = "en-US";
 		private static LocalisationTable currentLocalisationTable;
 
 		public static event Action OnLocaleChanged;
@@ -39,17 +38,11 @@ namespace DUCK.Localisation
 		/// <summary>
 		/// Initialises the localisation system in a folder in Resources/ where the localisation table assets are found.
 		/// </summary>
-		/// <param name="path"></param>
-		public static bool Initialise(string path)
+		/// <param name="path">Filepath to the folder of localisation tables</param>
+		/// <param name="cultureName">Optional culture name to initialise with. Falls back to default culture if not passed in or invalid</param>
+		public static bool Initialise(string path, string cultureName = null)
 		{
-			if (CurrentLocale == null)
-			{
-#if UNITY_WSA
-				CurrentLocale = CultureInfo.CurrentCulture;
-#else
-				CurrentLocale = CultureInfo.InstalledUICulture;
-#endif
-			}
+			CurrentLocale = TryGetCultureInfo(cultureName);
 
 			tablePathsByLocale.Clear();
 			allTablePaths.Clear();
@@ -103,11 +96,23 @@ namespace DUCK.Localisation
 				if (currentLocalisationTable == null)
 				{
 					Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
-					SwitchLanguage(DEFAULT_LOCALE);
+					SwitchLanguage(defaultCulture);
 				}
 			}
 
 			return Initialised;
+		}
+
+		public static void SetDefaultCulture(string defaultCultureName)
+		{
+			if (TryGetCultureInfo(defaultCultureName).Name == defaultCultureName)
+			{
+				defaultCulture = defaultCultureName;
+			}
+			else
+			{
+				Debug.LogError("Invalid culture name: " + defaultCultureName);
+			}
 		}
 
 		public static void SwitchLanguage(string localeName)
@@ -146,6 +151,29 @@ namespace DUCK.Localisation
 		public static Dictionary<string, string> GetTablePaths()
 		{
 			return allTablePaths;
+		}
+
+		/// <returns>Returns the correct CultureInfo if name is valid, otherwise returns CultureInfo(defaultCulture)</returns>
+		private static CultureInfo TryGetCultureInfo(string cultureName)
+		{
+			if (string.IsNullOrEmpty(cultureName))
+			{
+				cultureName = defaultCulture;
+			}
+
+			CultureInfo cultureInfo = null;
+
+			try
+			{
+				cultureInfo = new CultureInfo(cultureName);
+			}
+			catch (ArgumentException)
+			{
+				Debug.LogError("Invalid culture name: " + cultureName);
+				cultureInfo = new CultureInfo(defaultCulture);
+			}
+
+			return cultureInfo;
 		}
 
 		private static LocalisationTable LoadLocalisationTable(string localeName)
