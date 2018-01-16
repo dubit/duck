@@ -49,6 +49,9 @@ namespace DUCK.DebugMenu
 
 		private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
 
+		public event Action OnShow;
+		public event Action OnHide;
+
 		private void Awake()
 		{
 			if (instance != null) throw new Exception("Cannot have more than one Instance of DebugMenu active");
@@ -76,6 +79,11 @@ namespace DUCK.DebugMenu
 		public void Show()
 		{
 			rootObject.SetActive(true);
+
+			if (OnShow != null)
+			{
+				OnShow.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -84,6 +92,11 @@ namespace DUCK.DebugMenu
 		public void Hide()
 		{
 			rootObject.SetActive(false);
+
+			if (OnHide != null)
+			{
+				OnHide.Invoke();
+			}
 		}
 
 		/// <summary>
