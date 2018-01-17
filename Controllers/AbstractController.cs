@@ -14,6 +14,8 @@ namespace DUCK.Controllers
 		public bool HasParent { get { return parentController != null; } }
 		public int ChildCount { get { return childControllers.Count; } }
 
+		protected static bool IsApplicationQuitting { get; private set; }
+
 		private bool isInitialized;
 		private bool isDestroyed;
 		private AbstractController parentController;
@@ -314,6 +316,16 @@ namespace DUCK.Controllers
 			}
 
 			childControllers.Remove(controller);
+		}
+
+		/// <summary>
+		/// Called on all MonoBehaviours before Destroy when the application is quitting.
+		/// Caching when the application is quitting is used to prevent race conditions on close,
+		/// e.g. unsubscribing from another object's event on Destroy when the other object may get destroyed first.
+		/// </summary>
+		private void OnApplicationQuit()
+		{
+			IsApplicationQuitting = true;
 		}
 
 		/// <summary>
