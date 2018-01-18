@@ -4,11 +4,11 @@ using UnityEngine;
 namespace DUCK.Tween.Serialization
 {
 	[CreateAssetMenu(menuName = "Tween Config (Fancy™)", order = 230)]
-	public class TweenConfigScriptableObject : ScriptableObject
+	public class TweenConfig : ScriptableObject
 	{
 		[SerializeField]
-		private TweenConfig config = new TweenConfig();
-		public TweenConfig Config
+		private ObjectCreationConfig config = new ObjectCreationConfig();
+		public ObjectCreationConfig Config
 		{
 			get { return config; }
 			set { config = value; }

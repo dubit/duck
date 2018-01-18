@@ -1,11 +1,10 @@
 ﻿using System;
-using DUCK.Serialization;
 using UnityEngine;
 
 namespace DUCK.Serialization
 {
 	[Serializable]
-	public class TweenConfig
+	public class ObjectCreationConfig
 	{
 		[SerializeField]
 		private string creatorFunctionKey;

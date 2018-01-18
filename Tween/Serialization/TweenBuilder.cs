@@ -7,7 +7,9 @@ namespace DUCK.Tween.Serialization
 {
 	public class TweenBuilder : MonoBehaviour
 	{
-		private const string NULL_COMPONENT_ERROR = "Cannot build tween for {0}. Argument {1} ({2}) was not serialized and could not find the component on the TweenBuilder";
+		private const string NULL_COMPONENT_ERROR =
+				"Cannot build tween for {0}. Argument {1} ({2}) was not serialized and could not find the component on the TweenBuilder"
+			;
 
 		[SerializeField]
 		private bool playOnStart;
@@ -22,14 +24,14 @@ namespace DUCK.Tween.Serialization
 		private bool useReferencedConfig;
 
 		[SerializeField]
-		private TweenConfigScriptableObject tweenConfigScriptableObject;
+		private TweenConfig tweenConfig;
 
 		[SerializeField]
-		private TweenConfig tweenConfig = new TweenConfig();
-		public TweenConfig TweenConfig
+		private ObjectCreationConfig objectCreationConfig = new ObjectCreationConfig();
+		public ObjectCreationConfig ObjectCreationConfig
 		{
-			get { return tweenConfig; }
-			set { tweenConfig = value; }
+			get { return objectCreationConfig; }
+			set { objectCreationConfig = value; }
 		}
 
 		private void Start()
@@ -42,7 +44,7 @@ namespace DUCK.Tween.Serialization
 
 		public void Play()
 		{
-			var config = useReferencedConfig ? tweenConfigScriptableObject.Config : TweenConfig;
+			var config = useReferencedConfig ? tweenConfig.Config : ObjectCreationConfig;
 			var tween = BuildTween(config, gameObject);
 			if (tween != null)
 			{
@@ -82,22 +84,25 @@ namespace DUCK.Tween.Serialization
 			set { useReferencedConfig = value; }
 		}
 
-		public TweenConfigScriptableObject TweenConfigScriptableObject
+		public TweenConfig TweenConfig
 		{
-			get { return tweenConfigScriptableObject; }
-			set { tweenConfigScriptableObject = value; }
+			get { return tweenConfig; }
+			set { tweenConfig = value; }
 		}
 #endif
 
-		public static AbstractAnimation BuildTween(TweenConfig config, GameObject defaultTarget)
+		public static AbstractAnimation BuildTween(ObjectCreationConfig config, GameObject defaultTarget)
 		{
+			var creatorFunctions = TweenCreatorFunctions.Store;
+
 			var creatorFunctionKey = config.CreatorFunctionKey;
-			if (!TweenCreatorFunctionStore.Exists(creatorFunctionKey))
+			if (!creatorFunctions.Exists(creatorFunctionKey))
 			{
 				Debug.LogError("Cannot build tween: Creator function `" + creatorFunctionKey + "` could not be found!");
 				return null;
 			}
-			var creatorFunction = TweenCreatorFunctionStore.Get(creatorFunctionKey);
+
+			var creatorFunction = creatorFunctions[creatorFunctionKey];
 
 			// For any null args that are game objects or components, let's try to use this object
 			var args = config.Args.AllArgs.ToArray();
@@ -124,8 +129,7 @@ namespace DUCK.Tween.Serialization
 				}
 			}
 
-			var tween = creatorFunction.CreationMethod.Invoke(args);
-			return tween;
+			return creatorFunction.Invoke(args);
 		}
 	}
 }
