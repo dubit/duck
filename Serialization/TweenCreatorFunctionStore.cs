@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DUCK.Serialization;
+using DUCK.Tween;
 using DUCK.Tween.Easings;
 using DUCK.Tween.Extensions;
 using DUCK.Utils;
 
-namespace DUCK.Tween.Serialization
+namespace DUCK.Serialization
 {
 	/// <summary>
 	/// Holds info about functions that can be used to create tweens.

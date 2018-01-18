@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DUCK.Serialization;
 using UnityEngine;
 
 namespace DUCK.Tween.Serialization

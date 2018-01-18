@@ -2,14 +2,14 @@
 using DUCK.Serialization;
 using UnityEngine;
 
-namespace DUCK.Tween.Serialization
+namespace DUCK.Serialization
 {
 	[Serializable]
 	public class TweenConfig
 	{
 		[SerializeField]
 		private string creatorFunctionKey;
-		
+
 		[SerializeField]
 		private ArgsList args = new ArgsList();
 

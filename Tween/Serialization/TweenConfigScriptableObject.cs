@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DUCK.Serialization;
+using UnityEngine;
 
 namespace DUCK.Tween.Serialization
 {
