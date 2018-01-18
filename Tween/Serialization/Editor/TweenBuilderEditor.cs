@@ -33,7 +33,7 @@ namespace DUCK.Tween.Serialization.Editor
 			}
 			else
 			{
-				TweenObjectCreationConfigEditor.Draw(tweenBuilder.ObjectCreationConfig);
+				TweenObjectCreationConfigEditor.Draw(tweenBuilder.ObjectCreationConfig, tweenBuilder);
 			}
 		}
 

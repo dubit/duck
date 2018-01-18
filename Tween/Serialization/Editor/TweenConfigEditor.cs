@@ -14,7 +14,7 @@ namespace DUCK.Tween.Serialization.Editor
 
 		public override void OnInspectorGUI()
 		{
-			TweenObjectCreationConfigEditor.Draw(tweenConfig.Config);
+			TweenObjectCreationConfigEditor.Draw(tweenConfig.Config, tweenConfig);
 		}
 	}
 }

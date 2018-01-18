@@ -6,6 +6,7 @@ using DUCK.Tween.Easings;
 using DUCK.Utils.Editor.EditorGUIHelpers;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DUCK.Tween.Serialization.Editor
 {
@@ -19,9 +20,9 @@ namespace DUCK.Tween.Serialization.Editor
 			configEditor.CustomArgDrawFuncs.Add(typeof(Func<float, float>), DrawEasingSelector);
 		}
 
-		public static void Draw(ObjectCreationConfig config)
+		public static void Draw(ObjectCreationConfig config, Object parentObject)
 		{
-			configEditor.Draw(config, TweenCreatorFunctions.Store);
+			configEditor.Draw(config, parentObject, TweenCreatorFunctions.Store);
 
 			ReportWarningForAnyNullObjectReferences(config.Args);
 		}

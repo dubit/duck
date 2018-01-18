@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DUCK.Utils.Editor.EditorGUIHelpers;
 using UnityEditor;
+using Object = UnityEngine.Object;
 
 namespace DUCK.Serialization.Editor
 {
@@ -14,7 +15,7 @@ namespace DUCK.Serialization.Editor
 			CustomArgDrawFuncs = new Dictionary<Type, ArgsListEditor.CustomArgDrawFunc>();
 		}
 
-		public void Draw(ObjectCreationConfig config, ICreatorFunctionStore creatorFunctions)
+		public void Draw(ObjectCreationConfig config, Object parentObject, ICreatorFunctionStore creatorFunctions)
 		{
 			ArgsList args = config.Args;
 
@@ -58,7 +59,7 @@ namespace DUCK.Serialization.Editor
 				}
 			}
 
-			ArgsListEditor.Draw(args, creatorFunction.ArgNames, customDrawFuncs);
+			ArgsListEditor.Draw(args, parentObject, creatorFunction.ArgNames, customDrawFuncs);
 		}
 	}
 }
