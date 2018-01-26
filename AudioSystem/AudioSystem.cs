@@ -237,6 +237,7 @@ namespace DUCK.AudioSystem
 			if (channel != null)
 			{
 				channel.Stop();
+				channel.time = 0f;
 			}
 
 			// Try to remove from the callback list (null is acceptable)
@@ -378,6 +379,7 @@ namespace DUCK.AudioSystem
 			var channel = new GameObject("Channel " + number).AddComponent<AudioSource>();
 			channel.outputAudioMixerGroup = defaultMixerGroup;
 			channel.transform.SetParent(transform);
+			channel.playOnAwake = false;
 
 			return channel;
 		}

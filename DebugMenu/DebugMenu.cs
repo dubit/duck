@@ -47,7 +47,10 @@ namespace DUCK.DebugMenu
 		[SerializeField]
 		private Text infoPageText;
 
-		private readonly Dictionary<string, GameObject> buttons = new Dictionary<string, GameObject>();
+		private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
+
+		public event Action OnShow;
+		public event Action OnHide;
 
 		private void Awake()
 		{
@@ -76,6 +79,11 @@ namespace DUCK.DebugMenu
 		public void Show()
 		{
 			rootObject.SetActive(true);
+
+			if (OnShow != null)
+			{
+				OnShow.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -84,6 +92,11 @@ namespace DUCK.DebugMenu
 		public void Hide()
 		{
 			rootObject.SetActive(false);
+
+			if (OnHide != null)
+			{
+				OnHide.Invoke();
+			}
 		}
 
 		/// <summary>
@@ -166,7 +179,41 @@ namespace DUCK.DebugMenu
 				});
 				actionButton.GetComponentInChildren<Text>().text = text;
 				actionButton.gameObject.SetActive(true);
-				buttons.Add(text, actionButton.gameObject);
+				buttons.Add(text, actionButton);
+			}
+		}
+
+		/// <summary>
+		/// Updates a button in the debug menu.
+		/// </summary>
+		/// <param name="oldText">The text of the button to update</param>
+		/// <param name="newText">The new text of the button</param>
+		/// <param name="newAction">An optional replacement of the button onClick</param>
+		/// <param name="hideDebugMenuOnClick">Optional bool if the debug menu should hide when the button is clicked</param>
+		public void UpdateButton(string oldText, string newText, Action newAction = null, bool hideDebugMenuOnClick = true)
+		{
+			if (string.IsNullOrEmpty(oldText)) throw new ArgumentNullException("oldText");
+			if (string.IsNullOrEmpty(newText)) throw new ArgumentNullException("newText");
+
+			Button button = null;
+			if (!buttons.TryGetValue(oldText, out button)) return;
+
+			buttons.Remove(oldText);
+			button.GetComponentInChildren<Text>().text = newText;
+			buttons.Add(newText, button);
+
+			if (newAction != null)
+			{
+				button.onClick.RemoveAllListeners();
+				button.onClick.AddListener(() =>
+				{
+					newAction.Invoke();
+
+					if (hideDebugMenuOnClick)
+					{
+						Hide();
+					}
+				});
 			}
 		}
 
@@ -180,7 +227,7 @@ namespace DUCK.DebugMenu
 
 			if (buttons.ContainsKey(text))
 			{
-				Destroy(buttons[text]);
+				Destroy(buttons[text].gameObject);
 				buttons.Remove(text);
 			}
 		}

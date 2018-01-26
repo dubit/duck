@@ -26,6 +26,9 @@ namespace DUCK.Utils
 		[SerializeField]
 		private T prefab;
 
+		[SerializeField]
+		private bool instantiateOnAwake = true;
+
 #if UNITY_EDITOR
 		protected Transform editorPrefab;
 #endif
@@ -37,11 +40,23 @@ namespace DUCK.Utils
 			// If the application is running then create the real instance of the prefab
 			if (!Application.isPlaying) return;
 
+			if (instantiateOnAwake)
+			{
+				Instantiate();
+			}
+		}
+
+		public bool Instantiate()
+		{
+			if (InstantiatedPrefab != null) return false;
+
 			InstantiatedPrefab = Instantiator.Instantiate(prefab, transform.parent, false);
 			OnInstantiate();
 
 			// Safe invoke for any event listeners
 			OnInstantiated.SafeInvoke(InstantiatedPrefab);
+
+			return true;
 		}
 
 		protected virtual void OnInstantiate()

@@ -18,22 +18,18 @@ namespace DUCK.Tween
 
 		protected override void PlayQueuedAnimations()
 		{
-			if (Animations.Count > NumberOfAnimationsCompleted)
+			if (NumberOfAnimationsCompleted < Animations.Count)
 			{
 				var nextAnimation = Animations[NumberOfAnimationsCompleted];
 				if (nextAnimation.IsValid)
 				{
-					nextAnimation.Play(() =>
+					nextAnimation.Play(HandleCurrentAnimationCompleted, () =>
 					{
 						if (!nextAnimation.IsValid)
 						{
 							Animations.Remove(nextAnimation);
+							PlayQueuedAnimations();
 						}
-						else
-						{
-							NumberOfAnimationsCompleted++;
-						}
-						PlayQueuedAnimations();
 					});
 				}
 				else
@@ -42,10 +38,22 @@ namespace DUCK.Tween
 					PlayQueuedAnimations();
 				}
 			}
-			else
+			else if (NumberOfAnimationsCompleted == Animations.Count)
 			{
 				NotifyAnimationComplete();
 			}
+		}
+
+		private void HandleCurrentAnimationCompleted()
+		{
+			NumberOfAnimationsCompleted++;
+			PlayQueuedAnimations();
+		}
+
+		public override void Reverse()
+		{
+			base.Reverse();
+			NumberOfAnimationsCompleted = Animations.Count - 1 - NumberOfAnimationsCompleted;
 		}
 	}
 }

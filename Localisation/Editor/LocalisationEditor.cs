@@ -16,7 +16,7 @@ namespace DUCK.Localisation.Editor
 		public const int KEY_CRC_ENCODING_VERSION = 1;
 
 		private const string REPLACE_SUFFIX = ".old";
-		private const string CONFIG_FILENAME = "Scripts/LocalisationConfig.cs";
+		private const string CONFIG_FILENAME = "LocalisationConfig.cs";
 		private const string LOC_CLASS_NAME = "Loc";
 		private const string LOC_DATA_PATH = "Localisation";
 
@@ -108,12 +108,13 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.LabelField("Output filename:", CONFIG_FILENAME);
 			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_DATA_PATH + "/");
 
+			EditorGUILayout.LabelField("Template required to generate locale class");
 			EditorGUILayout.BeginHorizontal();
 			configTemplate =
 				(TextAsset)EditorGUILayout.ObjectField("Config template:", configTemplate, typeof(TextAsset), false);
 
 			EditorGUI.BeginDisabledGroup(configTemplate == null);
-			if (GUILayout.Button("Generate"))
+			if (GUILayout.Button("Generate Locale Class"))
 			{
 				GenerateLocalisationConfig();
 			}
@@ -160,10 +161,9 @@ namespace DUCK.Localisation.Editor
 			}
 
 			var i = 0;
-			var enumerator = tablePaths.GetEnumerator();
-			for (var e = enumerator; enumerator.MoveNext();)
+			foreach (var tablePath in tablePaths)
 			{
-				var locTable = Resources.Load<LocalisationTable>(e.Current.Value);
+				var locTable = Resources.Load<LocalisationTable>(tablePath.Value);
 				if (locTable != null)
 				{
 					metaData[i].missingValues = LocalisationTableEditor.FindEmptyValues(locTable, CurrentSchema, true);
@@ -173,7 +173,6 @@ namespace DUCK.Localisation.Editor
 				}
 				i++;
 			}
-			enumerator.Dispose();
 		}
 
 		private void DrawLocalisationTables()
@@ -196,12 +195,11 @@ namespace DUCK.Localisation.Editor
 
 				EditorGUI.indentLevel++;
 				var i = 0;
-				var enumerator = tablePaths.GetEnumerator();
-				for (var e = enumerator; enumerator.MoveNext();)
+				foreach (var tablePath in tablePaths)
 				{
 					EditorGUILayout.BeginHorizontal();
 					tableFoldouts[i] = EditorGUILayout.Foldout(tableFoldouts[i],
-						string.Format("{0}\tResources/{1}.asset", e.Current.Key, e.Current.Value));
+						string.Format("{0}\tResources/{1}.asset", tablePath.Key, tablePath.Value));
 					if (metaData[i].HasProblem)
 					{
 						EditorGUILayout.LabelField("✕", errorIconStyle, GUILayout.MaxWidth(40f));
@@ -231,7 +229,7 @@ namespace DUCK.Localisation.Editor
 							wrongKeyEncoding ? errorLabelStyle : okLabelStyle, GUILayout.MaxWidth(160f));
 						if (GUILayout.Button("Select (fix problem)", GUILayout.MaxWidth(160f)))
 						{
-							var assetPath = "Assets/Resources/" + e.Current.Value + ".asset";
+							var assetPath = "Assets/Resources/" + tablePath.Value + ".asset";
 							Selection.activeObject = AssetDatabase.LoadAssetAtPath<LocalisationTable>(assetPath);
 						}
 						EditorGUILayout.EndHorizontal();
@@ -244,7 +242,7 @@ namespace DUCK.Localisation.Editor
 							missingValues > 0 ? errorLabelStyle : okLabelStyle, GUILayout.MaxWidth(160f));
 						if (GUILayout.Button("Export missing values", GUILayout.MaxWidth(160f)))
 						{
-							var locTable = Resources.Load<LocalisationTable>(e.Current.Value);
+							var locTable = Resources.Load<LocalisationTable>(tablePath.Value);
 							if (locTable != null)
 							{
 								LocalisationTableEditor.ExportEmptyValues(locTable, CurrentSchema);
@@ -252,7 +250,7 @@ namespace DUCK.Localisation.Editor
 							}
 							else
 							{
-								Debug.LogError(string.Format("Could not load table: Resources/{0}.asset", e.Current.Value));
+								Debug.LogError(string.Format("Could not load table: Resources/{0}.asset", tablePath.Value));
 							}
 						}
 						EditorGUILayout.EndHorizontal();
@@ -260,7 +258,6 @@ namespace DUCK.Localisation.Editor
 					}
 					i++;
 				}
-				enumerator.Dispose();
 				EditorGUI.indentLevel--;
 			}
 			EditorGUI.EndDisabledGroup();
@@ -325,12 +322,23 @@ namespace DUCK.Localisation.Editor
 			File.WriteAllText(filePath, outputText);
 
 			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
 
 			Debug.Log(string.Format("Successfully generated {0} localisation keys.", totalKeys));
 		}
 
 		public void GenerateLocalisationTable()
 		{
+			if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+			{
+				AssetDatabase.CreateFolder("Assets", "Resources");
+			}
+
+			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_DATA_PATH))
+			{
+				AssetDatabase.CreateFolder("Assets/Resources", LOC_DATA_PATH);
+			}
+
 			ScriptableObjectUtility.CreateAsset<LocalisationTable>("Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset");
 		}
 

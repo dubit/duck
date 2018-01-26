@@ -110,5 +110,15 @@ namespace DUCK.Utils
 		{
 			return new Vector3(NormalizeAngle180(angles.x), NormalizeAngle180(angles.y), NormalizeAngle180(angles.z));
 		}
+
+		/// <summary>
+		/// Converts Gyroscope Attitude into Unity Rotation
+		/// </summary>
+		/// <param name="attitude">The Gyroscope Attitude</param>
+		/// <returns>Quaternion in Unity Rotation</returns>
+		public static Quaternion GyroToUnityRotation(Quaternion attitude)
+		{
+			return new Quaternion(attitude.x, attitude.y, -attitude.z, -attitude.w);
+		}
 	}
 }

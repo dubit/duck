@@ -13,8 +13,6 @@ namespace DUCK.Localisation
 	/// </summary>
 	public static class Localiser
 	{
-		public const string DEFAULT_LOCALE = "en-US";
-
 		public static readonly CultureInfo[] SupportedLocales =
 		{
 			new CultureInfo("en-GB"),
@@ -32,6 +30,7 @@ namespace DUCK.Localisation
 		private static readonly Dictionary<string, string> tablePathsByLocale = new Dictionary<string, string>();
 		private static readonly Dictionary<string, string> allTablePaths = new Dictionary<string, string>();
 
+		private static string defaultCulture = "en-US";
 		private static LocalisationTable currentLocalisationTable;
 
 		public static event Action OnLocaleChanged;
@@ -39,17 +38,11 @@ namespace DUCK.Localisation
 		/// <summary>
 		/// Initialises the localisation system in a folder in Resources/ where the localisation table assets are found.
 		/// </summary>
-		/// <param name="path"></param>
-		public static bool Initialise(string path)
+		/// <param name="path">Filepath to the folder of localisation tables</param>
+		/// <param name="cultureName">Optional culture name to initialise with. Falls back to default culture if not passed in or invalid</param>
+		public static bool Initialise(string path, string cultureName = null)
 		{
-			if (CurrentLocale == null)
-			{
-#if UNITY_WSA
-				CurrentLocale = CultureInfo.CurrentCulture;
-#else
-				CurrentLocale = CultureInfo.InstalledUICulture;
-#endif
-			}
+			CurrentLocale = TryGetCultureInfo(cultureName);
 
 			tablePathsByLocale.Clear();
 			allTablePaths.Clear();
@@ -58,7 +51,6 @@ namespace DUCK.Localisation
 
 			foreach (var locTable in localisationTables)
 			{
-				var useThisTable = false;
 				var fullPath = Path.Combine(path, locTable.name);
 
 				allTablePaths.Add(locTable.name, fullPath);
@@ -84,40 +76,45 @@ namespace DUCK.Localisation
 
 						if (localeName == CurrentLocale.Name && Application.isPlaying)
 						{
-							useThisTable = true;
-							SwitchLanguage(localeName);
+							currentLocalisationTable = locTable;
+						}
+						else
+						{
+							Resources.UnloadAsset(locTable);
 						}
 					}
 				}
-
-				if (!useThisTable)
-				{
-					Resources.UnloadAsset(locTable);
-				}
 			}
 
-			if (CurrentLocale != null && Application.isPlaying)
+			if (currentLocalisationTable == null && Application.isPlaying)
 			{
-				Debug.Log(string.Format("Localiser initialised in {0}, current locale is: {1} ({2})", path, CurrentLocale.Name,
-					CurrentLocale.NativeName));
-				if (currentLocalisationTable == null)
-				{
-					Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
-					SwitchLanguage(DEFAULT_LOCALE);
-				}
+				Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
+				SwitchLanguage(defaultCulture);
 			}
 
 			return Initialised;
 		}
 
-		public static void SwitchLanguage(string localeName)
+		public static void SetDefaultCulture(string defaultCultureName)
 		{
-			CurrentLocale = new CultureInfo(localeName);
-			currentLocalisationTable = LoadLocalisationTable(localeName);
+			if (TryGetCultureInfo(defaultCultureName).Name == defaultCultureName)
+			{
+				defaultCulture = defaultCultureName;
+			}
+			else
+			{
+				Debug.LogError("Invalid culture name: " + defaultCultureName);
+			}
+		}
+
+		public static void SwitchLanguage(string cultureName)
+		{
+			CurrentLocale = new CultureInfo(cultureName);
+			currentLocalisationTable = LoadLocalisationTable(cultureName);
 
 			if (currentLocalisationTable == null)
 			{
-				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", localeName));
+				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", cultureName));
 			}
 
 			OnLocaleChanged.SafeInvoke();
@@ -148,15 +145,35 @@ namespace DUCK.Localisation
 			return allTablePaths;
 		}
 
-		private static LocalisationTable LoadLocalisationTable(string localeName)
+		/// <returns>Returns the correct CultureInfo if name is valid, otherwise returns CultureInfo(defaultCulture)</returns>
+		private static CultureInfo TryGetCultureInfo(string cultureName)
 		{
-			if (tablePathsByLocale.ContainsKey(localeName))
+			if (string.IsNullOrEmpty(cultureName))
 			{
-				var loadPath = tablePathsByLocale[localeName];
-				return Resources.Load<LocalisationTable>(loadPath);
+				cultureName = defaultCulture;
 			}
 
-			return null;
+			CultureInfo cultureInfo = null;
+
+			try
+			{
+				cultureInfo = new CultureInfo(cultureName);
+			}
+			catch (ArgumentException)
+			{
+				Debug.LogError("Invalid culture name: " + cultureName);
+				cultureInfo = new CultureInfo(defaultCulture);
+			}
+
+			return cultureInfo;
+		}
+
+		private static LocalisationTable LoadLocalisationTable(string localeName)
+		{
+			if (!tablePathsByLocale.ContainsKey(localeName)) return null;
+
+			var loadPath = tablePathsByLocale[localeName];
+			return Resources.Load<LocalisationTable>(loadPath);
 		}
 	}
 }

@@ -40,7 +40,7 @@ namespace DUCK.Tween.Extensions
 
 		/// <summary>
 		/// Adds a ScaleAnimation to the collection that will scale to the given target scale, starting at the transform's current scale
-		/// The current scale will be the transform's position when the animation playback commences and not the scale at the time of the creation of the animation 
+		/// The current scale will be the transform's position when the animation playback commences and not the scale at the time of the creation of the animation
 		/// </summary>
 		/// <param name="animationCollection">The target animation collection</param>
 		/// <param name="transform">The transform that will be used in the ScaleAnimation</param>
@@ -55,7 +55,7 @@ namespace DUCK.Tween.Extensions
 
 		/// <summary>
 		/// Adds a ScaleAnimation to the collection that will scale to the given target scale, starting at the transform's current scale
-		/// The current scale will be the transform's position when the animation playback commences and not the scale at the time of the creation of the animation 
+		/// The current scale will be the transform's position when the animation playback commences and not the scale at the time of the creation of the animation
 		/// </summary>
 		/// <param name="animationCollection">The target animation collection</param>
 		/// <param name="transform">The transform that will be used in the ScaleAnimation</param>
@@ -80,7 +80,7 @@ namespace DUCK.Tween.Extensions
 		/// <returns>Returns this AnimationCollection to comply with fluent interface</returns>
 		public static AnimationCollection ScaleX(this AnimationCollection animationCollection, Transform transform, float from, float to, float duration = 1f, Func<float, float> easingFunction = null)
 		{
-			return animationCollection.Add(transform.ScaleX(duration, from, to, easingFunction));
+			return animationCollection.Add(transform.ScaleX(from, to, duration, easingFunction));
 		}
 
 		/// <summary>
