@@ -4,7 +4,7 @@ namespace DUCK.Utils
 {
 	public static class TextureUtils
 	{
-		public static Texture2D CombineTextures(Texture2D baseTexture, Texture2D addedTexture, bool additive = false, int xOffset = 0, int yOffset = 0)
+		public static Texture2D CombineTextures(Texture2D baseTexture, Texture2D addedTexture, int xOffset = 0, int yOffset = 0, bool additive = false)
 		{
 			var basePixels = baseTexture.GetPixels();
 			var addedPixels = addedTexture.GetPixels();
