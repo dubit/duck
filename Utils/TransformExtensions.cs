@@ -140,5 +140,15 @@ namespace DUCK.Utils
 		{
 			return Instantiator.InstantiateResource<TComponent>(path, transform, worldPositionStays);
 		}
+
+		/// <summary>
+		/// Take a snapshot of a transform in its current state in this frame.
+		/// </summary>
+		/// <param name="transform"></param>
+		/// <returns></returns>
+		public static TransformSnapshot Snapshot(this Transform transform)
+		{
+			return new TransformSnapshot(transform);
+		}
 	}
 }
