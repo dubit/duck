@@ -13,7 +13,7 @@ namespace DUCK.Utils
 		/// <param name="yOffset">Y offset (from bottom-left, upwards) of the added texture sub-area.</param>
 		/// <param name="additive">Whether to add the textures (true) or draw the addition over the base texture (false)</param>
 		/// <returns>The newly created Texture2D.</returns>
-		public static Texture2D CombineTextures(Texture2D baseTexture, Texture2D addedTexture, int xOffset = 0, int yOffset = 0, bool additive = false)
+		public static Texture2D AddTexture(this Texture2D baseTexture, Texture2D addedTexture, int xOffset = 0, int yOffset = 0, bool additive = false)
 		{
 			// Get the pixel (flattened) arrays of the base and overlay textures
 			var basePixels = baseTexture.GetPixels();
