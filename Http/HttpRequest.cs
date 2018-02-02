@@ -8,18 +8,28 @@ namespace DUCK.Http
 	{
 		public UnityWebRequest UnityWebRequest { get; private set; }
 
-		private readonly Dictionary<string, string> headers;
+		private Dictionary<string, string> headers;
 
 		public HttpRequest(UnityWebRequest unityWebRequest)
 		{
 			UnityWebRequest = unityWebRequest;
 
-			headers = Http.Instance.GetSuperHeaders();
+			SetDefaultHeaders();
 		}
 
 		public void SetHeader(string key, string value)
 		{
 			headers[key] = value;
+		}
+
+		public void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+		{
+			SetDefaultHeaders();
+
+			foreach (var kvp in headers)
+			{
+				SetHeader(kvp.Key, kvp.Value);
+			}
 		}
 
 		public bool RemoveHeader(string key)
@@ -35,6 +45,11 @@ namespace DUCK.Http
 			}
 
 			Http.Instance.Send(this, onSuccess, onError);
+		}
+
+		private void SetDefaultHeaders()
+		{
+			headers = Http.Instance.GetSuperHeaders();
 		}
 	}
 }
