@@ -10,11 +10,13 @@ namespace DUCK.Http
 
 		private Dictionary<string, string> headers;
 
-		public HttpRequest(UnityWebRequest unityWebRequest)
+		public HttpRequest(UnityWebRequest unityWebRequest, IEnumerable<KeyValuePair<string, string>> additionalHeaders = null)
 		{
 			UnityWebRequest = unityWebRequest;
 
-			SetDefaultHeaders();
+			headers = Http.Instance.GetSuperHeaders();
+
+			SetHeaders(additionalHeaders);
 		}
 
 		public void SetHeader(string key, string value)
@@ -24,7 +26,7 @@ namespace DUCK.Http
 
 		public void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers)
 		{
-			SetDefaultHeaders();
+			if (headers == null) return;
 
 			foreach (var kvp in headers)
 			{
@@ -45,11 +47,6 @@ namespace DUCK.Http
 			}
 
 			Http.Instance.Send(this, onSuccess, onError);
-		}
-
-		private void SetDefaultHeaders()
-		{
-			headers = Http.Instance.GetSuperHeaders();
 		}
 	}
 }
