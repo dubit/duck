@@ -90,15 +90,15 @@ namespace DUCK.Prefs
 			{
 				EditorPrefs.SetString(key, (string)value);
 			}
-			if (type == typeof(bool))
+			else if (type == typeof(bool))
 			{
 				EditorPrefs.SetBool(key, (bool)value);
 			}
-			if (type == typeof(int))
+			else if (type == typeof(int))
 			{
 				 EditorPrefs.SetInt(key, (int)value);
 			}
-			if (type == typeof(float))
+			else if (type == typeof(float))
 			{
 				 EditorPrefs.SetFloat(key, (float)value);
 			}
