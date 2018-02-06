@@ -35,5 +35,24 @@ namespace DUCK.Http
 		{
 			return PostAsJson(uri, JsonUtility.ToJson(payload));
 		}
+
+		/// <summary>
+		/// Create a HttpRequest configured to send raw bytes to a server via HTTP POST.
+		/// </summary>
+		/// <param name="uri">The target URI to which bytes will be transmitted.</param>
+		/// <param name="bytes">Byte array data.</param>
+		/// <returns>A HttpRequest configured to send raw bytes to a server via POST.</returns>
+		public static HttpRequest PostAsBytes(string uri, byte[] bytes, string contentType)
+		{
+			var unityWebRequest = new UnityWebRequest(uri, UnityWebRequest.kHttpVerbPOST)
+			{
+				uploadHandler = new UploadHandlerRaw(bytes)
+				{
+					contentType = contentType
+				},
+				downloadHandler = new DownloadHandlerBuffer()
+			};
+			return new HttpRequest(unityWebRequest);
+		}
 	}
 }
