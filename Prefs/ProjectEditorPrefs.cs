@@ -9,7 +9,7 @@ namespace DUCK.Prefs
 	public static class ProjectEditorPrefs
 	{
 		public static Dictionary<string, Type> StoredPrefs { get; private set; }
-		private readonly static string projectName;
+		private static readonly string projectName;
 
 		static ProjectEditorPrefs()
 		{

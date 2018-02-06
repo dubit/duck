@@ -21,9 +21,10 @@ namespace DUCK.Editor
 		private void OnGUI()
 		{
 			var types = ProjectEditorPrefs.StoredPrefs;
-			foreach (var key in types.Keys.ToList())
+			foreach (var pair in types.ToList())
 			{
-				var type = types[key];
+				var key = pair.Key;
+				var type = pair.Value;
 				var value = ProjectEditorPrefs.Get(key);
 
 				EditorGUI.BeginChangeCheck();
