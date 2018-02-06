@@ -8,7 +8,7 @@ namespace DUCK.Http
 	{
 		public UnityWebRequest UnityWebRequest { get; private set; }
 
-		private Dictionary<string, string> headers;
+		private readonly Dictionary<string, string> headers;
 
 		public HttpRequest(UnityWebRequest unityWebRequest, IEnumerable<KeyValuePair<string, string>> additionalHeaders = null)
 		{
