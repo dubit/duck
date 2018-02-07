@@ -17,10 +17,10 @@ namespace DUCK.Utils
 		///   next();
 		/// });
 		/// </summary>
-		/// <param name="doWork">The task function</param>
-		public void Add(Action<Action> doWork)
+		/// <param name="taskFunction">The task function</param>
+		public void Add(Action<Action> taskFunction)
 		{
-			tasks.Add(doWork);
+			tasks.Add(taskFunction);
 		}
 
 		/// <summary>
@@ -28,12 +28,12 @@ namespace DUCK.Utils
 		/// This is a simple function that is executed as part of async task list.
 		/// After the function has been called, the next task will begin instantly
 		/// </summary>
-		/// <param name="doWork">The task function</param>
-		public void Add(Action doWork)
+		/// <param name="taskFunction">The task function</param>
+		public void Add(Action taskFunction)
 		{
 			Add(next =>
 			{
-				doWork();
+				taskFunction();
 				next();
 			});
 		}
