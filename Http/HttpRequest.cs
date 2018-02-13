@@ -14,7 +14,11 @@ namespace DUCK.Http
 		{
 			UnityWebRequest = unityWebRequest;
 
-			headers = Http.Instance.GetSuperHeaders();
+			headers = new Dictionary<string, string>();
+			foreach (var kvp in Http.Instance.GetSuperHeaders())
+			{
+				headers.Add(kvp.Key, kvp.Value);
+			}
 
 			SetHeaders(additionalHeaders);
 		}
