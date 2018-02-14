@@ -41,6 +41,7 @@ namespace DUCK.Http
 		/// </summary>
 		/// <param name="uri">The target URI to which bytes will be transmitted.</param>
 		/// <param name="bytes">Byte array data.</param>
+		/// <param name="contentType">String representing the MIME type of the data (e.g. image/jpeg).</param>
 		/// <returns>A HttpRequest configured to send raw bytes to a server via POST.</returns>
 		public static HttpRequest PostAsBytes(string uri, byte[] bytes, string contentType)
 		{
