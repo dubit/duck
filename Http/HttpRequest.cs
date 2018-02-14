@@ -10,13 +10,11 @@ namespace DUCK.Http
 
 		private readonly Dictionary<string, string> headers;
 
-		public HttpRequest(UnityWebRequest unityWebRequest, IEnumerable<KeyValuePair<string, string>> additionalHeaders = null)
+		public HttpRequest(UnityWebRequest unityWebRequest)
 		{
 			UnityWebRequest = unityWebRequest;
 
 			headers = Http.Instance.GetSuperHeaders();
-
-			SetHeaders(additionalHeaders);
 		}
 
 		public void SetHeader(string key, string value)
