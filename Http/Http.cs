@@ -53,10 +53,10 @@ namespace DUCK.Http
 		/// <summary>
 		/// Super headers are key value pairs that will be added to every subsequent HttpRequest.
 		/// </summary>
-		/// <returns>A dictionary of headers.</returns>
+		/// <returns>A dictionary of super-headers.</returns>
 		public Dictionary<string, string> GetSuperHeaders()
 		{
-			return superHeaders;
+			return new Dictionary<string, string>(superHeaders);
 		}
 
 		/// <summary>

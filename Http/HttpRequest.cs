@@ -22,6 +22,16 @@ namespace DUCK.Http
 			headers[key] = value;
 		}
 
+		public void SetHeaders(IEnumerable<KeyValuePair<string, string>> headers)
+		{
+			if (headers == null) return;
+
+			foreach (var kvp in headers)
+			{
+				SetHeader(kvp.Key, kvp.Value);
+			}
+		}
+
 		public bool RemoveHeader(string key)
 		{
 			return headers.Remove(key);
