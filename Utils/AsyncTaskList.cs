@@ -5,9 +5,8 @@ namespace DUCK.Utils
 {
 	public class AsyncTaskList
 	{
-		private readonly List<Action<Action>> tasks = new List<Action<Action>>();
-		private int currentTaskIndex;
-		private bool isRunning;
+		private readonly Queue<Action<Action>> tasks = new Queue<Action<Action>>();
+		private bool hasRunBeenCalled;
 
 		/// <summary>
 		/// Adds an async task to the task list. The Action provided takes another action called next.
@@ -21,7 +20,7 @@ namespace DUCK.Utils
 		/// <param name="taskFunction">The task function</param>
 		public void Add(Action<Action> taskFunction)
 		{
-			tasks.Add(taskFunction);
+			tasks.Enqueue(taskFunction);
 		}
 
 		/// <summary>
@@ -45,29 +44,28 @@ namespace DUCK.Utils
 		/// <param name="onComplete">Optional on complete callback</param>
 		public void Run(Action onComplete = null)
 		{
-			if (isRunning)
+			if (hasRunBeenCalled)
 			{
-				throw new Exception("Cannot run this AsyncTaskList as it's already running!");
+				throw new Exception("Cannot run more than once on an instance of AsyncTaskList");
 			}
 
-			isRunning = true;
-			currentTaskIndex = 0;
+			hasRunBeenCalled = true;
 			RunNextTask(onComplete);
 		}
 
 		private void RunNextTask(Action onComplete)
 		{
-			if (currentTaskIndex < tasks.Count)
+			if (tasks.Count > 0)
 			{
-				tasks[currentTaskIndex](() =>
+				var nextTask = tasks.Dequeue();
+
+				nextTask(() =>
 				{
-					currentTaskIndex++;
 					RunNextTask(onComplete);
 				});
 			}
 			else
 			{
-				isRunning = false;
 				if (onComplete != null)
 				{
 					onComplete();

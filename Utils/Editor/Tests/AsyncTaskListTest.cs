@@ -171,27 +171,5 @@ namespace DUCK.Utils.Editor.Tests
 				tasks.Run();
 			});
 		}
-
-		[Test]
-		public void ExpectNotToThrowWhenCallingRunTwiceIfTheTaskChainCompleted()
-		{
-			var tasks = new AsyncTaskList();
-
-			// add task 1 (async)
-			tasks.Add(next =>
-			{
-				// Do nothing here to leave this task list suspended
-				next();
-			});
-
-			// run the tasks.
-			tasks.Run();
-
-			// now it should throw as we attempt to run it again
-			Assert.DoesNotThrow(() =>
-			{
-				tasks.Run();
-			});
-		}
 	}
 }
