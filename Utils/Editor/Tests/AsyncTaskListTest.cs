@@ -130,7 +130,6 @@ namespace DUCK.Utils.Editor.Tests
 
 			var tasks = new AsyncTaskList();
 
-			// add task 1 (async)
 			tasks.Add(next =>
 			{
 				// Do some work, and when we have done then we will call next
@@ -156,7 +155,6 @@ namespace DUCK.Utils.Editor.Tests
 		{
 			var tasks = new AsyncTaskList();
 
-			// add task 1 (async)
 			tasks.Add(next =>
 			{
 				// Do nothing here to leave this task list suspended
