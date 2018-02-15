@@ -1,9 +1,9 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-#if UNITY_EDITOR
 namespace DUCK.Prefs
 {
 	public static class ProjectEditorPrefs
