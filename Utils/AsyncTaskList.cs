@@ -7,6 +7,7 @@ namespace DUCK.Utils
 	{
 		private readonly List<Action<Action>> tasks = new List<Action<Action>>();
 		private int currentTaskIndex;
+		private bool isRunning;
 
 		/// <summary>
 		/// Adds an async task to the task list. The Action provided takes another action called next.
@@ -44,6 +45,12 @@ namespace DUCK.Utils
 		/// <param name="onComplete">Optional on complete callback</param>
 		public void Run(Action onComplete = null)
 		{
+			if (isRunning)
+			{
+				throw new Exception("Cannot run this AsyncTaskList as it's already running!");
+			}
+
+			isRunning = true;
 			currentTaskIndex = 0;
 			RunNextTask(onComplete);
 		}
@@ -60,6 +67,7 @@ namespace DUCK.Utils
 			}
 			else
 			{
+				isRunning = false;
 				if (onComplete != null)
 				{
 					onComplete();

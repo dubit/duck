@@ -49,6 +49,9 @@ namespace DUCK.Utils.Editor.Tests
 				wasCalled = true;
 				next();
 			});
+
+			Assert.IsFalse(wasCalled);
+
 			tasks.Run();
 
 			Assert.IsTrue(wasCalled);
@@ -146,6 +149,49 @@ namespace DUCK.Utils.Editor.Tests
 			goToNextTask();
 
 			Assert.IsTrue(wasOnCompleteCalled);
+		}
+
+		[Test]
+		public void ExpectToThrowWhenCallingRunTwiceInParallel()
+		{
+			var tasks = new AsyncTaskList();
+
+			// add task 1 (async)
+			tasks.Add(next =>
+			{
+				// Do nothing here to leave this task list suspended
+			});
+
+			// run the tasks.
+			tasks.Run();
+
+			// now it should throw as we attempt to run it again
+			Assert.Throws<Exception>(() =>
+			{
+				tasks.Run();
+			});
+		}
+
+		[Test]
+		public void ExpectNotToThrowWhenCallingRunTwiceIfTheTaskChainCompleted()
+		{
+			var tasks = new AsyncTaskList();
+
+			// add task 1 (async)
+			tasks.Add(next =>
+			{
+				// Do nothing here to leave this task list suspended
+				next();
+			});
+
+			// run the tasks.
+			tasks.Run();
+
+			// now it should throw as we attempt to run it again
+			Assert.DoesNotThrow(() =>
+			{
+				tasks.Run();
+			});
 		}
 	}
 }
