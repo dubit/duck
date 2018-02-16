@@ -11,7 +11,7 @@ namespace DUCK.Utils
 	{
 		public abstract class Type
 		{
-			internal abstract void ValidateType(CSVDocument.CSVRecord.CSVField field);
+			internal abstract void ValidateField(CSVDocument.CSVRecord.CSVField field);
 		}
 
 		public abstract class CSVType<T> : Type
@@ -23,7 +23,7 @@ namespace DUCK.Utils
 				Parse = parseFunction;
 			}
 
-			internal override void ValidateType(CSVDocument.CSVRecord.CSVField field)
+			internal override void ValidateField(CSVDocument.CSVRecord.CSVField field)
 			{
 				try
 				{
@@ -230,7 +230,7 @@ namespace DUCK.Utils
 							var fieldType = format.GetType(fieldName);
 							var field = new CSVField(values[i].Trim(), fieldType);
 
-							fieldType.ValidateType(field);
+							fieldType.ValidateField(field);
 
 							data.Add(fieldName, field);
 						}
