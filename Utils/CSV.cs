@@ -238,7 +238,7 @@ namespace DUCK.Utils
 						{
 							var sb = new StringBuilder("");
 							foreach (var s in values) sb.Append(s + ",");
-							Debug.LogError("Failed to Validate field " + i + " of " + sb.ToString() + ": " + e.Message);
+							Debug.LogError("Failed to validate field " + i + " of " + sb.ToString() + ": " + e.Message);
 						}
 					}
 				}
