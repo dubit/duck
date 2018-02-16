@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -8,15 +9,30 @@ namespace DUCK.Utils
 {
 	public static class CSV
 	{
-		public abstract class Type { }
+		public abstract class Type
+		{
+			internal abstract void ValidateType(CSVDocument.CSVRecord.CSVField field);
+		}
 
-		public class CSVType<T> : Type
+		public abstract class CSVType<T> : Type
 		{
 			public Func<string, T> Parse { get; private set; }
 
 			public CSVType(Func<string, T> parseFunction)
 			{
 				Parse = parseFunction;
+			}
+
+			internal override void ValidateType(CSVDocument.CSVRecord.CSVField field)
+			{
+				try
+				{
+					field.GetValue<T>();
+				}
+				catch
+				{
+					throw new ArgumentException(string.Format("Data '{0}' cannot be parsed to type {1}", field, typeof(T)));
+				}
 			}
 		}
 
@@ -84,14 +100,12 @@ namespace DUCK.Utils
 
 		public class CSVFormat
 		{
-			private List<string> fieldNames;
-			private List<Type> types;
+			private Dictionary<string, Type> format;
 			private Type defaultType = new Types.String();
 
 			public CSVFormat(Dictionary<string, Type> format, Type defaultType = null)
 			{
-				fieldNames = new List<string>(format.Keys);
-				types = new List<Type>(format.Values);
+				this.format = format;
 
 				if (defaultType != null)
 				{
@@ -101,19 +115,19 @@ namespace DUCK.Utils
 
 			internal string GetFieldName(int index)
 			{
-				return (fieldNames[index]);
+				return (format.Keys.ToArray()[index]);
 			}
 
 			internal Type GetType(string fieldName)
 			{
-				return types[fieldNames.IndexOf(fieldName)];
+				return format[fieldName];
 			}
 
 			internal void ValidateHeader(string[] header, bool allowUnexpectedFields = false)
 			{
-				if (fieldNames == null || fieldNames.Count == 0) return;
+				if (format == null || format.Keys.Count == 0) return;
 
-				List<string> expectedFieldNames = new List<string>(fieldNames);
+				List<string> expectedFieldNames = new List<string>(format.Keys);
 
 				foreach (var textChunk in header)
 				{
@@ -123,7 +137,7 @@ namespace DUCK.Utils
 					if (!didFind)
 					{
 						// Field is known but wasn't remaining in the 'expected' - i.e. we've removed it before
-						if (fieldNames.Contains(fieldName))
+						if (format.ContainsKey(fieldName))
 						{
 							throw new Exception("Duplicate field: " + fieldName);
 						}
@@ -136,8 +150,7 @@ namespace DUCK.Utils
 							}
 							else
 							{
-								fieldNames.Add(fieldName.Trim());
-								types.Add(defaultType);
+								format.Add(fieldName.Trim(), defaultType);
 							}
 						}
 					}
@@ -166,10 +179,10 @@ namespace DUCK.Utils
 			{
 				internal class CSVField
 				{
-					private string data;
+					internal string data;
 					private Type type;
 
-					public T GetValue<T>()
+					internal T GetValue<T>()
 					{
 						return (type as CSVType<T>).Parse(data);
 					}
@@ -178,6 +191,11 @@ namespace DUCK.Utils
 					{
 						this.data = data;
 						this.type = type;
+					}
+
+					public override string ToString()
+					{
+						return data;
 					}
 				}
 
@@ -200,24 +218,27 @@ namespace DUCK.Utils
 					}
 				}
 
-				internal CSVRecord(string[] inputRecord, CSVFormat format)
+				internal CSVRecord(string[] values, CSVFormat format)
 				{
 					data = new Dictionary<string, CSVField>();
 
-					for (var i = 0; i < inputRecord.Length; i++)
+					for (var i = 0; i < values.Length; i++)
 					{
 						try
 						{
 							var fieldName = format.GetFieldName(i);
-							var field = new CSVField(inputRecord[i].Trim(), format.GetType(fieldName));
+							var fieldType = format.GetType(fieldName);
+							var field = new CSVField(values[i].Trim(), fieldType);
+
+							fieldType.ValidateType(field);
 
 							data.Add(fieldName, field);
 						}
-						catch
+						catch (Exception e)
 						{
 							var sb = new StringBuilder("");
-							foreach (var s in inputRecord) sb.Append(s + ",");
-							Debug.LogError("Record Failed to get field " + i + " of " + sb.ToString());
+							foreach (var s in values) sb.Append(s + ",");
+							Debug.LogError("Failed to Validate field " + i + " of " + sb.ToString() + ": " + e.Message);
 						}
 					}
 				}
