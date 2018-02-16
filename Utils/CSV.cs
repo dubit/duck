@@ -11,19 +11,19 @@ namespace DUCK.Utils
 	{
 		public abstract class Type
 		{
-			internal abstract void ValidateField(CSVDocument.CSVRecord.CSVField field);
+			internal abstract void ValidateField(Document.Record.Field field);
 		}
 
-		public abstract class CSVType<T> : Type
+		public abstract class Type<T> : Type
 		{
 			public Func<string, T> Parse { get; private set; }
 
-			public CSVType(Func<string, T> parseFunction)
+			public Type(Func<string, T> parseFunction)
 			{
 				Parse = parseFunction;
 			}
 
-			internal override void ValidateField(CSVDocument.CSVRecord.CSVField field)
+			internal override void ValidateField(Document.Record.Field field)
 			{
 				try
 				{
@@ -38,7 +38,7 @@ namespace DUCK.Utils
 
 		public static class Types
 		{
-			public class String : CSVType<string>
+			public class String : Type<string>
 			{
 				public String() : base(s => s) { }
 
@@ -49,7 +49,7 @@ namespace DUCK.Utils
 				}){}
 			}
 
-			public class Int : CSVType<int>
+			public class Int : Type<int>
 			{
 				public Int() : base(int.Parse) { }
 
@@ -62,12 +62,12 @@ namespace DUCK.Utils
 				}){}
 			}
 
-			public class Bool : CSVType<bool>
+			public class Bool : Type<bool>
 			{
 				public Bool() : base(bool.Parse) { }
 			}
 
-			public class Float : CSVType<float>
+			public class Float : Type<float>
 			{
 				public Float() : base(float.Parse) { }
 
@@ -80,7 +80,7 @@ namespace DUCK.Utils
 				}){ }
 			}
 
-			public class Enum<T> : CSVType<T>
+			public class Enum<T> : Type<T>
 				where T : struct, IConvertible
 			{
 				public Enum() : base
@@ -98,12 +98,12 @@ namespace DUCK.Utils
 			}
 		}
 
-		public class CSVFormat
+		public class Format
 		{
 			private Dictionary<string, Type> format;
 			private Type defaultType = new Types.String();
 
-			public CSVFormat(Dictionary<string, Type> format, Type defaultType = null)
+			public Format(Dictionary<string, Type> format, Type defaultType = null)
 			{
 				this.format = format;
 
@@ -173,21 +173,21 @@ namespace DUCK.Utils
 			}
 		}
 
-		public class CSVDocument
+		public class Document
 		{
-			public class CSVRecord
+			public class Record
 			{
-				internal class CSVField
+				internal class Field
 				{
 					internal string data;
 					private Type type;
 
 					internal T GetValue<T>()
 					{
-						return (type as CSVType<T>).Parse(data);
+						return (type as Type<T>).Parse(data);
 					}
 
-					internal CSVField(string data, Type type)
+					internal Field(string data, Type type)
 					{
 						this.data = data;
 						this.type = type;
@@ -199,9 +199,9 @@ namespace DUCK.Utils
 					}
 				}
 
-				private Dictionary<string, CSVField> data;
+				private Dictionary<string, Field> data;
 
-				public T GetFieldValue<T>(string fieldName, bool useDefault = false)
+				public T GetFieldValue<T>(string fieldName, bool useFallback = false)
 				{
 					try
 					{
@@ -209,7 +209,7 @@ namespace DUCK.Utils
 					}
 					catch (Exception e)
 					{
-						if (useDefault)
+						if (useFallback)
 						{
 							return default(T);
 						}
@@ -218,9 +218,9 @@ namespace DUCK.Utils
 					}
 				}
 
-				internal CSVRecord(string[] values, CSVFormat format)
+				internal Record(string[] values, Format format)
 				{
-					data = new Dictionary<string, CSVField>();
+					data = new Dictionary<string, Field>();
 
 					for (var i = 0; i < values.Length; i++)
 					{
@@ -228,7 +228,7 @@ namespace DUCK.Utils
 						{
 							var fieldName = format.GetFieldName(i);
 							var fieldType = format.GetType(fieldName);
-							var field = new CSVField(values[i].Trim(), fieldType);
+							var field = new Field(values[i].Trim(), fieldType);
 
 							fieldType.ValidateField(field);
 
@@ -244,26 +244,26 @@ namespace DUCK.Utils
 				}
 			}
 
-			public CSVRecord[] Records
+			public Record[] Records
 			{
 				get; private set;
 			}
 
-			public CSVDocument(string[] inputRecords, CSVFormat format)
+			public Document(string[] inputRecords, Format format)
 			{
 				var offset = (format != null ? 1 : 0);
 
-				Records = new CSVRecord[inputRecords.Length - offset];
+				Records = new Record[inputRecords.Length - offset];
 
 				for (var i = offset; i < inputRecords.Length; i++)
 				{
 					var inputRecord = inputRecords[i].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-					Records[i - offset] = new CSVRecord(inputRecord, format);
+					Records[i - offset] = new Record(inputRecord, format);
 				}
 			}
 		}
 
-		public static CSVDocument Parse(string rawInputData, CSVFormat format, bool allowUnexpectedFields = false)
+		public static Document Parse(string rawInputData, Format format, bool allowUnexpectedFields = false)
 		{
 			var inputRecords = rawInputData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			if (inputRecords.Length == 0) return null;
@@ -277,7 +277,7 @@ namespace DUCK.Utils
 				}
 			}
 
-			return new CSVDocument(inputRecords, format);
+			return new Document(inputRecords, format);
 		}
 	}
 }
