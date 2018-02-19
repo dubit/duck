@@ -14,13 +14,26 @@ namespace DUCK.Utils
 			internal abstract void ValidateField(Document.Record.Field field);
 		}
 
-		public abstract class Type<T> : Type
+		public class Type<T> : Type
 		{
 			public Func<string, T> Parse { get; private set; }
 
-			public Type(Func<string, T> parseFunction)
+			public Type(Func<string, T> parseFunction, bool allowEmptyValues = false)
 			{
-				Parse = parseFunction;
+				Parse = (s) =>
+				{
+					if (string.IsNullOrEmpty(s))
+					{
+						if (allowEmptyValues)
+						{
+							return default(T);
+						}
+
+						throw new ArgumentNullException();
+					}
+
+					return parseFunction(s);
+				};
 			}
 
 			internal override void ValidateField(Document.Record.Field field)
@@ -29,9 +42,17 @@ namespace DUCK.Utils
 				{
 					field.GetValue<T>();
 				}
-				catch
+				catch (ArgumentNullException)
 				{
-					throw new ArgumentException(string.Format("Data '{0}' cannot be parsed to type {1}", field, typeof(T)));
+					throw new ArgumentException(string.Format("Empty/null values are not accepted by this {0}", this.GetType()));
+				}
+				catch (FormatException)
+				{
+					throw new ArgumentException(string.Format("Input '{0}' cannot be parsed to type {1}", field, typeof(T)));
+				}
+				catch (ArgumentException)
+				{
+					throw new ArgumentException(string.Format("Input '{0}' is invalid for the constraints on this {1}", field, this.GetType()));
 				}
 			}
 		}
@@ -40,75 +61,55 @@ namespace DUCK.Utils
 		{
 			public class String : Type<string>
 			{
-				public String() : base(s => s) { }
-
-				public String(int maxLength) : base(s =>
-				{
-					if ((s != null ? s.Length : 0) > maxLength) throw new Exception("Max string length exceeded: " + maxLength);
-					return s;
-				}){}
+				public String(bool allowEmptyValues = false) : base(s => s, allowEmptyValues) { }
 			}
 
 			public class Int : Type<int>
 			{
 				public Int() : base(int.Parse) { }
 
-				public Int(int minValue = int.MinValue, int maxValue = int.MaxValue) : base(s => 
+				public Int(bool allowEmptyValues = false, int minValue = int.MinValue, int maxValue = int.MaxValue) : base(s => 
 				{
 					var value = int.Parse(s);
-					if (value < minValue) throw new Exception("Min value not reached: " + maxValue);
-					if (value > maxValue) throw new Exception("Max value exceeded: " + maxValue);
+					if (value < minValue) throw new ArgumentException("Min value not reached: " + maxValue);
+					if (value > maxValue) throw new ArgumentException("Max value exceeded: " + maxValue);
 					return value;
-				}){}
+				}, allowEmptyValues){}
 			}
 
 			public class Bool : Type<bool>
 			{
-				public Bool() : base(bool.Parse) { }
+				public Bool(bool allowEmptyValues = false) : base(bool.Parse, allowEmptyValues) { }
 			}
 
 			public class Float : Type<float>
 			{
 				public Float() : base(float.Parse) { }
 
-				public Float(float minValue = float.MinValue, float maxValue = float.MaxValue) : base(s => 
+				public Float(bool allowEmptyValues = false, float minValue = float.MinValue, float maxValue = float.MaxValue) : base(s =>
 				{
 					var value = float.Parse(s);
-					if (value < minValue) throw new Exception("Min value not reached: " + maxValue);
-					if (value > maxValue) throw new Exception("Max value exceeded: " + maxValue);
+					if (value < minValue) throw new ArgumentException("Min value not reached: " + maxValue);
+					if (value > maxValue) throw new ArgumentException("Max value exceeded: " + maxValue);
 					return value;
-				}){ }
+				}, allowEmptyValues){ }
 			}
 
 			public class Enum<T> : Type<T> where T : struct, IConvertible
 			{
-				public Enum(bool ignoreCase = false) : base
-					(
-						str =>
-						{
-							if (!typeof(T).IsEnum) throw new ArgumentException("Type must be an Enum type.");
+				public Enum(bool ignoreCase = false, bool allowEmptyValues = false, T fallbackValue = default(T)) : base(s =>
+				{
+					if (!typeof(T).IsEnum) throw new ArgumentException("Type must be an Enum type.");
 
-							return (T)Enum.Parse(typeof(T), str, ignoreCase);
-						}
-					)
-				{ }
+					if (string.IsNullOrEmpty(s))
+					{
+						if (allowEmptyValues) return fallbackValue;
 
-				public Enum(T fallbackValue, bool ignoreCase = false) : base
-					(
-						str =>
-						{
-							if (!typeof(T).IsEnum) throw new ArgumentException("Type must be an Enum type.");
+						throw new ArgumentNullException();
+					}
 
-							try
-							{
-								return (T)Enum.Parse(typeof(T), str, ignoreCase);
-							}
-							catch
-							{
-								return fallbackValue;
-							}
-						}
-					){}
+					return (T)Enum.Parse(typeof(T), s, ignoreCase);
+				}, allowEmptyValues){ }
 			}
 		}
 
@@ -238,9 +239,10 @@ namespace DUCK.Utils
 
 					for (var i = 0; i < values.Length; i++)
 					{
+						var fieldName = format.GetFieldName(i);
+
 						try
 						{
-							var fieldName = format.GetFieldName(i);
 							var fieldType = format.GetType(fieldName);
 							var field = new Field(values[i].Trim(), fieldType);
 
@@ -252,7 +254,11 @@ namespace DUCK.Utils
 						{
 							var sb = new StringBuilder("");
 							foreach (var s in values) sb.Append(s + ",");
-							Debug.LogError("Failed to validate field " + i + " of " + sb.ToString() + ": " + e.Message);
+							Debug.LogError(string.Format("Failed to validate field {0} ({1}) of {2} : {3}",
+								i,
+								fieldName,
+								sb.ToString(),
+								e.Message));
 						}
 					}
 				}
@@ -271,7 +277,7 @@ namespace DUCK.Utils
 
 				for (var i = offset; i < inputRecords.Length; i++)
 				{
-					var inputRecord = inputRecords[i].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+					var inputRecord = inputRecords[i].Split(new[] { ',' });
 					Records[i - offset] = new Record(inputRecord, format);
 				}
 			}
@@ -287,7 +293,7 @@ namespace DUCK.Utils
 				var header = inputRecords[0];
 				if (format != null)
 				{
-					format.ValidateHeader(header.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries), allowUnexpectedFields);
+					format.ValidateHeader(header.Split(new[] { ',' }), allowUnexpectedFields);
 				}
 			}
 
