@@ -83,16 +83,20 @@ namespace DUCK.Utils
 			public class Enum<T> : Type<T>
 				where T : struct, IConvertible
 			{
-				public Enum() : base
+				public Enum(T fallbackValue = default(T), bool ignoreCase = false) : base
 					(
 						str =>
 						{
-							if (!typeof(T).IsEnum)
-							{
-								throw new ArgumentException("Type must be Enum");
-							}
+							if (!typeof(T).IsEnum) throw new ArgumentException("Type must be an Enum type.");
 
-							return (T)Enum.Parse(typeof(T), str);
+							try
+							{
+								return (T)Enum.Parse(typeof(T), str, ignoreCase);
+							}
+							catch
+							{
+								return fallbackValue;
+							}
 						}
 					){}
 			}
