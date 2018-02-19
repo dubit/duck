@@ -116,7 +116,7 @@ namespace DUCK.Utils
 		public class Format
 		{
 			private Dictionary<string, Type> format;
-			private Type defaultType = new Types.String();
+			private Type defaultType = new Types.String(allowEmptyValues: true);
 
 			public Format(Dictionary<string, Type> format, Type defaultType = null)
 			{
@@ -216,11 +216,11 @@ namespace DUCK.Utils
 
 				private Dictionary<string, Field> data;
 
-				public T GetFieldValue<T>(string fieldName, bool useFallback = false)
+				public T GetFieldValue<T>(object fieldName, bool useFallback = false)
 				{
 					try
 					{
-						return (data[fieldName].GetValue<T>());
+						return (data[fieldName.ToString()].GetValue<T>());
 					}
 					catch (Exception e)
 					{
@@ -228,8 +228,7 @@ namespace DUCK.Utils
 						{
 							return default(T);
 						}
-
-						throw e;
+						else throw e;
 					}
 				}
 
@@ -254,7 +253,7 @@ namespace DUCK.Utils
 						{
 							var sb = new StringBuilder("");
 							foreach (var s in values) sb.Append(s + ",");
-							Debug.LogError(string.Format("Failed to validate field {0} ({1}) of {2} : {3}",
+							throw new Exception(string.Format("Failed to validate field {0} ({1}) of {2} : {3}",
 								i,
 								fieldName,
 								sb.ToString(),
