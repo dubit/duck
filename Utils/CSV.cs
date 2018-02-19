@@ -93,7 +93,7 @@ namespace DUCK.Utils
 					)
 				{ }
 
-				public Enum(bool ignoreCase = false, T fallbackValue) : base
+				public Enum(T fallbackValue, bool ignoreCase = false) : base
 					(
 						str =>
 						{
