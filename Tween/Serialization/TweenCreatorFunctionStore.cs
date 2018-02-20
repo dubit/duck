@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using DUCK.Serialization;
@@ -9,88 +8,68 @@ using DUCK.Utils;
 
 namespace DUCK.Tween.Serialization
 {
-	/// <summary>
-	/// Holds info about functions that can be used to create tweens.
-	/// This is used in conjunction with the TweenBuilder to provide editor gui to create tweens at editor time.
-	/// </summary>
-	public static class TweenCreatorFunctionStore
+	public static class TweenCreatorFunctions
 	{
-		public static string[] Keys
+		public static CreatorFunctionStore<AbstractAnimation> Store { get; private set; }
+
+		private static Type[] constructorTypes =
 		{
-			get { return tweenCreatorFunctionInfos.Keys.ToArray(); }
-		}
+			typeof(MoveAnimation),
+			typeof(RotateAnimation),
+			typeof(ScaleAnimation),
+			typeof(RendererColorFadeAnimation),
+			typeof(UIColorFadeAnimation),
+			typeof(RendererFadeAnimation),
+			typeof(UIFadeAnimation),
+		};
 
-		private static readonly Dictionary<string, TweenCreatorFunctionInfo> tweenCreatorFunctionInfos;
-
-		static TweenCreatorFunctionStore()
+		private static Type[] extensionMethodTypes =
 		{
-			tweenCreatorFunctionInfos = new Dictionary<string, TweenCreatorFunctionInfo>();
+			typeof(TransformAnimationExtensions),
+			typeof(RectTransformAnimationExtensions),
+			typeof(RendererAnimationExtensions),
+			typeof(UIComponentAnimationExtensions),
+		};
 
-			Func<MethodBase, bool> filterMethods = method =>
-			{
-				var parameters = method.GetParameters();
-				return parameters.All(p =>
-				{
-					// All types must supported by Args list or be a Func<float,float> (easing function)
-					return ArgsList.IsSupportedType(p.ParameterType) || p.ParameterType == typeof(Func<float, float>);
-				});
-			};
+		static TweenCreatorFunctions()
+		{
+			Store = new CreatorFunctionStore<AbstractAnimation>();
 
 			// Grab all constructors of listed types and use these.
-			new[]
-			{
-				typeof(MoveAnimation),
-				typeof(RotateAnimation),
-				typeof(ScaleAnimation),
-				typeof(RendererColorFadeAnimation),
-				typeof(UIColorFadeAnimation),
-				typeof(RendererFadeAnimation),
-				typeof(UIFadeAnimation),
-			}.ForEach(t =>
+			constructorTypes.ForEach(t =>
 			{
 				t.GetConstructors()
-					.Where(filterMethods)
+					.Where(MethodFilter)
 					.ForEach(c =>
-				{
-					var key = StringifyConstructor((ConstructorInfo)c);
-					var func = TweenCreatorFunctionInfo.FromMethod(c);
-					tweenCreatorFunctionInfos.Add(key, func);
-				});
+					{
+						var key = StringifyConstructor(c);
+						var func = new CreatorFunctionInfo<AbstractAnimation>(c, MapArgTypes, MapArgs);
+						Store.Add(key, func);
+					});
 			});
 
 			// Grab all extension methods of the following types
-			new[]
-			{
-				typeof(TransformAnimationExtensions),
-				typeof(RectTransformAnimationExtensions),
-				typeof(RendererAnimationExtensions),
-				typeof(UIComponentAnimationExtensions),
-			}.ForEach(t =>
+			extensionMethodTypes.ForEach(t =>
 			{
 				t.GetMethods(BindingFlags.Public | BindingFlags.Static)
-					.Where(filterMethods)
+					.Where(MethodFilter)
 					.ForEach(m =>
 					{
-						var key = StringifyExtMethod((MethodInfo)m);
-						var func = TweenCreatorFunctionInfo.FromMethod(m);
-						tweenCreatorFunctionInfos.Add(key, func);
+						var key = StringifyExtMethod(m);
+						var func = new CreatorFunctionInfo<AbstractAnimation>(m, MapArgTypes, MapArgs);
+						Store.Add(key, func);
 					});
 			});
 		}
 
-		public static void Add(string key, TweenCreatorFunctionInfo functionInfo)
+		private static bool MethodFilter(MethodBase method)
 		{
-			tweenCreatorFunctionInfos.Add(key, functionInfo);
-		}
-
-		public static bool Exists(string key)
-		{
-			return tweenCreatorFunctionInfos.ContainsKey(key);
-		}
-
-		public static TweenCreatorFunctionInfo Get(string key)
-		{
-			return tweenCreatorFunctionInfos.ContainsKey(key) ? tweenCreatorFunctionInfos[key] : null;
+			var parameters = method.GetParameters();
+			return parameters.All(p =>
+			{
+				// All types must supported by Args list or be a Func<float,float> (easing function)
+				return ArgsList.IsSupportedType(p.ParameterType) || p.ParameterType == typeof(Func<float, float>);
+			});
 		}
 
 		private static string StringifyConstructor(ConstructorInfo ctor)
@@ -115,32 +94,12 @@ namespace DUCK.Tween.Serialization
 			}
 			return paramsString;
 		}
-	}
-
-	public class TweenCreatorFunctionInfo
-	{
-		public List<Type> RealArgTypes { get; private set; }
-		public List<Type> SerializedArgTypes { get; private set; }
-		public List<string> ArgNames { get; private set; }
-		public Func<object[], AbstractAnimation> CreationMethod { get; private set; }
-
-		public static TweenCreatorFunctionInfo FromMethod(MethodBase method)
-		{
-			var info = new TweenCreatorFunctionInfo();
-			var parameterInfos = method.GetParameters();
-			info.ArgNames = parameterInfos.Select(a => a.Name).ToList();
-			info.RealArgTypes = parameterInfos.Select(a => a.ParameterType).ToList();
-			info.SerializedArgTypes = parameterInfos.Select(a => a.ParameterType).Select(MapArgTypes).ToList();
-			info.CreationMethod = args => (AbstractAnimation) method.Invoke(null, MapArgs(method, args));
-			return info;
-		}
 
 		private static object[] MapArgs(MethodBase func, object[] args)
 		{
 			var paramaterInfos = func.GetParameters();
 			for (var i = 0; i < paramaterInfos.Length; i++)
 			{
-				// TODO: abstract this out so we can plug in any arg converters
 				if (paramaterInfos[i].ParameterType == typeof(Func<float, float>))
 				{
 					var easingFunctionKey = (string) args[i];

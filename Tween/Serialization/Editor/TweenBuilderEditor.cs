@@ -27,13 +27,13 @@ namespace DUCK.Tween.Serialization.Editor
 
 			if (tweenBuilder.UseReferencedConfig)
 			{
-				tweenBuilder.TweenConfigScriptableObject = (TweenConfigScriptableObject)
-					EditorGUILayout.ObjectField("Config", tweenBuilder.TweenConfigScriptableObject,
-						typeof(TweenConfigScriptableObject), false);
+				tweenBuilder.TweenConfig = (TweenConfig)
+					EditorGUILayout.ObjectField("Config", tweenBuilder.TweenConfig,
+						typeof(TweenConfig), false);
 			}
 			else
 			{
-				TweenConfigEditor.Draw(tweenBuilder.TweenConfig);
+				TweenObjectCreationConfigEditor.Draw(tweenBuilder.ObjectCreationConfig, tweenBuilder);
 			}
 		}
 

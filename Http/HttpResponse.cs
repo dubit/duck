@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -15,6 +16,7 @@ namespace DUCK.Http
 		public byte[] Bytes { get; private set; }
 		public string Text { get; private set; }
 		public Texture Texture { get; private set; }
+		public Dictionary<string, string> ResponseHeaders { get; private set; }
 
 		public HttpResponse(UnityWebRequest unityWebRequest)
 		{
@@ -26,6 +28,7 @@ namespace DUCK.Http
 			IsNetworkError = unityWebRequest.isNetworkError;
 			ResponseCode = unityWebRequest.responseCode;
 			ResponseType = HttpUtils.GetResponseType(ResponseCode);
+			ResponseHeaders = unityWebRequest.GetResponseHeaders();
 
 			var downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
 			if (downloadHandlerTexture != null)

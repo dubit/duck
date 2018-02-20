@@ -8,7 +8,7 @@ namespace DUCK.Tween.Serialization.Editor
 		[MenuItem("DUCK/Tween/Create Tween Config")]
 		public static void CreateTweenConfig()
 		{
-			ScriptableObjectUtility.CreateAsset<TweenConfigScriptableObject>();
+			ScriptableObjectUtility.CreateAsset<TweenConfig>();
 		}
 	}
 }

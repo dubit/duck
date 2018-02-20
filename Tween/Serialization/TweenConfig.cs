@@ -1,34 +1,17 @@
-﻿using System;
-using DUCK.Serialization;
+﻿using DUCK.Serialization;
 using UnityEngine;
 
 namespace DUCK.Tween.Serialization
 {
-	[Serializable]
-	public class TweenConfig
+	[CreateAssetMenu(menuName = "Tween Config (Fancy™)", order = 230)]
+	public class TweenConfig : ScriptableObject
 	{
 		[SerializeField]
-		private string creatorFunctionKey;
-		
-		[SerializeField]
-		private ArgsList args = new ArgsList();
-
-		// These properties get exposed but only for UNITY_EDITOR for custom editor access
-		public string CreatorFunctionKey
+		private ObjectCreationConfig config = new ObjectCreationConfig();
+		public ObjectCreationConfig Config
 		{
-			get { return creatorFunctionKey; }
-#if !UNITY_EDITOR
-			private
-#endif
-			set { creatorFunctionKey = value; }
-		}
-		public ArgsList Args
-		{
-			get { return args; }
-#if !UNITY_EDITOR
-			private
-#endif
-			set { args = value; }
+			get { return config; }
+			set { config = value; }
 		}
 	}
 }

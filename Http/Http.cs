@@ -53,10 +53,10 @@ namespace DUCK.Http
 		/// <summary>
 		/// Super headers are key value pairs that will be added to every subsequent HttpRequest.
 		/// </summary>
-		/// <returns>A dictionary of headers.</returns>
+		/// <returns>A dictionary of super-headers.</returns>
 		public Dictionary<string, string> GetSuperHeaders()
 		{
-			return superHeaders;
+			return new Dictionary<string, string>(superHeaders);
 		}
 
 		/// <summary>
@@ -245,7 +245,11 @@ namespace DUCK.Http
 			Action<HttpResponse> onError)
 		{
 			var unityWebRequest = request.UnityWebRequest;
+#if UNITY_2017_2_OR_NEWER
 			yield return unityWebRequest.SendWebRequest();
+#else
+			yield return unityWebRequest.Send();
+#endif
 			var response = new HttpResponse(unityWebRequest);
 
 			if (unityWebRequest.isNetworkError || unityWebRequest.isHttpError)
@@ -268,7 +272,11 @@ namespace DUCK.Http
 		private static IEnumerator SendCoroutine(UnityWebRequest unityWebRequest,
 			Action onSuccess = null, Action onError = null, Action onNetworkError = null)
 		{
+#if UNITY_2017_2_OR_NEWER
 			yield return unityWebRequest.SendWebRequest();
+#else
+			yield return unityWebRequest.Send();
+#endif
 			if (unityWebRequest.isNetworkError)
 			{
 				if (onNetworkError != null)
@@ -296,7 +304,11 @@ namespace DUCK.Http
 			Action<UnityWebRequest> onSuccess = null,
 			Action<UnityWebRequest> onError = null, Action<UnityWebRequest> onNetworkError = null)
 		{
+#if UNITY_2017_2_OR_NEWER
 			yield return unityWebRequest.SendWebRequest();
+#else
+			yield return unityWebRequest.Send();
+#endif
 			if (unityWebRequest.isNetworkError)
 			{
 				if (onNetworkError != null)
@@ -324,7 +336,11 @@ namespace DUCK.Http
 			Action<HttpResponse> onSuccess,
 			Action<HttpResponse> onError)
 		{
+#if UNITY_2017_2_OR_NEWER
 			yield return request.SendWebRequest();
+#else
+			yield return request.Send();
+#endif
 			var response = new HttpResponse(request);
 
 			if (request.isNetworkError || request.isHttpError)
