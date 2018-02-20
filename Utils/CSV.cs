@@ -115,6 +115,7 @@ namespace DUCK.Utils
 
 		public class Format
 		{
+			private List<string> orderedKeys;
 			private Dictionary<string, Type> format;
 			private Type defaultType = new Types.String(allowEmptyValues: true);
 
@@ -130,7 +131,7 @@ namespace DUCK.Utils
 
 			internal string GetFieldName(int index)
 			{
-				return (format.Keys.ToArray()[index]);
+				return (orderedKeys[index]);
 			}
 
 			internal Type GetType(string fieldName)
@@ -142,7 +143,9 @@ namespace DUCK.Utils
 			{
 				if (format == null || format.Keys.Count == 0) return;
 
-				List<string> expectedFieldNames = new List<string>(format.Keys);
+				var expectedFieldNames = new List<string>(format.Keys);
+
+				orderedKeys = new List<string>();
 
 				foreach (var textChunk in header)
 				{
@@ -169,6 +172,8 @@ namespace DUCK.Utils
 							}
 						}
 					}
+
+					orderedKeys.Add(fieldName);
 				}
 
 				if (expectedFieldNames.Count > 0)
