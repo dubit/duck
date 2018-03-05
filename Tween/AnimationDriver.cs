@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DUCK.Utils;
 using UnityEngine;
 
@@ -28,7 +27,7 @@ namespace DUCK.Tween
 		public static DefaultAnimationDriver Instance { get { return instance == null ? CreateInstance() : instance; } }
 		private static DefaultAnimationDriver instance;
 
-		private static readonly UpdateList UpdateList = new UpdateList();
+		private static readonly UpdateList updateList = new UpdateList();
 
 		private static DefaultAnimationDriver CreateInstance()
 		{
@@ -39,17 +38,17 @@ namespace DUCK.Tween
 
 		public void Add(Action<float> updateFunction)
 		{
-			UpdateList.Add(updateFunction);
+			updateList.Add(updateFunction);
 		}
 
 		public void Remove(Action<float> updateFunction)
 		{
-			UpdateList.Remove(updateFunction);
+			updateList.Remove(updateFunction);
 		}
 
 		private void Update()
 		{
-			UpdateList.Update(Time.unscaledDeltaTime);
+			updateList.Update(Time.unscaledDeltaTime);
 		}
 	}
 }
