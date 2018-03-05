@@ -15,6 +15,7 @@ namespace DUCK.Tween.Serialization.Editor
 		public override void OnInspectorGUI()
 		{
 			tweenBuilder.PlayOnStart = EditorGUILayout.Toggle("Play on Start", tweenBuilder.PlayOnStart);
+			tweenBuilder.PlayOnEnable = EditorGUILayout.Toggle("Play on Enable", tweenBuilder.PlayOnEnable);
 
 			tweenBuilder.Repeat = EditorGUILayout.Toggle("Repeat?", tweenBuilder.Repeat);
 
