@@ -16,12 +16,22 @@ namespace DUCK.Utils
 
 		private bool isUpdating;
 
+		/// <summary>
+		/// Returns true if the update list contains this function
+		/// </summary>
+		/// <param name="updateFunction">The update function to test for the presence of</param>
+		/// <returns>True if the function is in the update list, false if not</returns>
 		public bool Contains(Action<float> updateFunction)
 		{
 			var index = updateFunctions.IndexOf(updateFunction);
 			return index != -1 && !deadFunctionIndices.Contains(index);
 		}
 
+		/// <summary>
+		/// Adds the given function to the update list. It must not already be added.
+		/// </summary>
+		/// <param name="updateFunction">The update function to add to the update list</param>
+		/// <exception cref="Exception">Throws an Exception if the function was already added</exception>
 		public void Add(Action<float> updateFunction)
 		{
 			var index = updateFunctions.IndexOf(updateFunction);
@@ -40,6 +50,11 @@ namespace DUCK.Utils
 			updateFunctions.Add(updateFunction);
 		}
 
+		/// <summary>
+		/// Removes the given update function from the update list
+		/// </summary>
+		/// <param name="updateFunction">The update function to remove from the list</param>
+		/// <exception cref="Exception">Throws if the given update function was not in the list</exception>
 		public void Remove(Action<float> updateFunction)
 		{
 			var index = updateFunctions.IndexOf(updateFunction);
@@ -63,6 +78,10 @@ namespace DUCK.Utils
 			}
 		}
 
+		/// <summary>
+		/// Updtes all functions in the list in descending order.
+		/// </summary>
+		/// <param name="dt">The amount of delta time to be passed into each function.</param>
 		public void Update(float dt)
 		{
 			isUpdating = true;
