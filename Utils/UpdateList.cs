@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DUCK.Utils
 {
@@ -16,23 +15,18 @@ namespace DUCK.Utils
 		private readonly List<int> deadFunctionIndices = new List<int>();
 
 		private bool isUpdating;
-		private int currentUpdatingIndex;
+
+		public bool Contains(Action<float> updateFunction)
+		{
+			var index = updateFunctions.IndexOf(updateFunction);
+			return index != -1 && !deadFunctionIndices.Contains(index);
+		}
 
 		public void Add(Action<float> updateFunction)
 		{
-			var index = updateFunctions.IndexOf(updateFunction);
-			if (index >= 0)
+			if (updateFunctions.Contains(updateFunction))
 			{
-				// Someone wants to add it back right after removed it
-				// Possibally, Abort() then Play() in an update callback
-				if (deadFunctionIndices.Contains(index))
-				{
-					// We just cancel the removement
-					deadFunctionIndices.Remove(index);
-					return;
-				}
-				Debug.LogWarning("You should not add the same update function more than once into update container.");
-				return;
+				throw new Exception("Cannot add the given function. It is already in the list");
 			}
 
 			updateFunctions.Add(updateFunction);
@@ -41,11 +35,14 @@ namespace DUCK.Utils
 		public void Remove(Action<float> updateFunction)
 		{
 			var index = updateFunctions.IndexOf(updateFunction);
-			if (index < 0) return;
+			if (index < 0)
+			{
+				throw new Exception("Cannot remove the given function. It was not found in the list");
+			}
 
-			// if we are currently updating (and not updating the current one) we mark it as dead,
+			// if we are currently updating we mark it as dead,
 			// otherwise (else) we can remove it straight away
-			if (isUpdating && currentUpdatingIndex != index)
+			if (isUpdating)
 			{
 				if (!deadFunctionIndices.Contains(index))
 				{
@@ -61,24 +58,17 @@ namespace DUCK.Utils
 		public void Update(float dt)
 		{
 			isUpdating = true;
-			for (currentUpdatingIndex = updateFunctions.Count - 1; currentUpdatingIndex >= 0; --currentUpdatingIndex)
+			for (var i = updateFunctions.Count - 1; i >= 0; --i)
 			{
-				if (deadFunctionIndices.Remove(currentUpdatingIndex))
+				if (!deadFunctionIndices.Contains(i))
 				{
-					updateFunctions.RemoveAt(currentUpdatingIndex);
-				}
-				else
-				{
-					updateFunctions[currentUpdatingIndex](dt);
+					updateFunctions[i](dt);
 				}
 			}
 			isUpdating = false;
 
-			// Clean up the rest of the dead update functions (have to do this in one frame)
 			if (deadFunctionIndices.Count > 0)
 			{
-				// We have to remove the function descendingly or sort the indices by descending order
-				// Because if you remove the function in the middle of the list, the rest part of functions indecies will be changed.
 				for (var i = updateFunctions.Count - 1; i >= 0; --i)
 				{
 					if (deadFunctionIndices.Remove(i))
