@@ -116,6 +116,26 @@ namespace DUCK.Utils.Editor
 		}
 
 		[Test]
+		public void ExpectRemoveAndReAddWithinAnUpdateLoopToNotRemove()
+		{
+			var updateList = new UpdateList();
+
+			Action<float> func2 = dt => { };
+			Action<float> func1 = dt =>
+			{
+				updateList.Remove(func2);
+				updateList.Add(func2);
+			};
+
+			updateList.Add(func1);
+			updateList.Add(func2);
+
+			updateList.Update(0f);
+
+			Assert.IsTrue(updateList.Contains(func2));
+		}
+
+		[Test]
 		public void ExpectUpdateToPassDeltaTimeToAllFunctions()
 		{
 			const float dtParam = 0.112f;

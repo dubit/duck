@@ -24,8 +24,16 @@ namespace DUCK.Utils
 
 		public void Add(Action<float> updateFunction)
 		{
-			if (updateFunctions.Contains(updateFunction))
+			var index = updateFunctions.IndexOf(updateFunction);
+			if (index >= 0)
 			{
+				// if the function exists but it's marked as dead we should, unmark it (to re add it)
+				if (deadFunctionIndices.Contains(index))
+				{
+					deadFunctionIndices.Remove(index);
+					return;
+				}
+
 				throw new Exception("Cannot add the given function. It is already in the list");
 			}
 
