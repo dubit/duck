@@ -82,6 +82,7 @@ namespace DUCK.Utils
 				transform.position = Vector3.zero;
 				transform.rotation = Quaternion.identity;
 			}
+
 			transform.localScale = Vector3.one;
 		}
 
@@ -103,6 +104,7 @@ namespace DUCK.Utils
 				delta.Scale(rectTransform.localScale);
 				rectTransform.anchoredPosition += delta;
 			}
+
 			rectTransform.pivot = pivot;
 		}
 
@@ -149,6 +151,11 @@ namespace DUCK.Utils
 		public static TransformSnapshot Snapshot(this Transform transform)
 		{
 			return new TransformSnapshot(transform);
+		}
+
+		public static void ApplySnapshot(this Transform transform, TransformSnapshot snapshot)
+		{
+			snapshot.ApplyTo(transform);
 		}
 	}
 }
