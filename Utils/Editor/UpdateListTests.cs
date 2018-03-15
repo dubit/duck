@@ -113,6 +113,8 @@ namespace DUCK.Utils.Editor
 			funcRef = func;
 
 			updateList.Add(funcRef);
+
+			updateList.Update(0f);
 		}
 
 		[Test]
