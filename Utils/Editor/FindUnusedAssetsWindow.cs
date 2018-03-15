@@ -33,6 +33,7 @@ namespace DUCK.Utils.Editor
 				{
 					Name = obj.name;
 				}
+
 				var indexOfPoint = path.LastIndexOf('.');
 				var length = path.Length - indexOfPoint;
 				if (indexOfPoint >= 0 && length >= 0)
@@ -74,6 +75,7 @@ namespace DUCK.Utils.Editor
 		[DidReloadScripts]
 		private static void ReloadWindow()
 		{
+			if (window == null) return;
 			LoadFilters();
 			Search();
 		}
@@ -93,6 +95,7 @@ namespace DUCK.Utils.Editor
 					{
 						assetsByExtension[a.Extension] = new List<Asset>();
 					}
+
 					assetsByExtension[a.Extension].Add(a);
 				});
 				gridSelectionButtonNames = new string[assetsByExtension.Keys.Count + 1];
@@ -102,6 +105,7 @@ namespace DUCK.Utils.Editor
 					var element = assetsByExtension.ElementAt(i);
 					gridSelectionButtonNames[i + 1] = string.Format("({0}) {1}", element.Value.Count, element.Key);
 				}
+
 				hasEditorLagBeenFound = true;
 			}
 			else
@@ -142,6 +146,7 @@ namespace DUCK.Utils.Editor
 				Search();
 				SaveFilters();
 			}
+
 			GUILayout.EndHorizontal();
 
 			if (!hasEditorLagBeenFound)
@@ -173,6 +178,7 @@ namespace DUCK.Utils.Editor
 				{
 					DrawAsset(asset);
 				}
+
 				GUILayout.EndScrollView();
 			}
 		}
@@ -190,6 +196,7 @@ namespace DUCK.Utils.Editor
 					EditorPrefs.SetBool(EDITOR_PREF_SEEN_WARNING_ASSETS, true);
 					seenWarningAssets = true;
 				}
+
 				GUILayout.EndHorizontal();
 			}
 		}
@@ -226,10 +233,12 @@ namespace DUCK.Utils.Editor
 			{
 				return true;
 			}
+
 			if (asset.IsIgnored)
 			{
 				return false;
 			}
+
 			return asset.Path.IndexOf(searchValue, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
@@ -246,6 +255,7 @@ namespace DUCK.Utils.Editor
 				{
 					GUI.color = Color.green;
 				}
+
 				GUILayout.Label(asset.Name);
 				GUI.color = originalColor;
 				GUILayout.FlexibleSpace();
@@ -253,10 +263,12 @@ namespace DUCK.Utils.Editor
 				{
 					IgnoreAsset(asset, !asset.IsIgnored);
 				}
+
 				if (GUILayout.Button("Select"))
 				{
 					Selection.activeObject = asset.Obj;
 				}
+
 				if (GUILayout.Button("Delete"))
 				{
 					AssetDatabase.DeleteAsset(asset.Path);
@@ -267,6 +279,7 @@ namespace DUCK.Utils.Editor
 			{
 				GUILayout.Label(asset.Path);
 			}
+
 			GUILayout.EndHorizontal();
 			GUILayout.Space(0.1f);
 			GUILayout.Box(string.Empty, GUILayout.ExpandWidth(true), GUILayout.Height(0.01f));
@@ -316,10 +329,12 @@ namespace DUCK.Utils.Editor
 					isValid &= !asset.Contains("duck");
 					isValid &= !asset.Contains("Duck");
 				}
+
 				if (!includePlugins)
 				{
 					isValid &= !asset.Contains("Plugins");
 				}
+
 				if (!includeVendor)
 				{
 					isValid &= !asset.Contains("Vendor");
@@ -332,6 +347,7 @@ namespace DUCK.Utils.Editor
 					filteredAssets.Add(asset);
 				}
 			}
+
 			return filteredAssets.ToArray();
 		}
 
@@ -385,6 +401,11 @@ namespace DUCK.Utils.Editor
 			}
 
 			return unityEditorLogfile;
+		}
+
+		private void OnDisable()
+		{
+			window = null;
 		}
 	}
 }
