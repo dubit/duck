@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Utils
+namespace DUCK.Utils
 {
 	/// <summary>
 	/// Color utilities for converting and manipulating Color types

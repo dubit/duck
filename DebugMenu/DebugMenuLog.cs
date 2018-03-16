@@ -1,10 +1,8 @@
 ﻿using DUCK.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
 namespace DUCK.DebugMenu
 {
