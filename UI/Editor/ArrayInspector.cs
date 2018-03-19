@@ -2,27 +2,13 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Dubit.DUCK.Editor.Inspectors
+namespace DUCK.Editor.Inspectors
 {
 	public abstract class ArrayInspector : UnityEditor.Editor
 	{
-		protected abstract string arrayPropertyName
-		{
-			get;
-		}
+		protected abstract string arrayPropertyName { get; }
 
-		protected virtual int arrayFoldoutBitmask
-		{
-			get
-			{
-				return -1;
-			}
-
-			set
-			{
-				// Default: do nothing
-			}
-		}
+		protected virtual int arrayFoldoutBitmask { get { return -1; } set { /*Default: do nothing*/ } }
 
 		protected abstract Action<SerializedProperty> drawArrayElement
 		{
@@ -36,22 +22,28 @@ namespace Dubit.DUCK.Editor.Inspectors
 			serializedArray = serializedObject.FindProperty(arrayPropertyName);
 		}
 
+		protected virtual void DrawPreArray() { }
+		protected virtual void DrawPostArray() { }
+
 		public override void OnInspectorGUI()
 		{
 			serializedObject.Update();
+
+			DrawPreArray();
 
 			if (serializedArray != null)
 			{
 				arrayFoldoutBitmask = DrawArray(serializedArray, drawArrayElement, arrayFoldoutBitmask);
 			}
 
+			DrawPostArray();
+
 			serializedObject.ApplyModifiedProperties();
 		}
 
 		public static int DrawArray(SerializedProperty arrayProperty, Action<SerializedProperty> drawArrayElement, int selectionBitmask = -1)
 		{
-			if (arrayProperty == null || arrayProperty.arraySize < 0)
-				return -1;
+			if (arrayProperty == null || arrayProperty.arraySize < 0) return -1;
 
 			for (var i = 0; i < arrayProperty.arraySize; i++)
 			{
@@ -134,7 +126,7 @@ namespace Dubit.DUCK.Editor.Inspectors
 
 		private static void DrawElementContainer(SerializedProperty arrayProperty, SerializedProperty elementProperty, int index, Action<SerializedProperty> drawArrayElement)
 		{
-			var buttonWidth = 60f;
+			const float buttonWidth = 60f;
 
 			EditorGUILayout.BeginHorizontal();
 
