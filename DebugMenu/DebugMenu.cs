@@ -63,7 +63,9 @@ namespace DUCK.DebugMenu
 			instance = this;
 
 			rootObject.gameObject.SetActive(false);
-			
+
+			logPage.Initialise();
+
 			DontDestroyOnLoad(this);
 		}
 
