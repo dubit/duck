@@ -34,14 +34,10 @@ namespace DUCK.DebugMenu
 
 		private void Awake()
 		{
-			if (instance != null)
-			{
-				throw new Exception("Cannot have two instances of DebugMenuLog.");
-			}
-
-			instance = this;
 			entryPrefab.gameObject.SetActive(false);
 			clearButton.interactable = false;
+
+			Initialise();
 		}
 
 		private void OnEnable()
@@ -69,6 +65,14 @@ namespace DUCK.DebugMenu
 			if (instance == null) return;
 
 			instance.AddLogEntry(text, logType);
+		}
+
+		public void Initialise()
+		{
+			if (instance == null)
+			{
+				instance = this;
+			}
 		}
 
 		public void Clear()
