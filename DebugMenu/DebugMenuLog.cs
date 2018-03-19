@@ -99,7 +99,10 @@ namespace DUCK.DebugMenu
 
 			newLogEntry.gameObject.SetActive(true);
 
-			StartCoroutine(ScrollToBottom());
+			if (gameObject.activeInHierarchy)
+			{
+				StartCoroutine(ScrollToBottom());
+			}
 		}
 
 		private IEnumerator ScrollToBottom()
