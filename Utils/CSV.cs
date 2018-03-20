@@ -115,7 +115,11 @@ namespace DUCK.Utils
 
 		public class Format
 		{
+			// Keys derived from the ordered header of the CSV file, passed through ValidateHeader - guaranteed correct, but optional in standard CSV
 			private List<string> orderedKeys;
+			// Keys derived from the dictionary with which this Format was constructed - assumes this was ordered correctly, but should defer to header
+			private List<string> unorderedKeys;
+
 			private IDictionary<string, Type> format;
 
 			public string Header
@@ -130,30 +134,23 @@ namespace DUCK.Utils
 
 			public Format(IDictionary<string, Type> format)
 			{
+				unorderedKeys = format.Keys.ToList();
+
 				this.format = format;
 			}
 
 			public string[] GetFieldNames()
 			{
-				var fieldCount = format.Keys.Count;
-				var fieldNames = new string[fieldCount];
-				for (var i = 0; i < fieldCount; i++)
-				{
-					fieldNames[i] = GetFieldName(i);
-				}
-				return fieldNames;
+				return ((orderedKeys != null)
+					? orderedKeys
+					: unorderedKeys).ToArray();
 			}
 
 			internal string GetFieldName(int index)
 			{
-				if (orderedKeys != null)
-				{
-					return (orderedKeys[index]);
-				}
-				else
-				{
-					return (format.Keys.ToArray())[index];
-				}
+				return ((orderedKeys != null)
+					? orderedKeys
+					: unorderedKeys)[index];
 			}
 
 			internal Type GetType(string fieldName)
@@ -186,7 +183,7 @@ namespace DUCK.Utils
 						{
 							if (defaultType == null)
 							{
-								throw new Exception("Unknown field, no default type: " + fieldName);
+								throw new Exception("Unknown field, and no default type provided: " + fieldName);
 							}
 							else
 							{
