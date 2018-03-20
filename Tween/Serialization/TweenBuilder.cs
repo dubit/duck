@@ -15,6 +15,9 @@ namespace DUCK.Tween.Serialization
 		private bool playOnStart;
 
 		[SerializeField]
+		private bool playOnEnable;
+
+		[SerializeField]
 		private bool repeat;
 
 		[SerializeField]
@@ -42,6 +45,14 @@ namespace DUCK.Tween.Serialization
 			}
 		}
 
+		private void OnEnable()
+		{
+			if (playOnEnable)
+			{
+				Play();
+			}
+		}
+
 		public void Play()
 		{
 			var config = useReferencedConfig ? tweenConfig.Config : ObjectCreationConfig;
@@ -64,6 +75,12 @@ namespace DUCK.Tween.Serialization
 		{
 			get { return playOnStart; }
 			set { playOnStart = value; }
+		}
+
+		public bool PlayOnEnable
+		{
+			get { return playOnEnable; }
+			set { playOnEnable = value; }
 		}
 
 		public bool Repeat

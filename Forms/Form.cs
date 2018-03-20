@@ -43,6 +43,11 @@ namespace DUCK.Forms
 				}
 			}
 
+			if (isValid)
+			{
+				OnSubmitForm.SafeInvoke(fieldConfigs.ToDictionary(config => config.field.FieldName, config => config.field));
+			}
+
 			// Fields need to be validated before the fields get cleared.
 			// This is because vildation components may require values from other fields.
 			foreach (var fieldConfig in fieldConfigs)
@@ -51,11 +56,6 @@ namespace DUCK.Forms
 				{
 					fieldConfig.field.Clear();
 				}
-			}
-
-			if (isValid)
-			{
-				OnSubmitForm.SafeInvoke(fieldConfigs.ToDictionary(config => config.field.FieldName, config => config.field));
 			}
 		}
 

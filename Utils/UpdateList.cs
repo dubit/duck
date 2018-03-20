@@ -5,9 +5,9 @@ using UnityEngine;
 namespace DUCK.Utils
 {
 	/// <summary>
-	/// UpdateList: allows you to add multiple update functions to a list, then just update the list and all functions 
+	/// UpdateList: allows you to add multiple update functions to a list, then just update the list and all functions
 	/// will be called. It also allows removing an update function from the list during the update iteration.
-	/// It is very well optimized and is a way to get around multiple monobehaviours. It also allows you to make 
+	/// It is very well optimized and is a way to get around multiple monobehaviours. It also allows you to make
 	/// multiple instances, to update different objects with different time scales.
 	/// </summary>
 	public class UpdateList
@@ -20,8 +20,17 @@ namespace DUCK.Utils
 
 		public void Add(Action<float> updateFunction)
 		{
-			if (updateFunctions.Contains(updateFunction))
+			var index = updateFunctions.IndexOf(updateFunction);
+			if (index >= 0)
 			{
+				// Someone wants to add it back right after removed it
+				// Possibally, Abort() then Play() in an update callback
+				if (deadFunctionIndices.Contains(index))
+				{
+					// We just cancel the removement
+					deadFunctionIndices.Remove(index);
+					return;
+				}
 				Debug.LogWarning("You should not add the same update function more than once into update container.");
 				return;
 			}
@@ -34,7 +43,7 @@ namespace DUCK.Utils
 			var index = updateFunctions.IndexOf(updateFunction);
 			if (index < 0) return;
 
-			// if we are currently updating (and not updating the current one) we mark it as dead, 
+			// if we are currently updating (and not updating the current one) we mark it as dead,
 			// otherwise (else) we can remove it straight away
 			if (isUpdating && currentUpdatingIndex != index)
 			{
