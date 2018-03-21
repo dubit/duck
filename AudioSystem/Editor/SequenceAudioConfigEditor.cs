@@ -54,12 +54,7 @@ namespace DUCK.AudioSystem.Editor
 							break;
 
 						case SequenceAudioConfig.AudioClipIndexType.Parameter:
-							var stringValue = EditorGUILayout.TextField(clipIndexConstant.stringValue);
-							if (!string.IsNullOrEmpty(stringValue))
-							{
-								stringValue = stringValue.Trim().Replace(" ", string.Empty);
-							}
-							clipIndexParameter.stringValue = stringValue;
+							clipIndexParameter.stringValue = EditorGUILayout.TextField(clipIndexParameter.stringValue).Trim().Replace(" ", string.Empty);
 							break;
 					}
 				}
