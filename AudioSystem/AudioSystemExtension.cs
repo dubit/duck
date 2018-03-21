@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DUCK.Utils;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DUCK.AudioSystem
@@ -149,6 +151,49 @@ namespace DUCK.AudioSystem
 			audioConfig.Callbacks.Add(targetChannel, onComplete);
 
 			return targetChannel;
+		}
+
+		/// <summary>
+		/// Play a sequence of audio clips with optional delay between them
+		/// </summary>
+		/// <param name="audioConfigs">Enumerable collection of AudioConfigs</param>
+		/// <param name="volume">The volume scale for the channel (will override the config one)</param>
+		/// <param name="parent">The source of the audio</param>
+		/// <param name="delay">The delay time in between playing audio sources</param>
+		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
+		/// <param name="onComplete">The callback when the playback of all configs finished</param>
+		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
+		public static void PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume, Transform parent = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			PlayNext(true, audioConfigs.GetEnumerator(), volume, parent, delay, onComplete, onEachConfigPlayed);
+		}
+
+		private static void PlayNext(bool isFirst, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			Action playConfig = () =>
+			{
+				if (!enumerator.MoveNext())
+				{
+					onComplete.SafeInvoke();
+					return;
+				}
+
+				onEachConfigPlayed.SafeInvoke(enumerator.Current);
+
+				Play(enumerator.Current, volume, parent, () =>
+				{
+					PlayNext(false, enumerator, volume, parent, delay, onComplete, onEachConfigPlayed);
+				});
+			};
+
+			if (isFirst || delay <= 0f)
+			{
+				playConfig();
+			}
+			else
+			{
+				Timer.SetTimeout(delay, playConfig);
+			}
 		}
 
 		private static void HandleOnComplete(AudioSource channel, AudioConfig audioConfig)
