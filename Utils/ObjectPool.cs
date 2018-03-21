@@ -28,9 +28,11 @@ namespace DUCK.Pooling
 
 			public T Get()
 			{
-				var obj = (pooledObjects.Count > 0)
-					? pooledObjects.Dequeue()
-					: null;
+				T obj = null;
+				while (pooledObjects.Count > 0)
+				{
+					obj = pooledObjects.Dequeue();
+				}
 
 				if (obj)
 				{
@@ -42,7 +44,7 @@ namespace DUCK.Pooling
 
 			public void Add(PoolableObject obj)
 			{
-				if (obj != null)
+				if (obj != null && !pooledObjects.Contains((T)obj))
 				{
 					obj.AddToPool();
 					pooledObjects.Enqueue((T)obj);
