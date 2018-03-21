@@ -9,6 +9,8 @@ namespace DUCK.AudioSystem
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
 	public class AudioConfig : ScriptableObject
 	{
+		public const int RANDOM_CLIP = -1;
+
 		public enum SpatialModes
 		{
 			Pure2D,
@@ -94,7 +96,7 @@ namespace DUCK.AudioSystem
 		/// </summary>
 		/// <param name="index">The index of the selected audio clip, if available.</param>
 		/// <returns>A random audio clip from the list</returns>
-		public AudioClip GetAudioClip(int index = -1)
+		public AudioClip GetAudioClip(int index = RANDOM_CLIP)
 		{
 			var count = audioClips.Count;
 			if (count == 0 || index < 0 || index >= count)

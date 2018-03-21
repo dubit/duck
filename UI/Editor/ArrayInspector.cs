@@ -17,7 +17,7 @@ namespace DUCK.Editor.Inspectors
 
 		protected SerializedProperty serializedArray;
 
-		protected void OnEnable()
+		protected virtual void OnEnable()
 		{
 			serializedArray = serializedObject.FindProperty(arrayPropertyName);
 		}

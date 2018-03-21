@@ -156,19 +156,27 @@ namespace DUCK.AudioSystem
 		/// <summary>
 		/// Play a sequence of audio clips with optional delay between them
 		/// </summary>
-		/// <param name="audioConfigs">Enumerable collection of AudioConfigs</param>
+		/// <param name="compositeAudioConfig">Enumerable collection of AudioConfigs</param>
 		/// <param name="volume">The volume scale for the channel (will override the config one)</param>
 		/// <param name="parent">The source of the audio</param>
 		/// <param name="delay">The delay time in between playing audio sources</param>
 		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
 		/// <param name="onComplete">The callback when the playback of all configs finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static void PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume, Transform parent = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		public static void PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume, Transform parent = null, 
+			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
-			PlayNext(true, audioConfigs.GetEnumerator(), volume, parent, delay, onComplete, onEachConfigPlayed);
+			PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 		}
 
-		private static void PlayNext(bool isFirst, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		public static void Play(this SequenceAudioConfig compositeConfig, float volume, Transform parent = null, 
+			Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			PlaySequence(compositeConfig.AudioConfigs, volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
+		}
+
+		private static void PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 
+			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			Action playConfig = () =>
 			{
@@ -180,13 +188,13 @@ namespace DUCK.AudioSystem
 
 				onEachConfigPlayed.SafeInvoke(enumerator.Current);
 
-				enumerator.Current.Play(volume, parent, onComplete: () =>
+				enumerator.Current.Play(volume, parent, (getClipId != null) ? getClipId(enumerator.Current) : AudioConfig.RANDOM_CLIP, () =>
 				{
-					PlayNext(false, enumerator, volume, parent, delay, onComplete, onEachConfigPlayed);
+					PlaySequenceAtIndex(index + 1, enumerator, volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 				});
 			};
 
-			if (isFirst || delay <= 0f)
+			if (index == 0 || delay <= 0f)
 			{
 				playConfig();
 			}
