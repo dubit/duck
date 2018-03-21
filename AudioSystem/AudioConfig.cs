@@ -6,8 +6,10 @@ using Random = UnityEngine.Random;
 
 namespace DUCK.AudioSystem
 {
+	public interface IAudioConfig { }
+
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
-	public class AudioConfig : ScriptableObject
+	public class AudioConfig : ScriptableObject, IAudioConfig
 	{
 		public const int RANDOM_CLIP = -1;
 
