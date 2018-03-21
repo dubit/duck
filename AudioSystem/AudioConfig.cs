@@ -90,6 +90,22 @@ namespace DUCK.AudioSystem
 		}
 
 		/// <summary>
+		/// Get a specific Audio Clip from the list, or a random one if the index is invalid or unspecified.
+		/// </summary>
+		/// <param name="index">The index of the selected audio clip, if available.</param>
+		/// <returns>A random audio clip from the list</returns>
+		public AudioClip GetAudioClip(int index = -1)
+		{
+			var count = audioClips.Count;
+			if (count == 0 || index < 0 || index >= count)
+			{
+				return GetRandomAudioClip();
+			}
+
+			return audioClips[index];
+		}
+
+		/// <summary>
 		/// Get a random Audio Clip from the list.
 		/// </summary>
 		/// <returns>A random audio clip from the list</returns>

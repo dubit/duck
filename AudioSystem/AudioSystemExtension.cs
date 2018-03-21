@@ -44,7 +44,7 @@ namespace DUCK.AudioSystem
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
 		public static AudioSource Play(this AudioConfig audioConfig, Action onComplete = null)
 		{
-			return audioConfig.Play(audioConfig.VolumeScale, null, onComplete);
+			return audioConfig.Play(audioConfig.VolumeScale, null, onComplete: onComplete);
 		}
 
 		/// <summary>
@@ -54,9 +54,9 @@ namespace DUCK.AudioSystem
 		/// <param name="parent">The source of the audio</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this AudioConfig audioConfig, Transform parent, Action onComplete = null)
+		public static AudioSource Play(this AudioConfig audioConfig, Transform parent, int clipIndex = -1, Action onComplete = null)
 		{
-			return audioConfig.Play(audioConfig.VolumeScale, parent, onComplete);
+			return audioConfig.Play(audioConfig.VolumeScale, parent, clipIndex, onComplete);
 		}
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace DUCK.AudioSystem
 		/// <param name="parent">The source of the audio</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this AudioConfig audioConfig, float volume, Transform parent = null, Action onComplete = null)
+		public static AudioSource Play(this AudioConfig audioConfig, float volume, Transform parent = null, int clipIndex = -1, Action onComplete = null)
 		{
 			// Stop the previous playbacks if necessary
 			if (audioConfig.CurrentChannel != null)
@@ -96,13 +96,13 @@ namespace DUCK.AudioSystem
 			AudioSource targetChannel;
 			if (audioConfig.TemplateAudioSource != null)
 			{
-				targetChannel = AudioSystem.Instance.Play(audioConfig.GetRandomAudioClip(),
+				targetChannel = AudioSystem.Instance.Play(audioConfig.GetAudioClip(clipIndex),
 					audioConfig.TemplateAudioSource, volume, channel => HandleOnComplete(channel, audioConfig));
 			}
 			else
 			{
 				targetChannel = AudioSystem.Instance.GetFreeChannel();
-				targetChannel.clip = audioConfig.GetRandomAudioClip();
+				targetChannel.clip = audioConfig.GetAudioClip(clipIndex);
 				targetChannel.volume = volume;
 				targetChannel.loop = audioConfig.Loop;
 
