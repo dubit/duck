@@ -180,7 +180,7 @@ namespace DUCK.AudioSystem
 
 				onEachConfigPlayed.SafeInvoke(enumerator.Current);
 
-				Play(enumerator.Current, volume, parent, () =>
+				enumerator.Current.Play(volume, parent, onComplete: () =>
 				{
 					PlayNext(false, enumerator, volume, parent, delay, onComplete, onEachConfigPlayed);
 				});
