@@ -42,7 +42,7 @@ namespace DUCK.AudioSystem
 		/// <param name="audioConfig">The target audio config</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this IAudioConfig audioConfig, float volume, Transform parent = null, Action onComplete = null)
+		public static AudioSource Play(this AbstractAudioConfig audioConfig, float volume, Transform parent = null, Action onComplete = null)
 		{
 			if (audioConfig == null) return null;
 

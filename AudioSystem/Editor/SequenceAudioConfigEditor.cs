@@ -34,13 +34,14 @@ namespace DUCK.AudioSystem.Editor
 		private void DrawEntry(SerializedProperty property)
 		{
 			var audioConfig = property.FindPropertyRelative("audioConfig");
-			var clipMode = property.FindPropertyRelative("clipMode");
-			var clipIndexConstant = property.FindPropertyRelative("clipIndexConstant");
-			var clipIndexParameter = property.FindPropertyRelative("clipIndexParameter");
 
 			EditorGUILayout.BeginVertical();
 			{
 				EditorGUILayout.PropertyField(audioConfig);
+
+				var clipMode = property.FindPropertyRelative("clipMode");
+				var clipIndexConstant = property.FindPropertyRelative("clipIndexConstant");
+				var clipIndexParameter = property.FindPropertyRelative("clipIndexParameter");
 
 				EditorGUILayout.BeginHorizontal();
 				{

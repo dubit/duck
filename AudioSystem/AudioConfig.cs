@@ -6,14 +6,14 @@ using Random = UnityEngine.Random;
 
 namespace DUCK.AudioSystem
 {
-	public interface IAudioConfig
+	public abstract class AbstractAudioConfig : ScriptableObject
 	{
-		IEnumerable<AudioConfig> AudioConfigs { get; }
-		string AlternativeText { get; }
+		public abstract AudioConfig[] AudioConfigs { get; }
+		public abstract string AlternativeText { get; }
 	}
 
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
-	public class AudioConfig : ScriptableObject, IAudioConfig
+	public class AudioConfig : AbstractAudioConfig
 	{
 		public const int RANDOM_CLIP = -1;
 
@@ -31,7 +31,7 @@ namespace DUCK.AudioSystem
 			OneAtATime
 		}
 
-		IEnumerable<AudioConfig> IAudioConfig.AudioConfigs
+		public override AudioConfig[] AudioConfigs
 		{
 			get
 			{
@@ -80,7 +80,7 @@ namespace DUCK.AudioSystem
 
 		[SerializeField]
 		private string alternativeText;
-		public string AlternativeText { get { return alternativeText; } }
+		public override string AlternativeText { get { return alternativeText; } }
 
 		/// <summary>
 		/// When an audio clip played, the channel it uses will be stored into this list.

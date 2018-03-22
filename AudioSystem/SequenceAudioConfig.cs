@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 namespace DUCK.AudioSystem
 {
 	[CreateAssetMenu(menuName = "Sequence Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
-	public class SequenceAudioConfig : ScriptableObject, IAudioConfig
+	public class SequenceAudioConfig : AbstractAudioConfig
 	{
 		public enum AudioClipIndexType
 		{
@@ -16,15 +16,15 @@ namespace DUCK.AudioSystem
 			Parameter
 		}
 
-		public IEnumerable<AudioConfig> AudioConfigs
+		public override AudioConfig[] AudioConfigs
 		{
 			get
 			{
-				return entries.Select(e => e.AudioConfig);
+				return entries.Select(e => e.AudioConfig).ToArray();
 			}
 		}
 
-		string IAudioConfig.AlternativeText
+		public override string AlternativeText
 		{
 			get
 			{
