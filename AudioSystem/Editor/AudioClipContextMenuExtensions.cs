@@ -1,45 +1,33 @@
-﻿using DUCK.Editor;
-using System;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace DUCK.AudioSystem.Editor
 {
-	[CustomEditor(typeof(AudioClip))]
-	[CanEditMultipleObjects]
-	public class AudioClipEditor : UnityEditor.Editor
+	public class AudioClipContextMenuExtensions : UnityEditor.Editor
 	{
-		private bool groupClips;
+		private const string GENERATE_AUDIO_CONFIGS = "Assets/Generate AudioConfig";
 
-		private void OnEnable()
+		[MenuItem(GENERATE_AUDIO_CONFIGS, true)]
+		private static bool CanGenerateAudioConfig()
 		{
-			groupClips = false;
-		}
-		
-		public override void OnInspectorGUI()
-		{
-			DrawDefaultInspector();
-
-			GUI.enabled = true;
-
-			EditorGUILayout.BeginHorizontal();
-			var multipleSelected = (Selection.objects.Length > 1);
-			if (GUILayout.Button(multipleSelected ? "Create AudioConfigs for these clips" : "Create AudioConfig for this clip"))
-			{
-				CreateAudioConfigs(Selection.objects, groupClips);
-			}
-
-			if (multipleSelected)
-			{
-				groupClips = EditorGUILayout.Toggle("Group?", groupClips);
-			}
-
-			EditorGUILayout.EndHorizontal();
+			return Selection.objects.All(obj => obj is AudioClip);
 		}
 
-		private static void CreateAudioConfigs(UnityEngine.Object[] selectedObjects, bool groupIntoOneConfig = false)
+		[MenuItem(GENERATE_AUDIO_CONFIGS)]
+		private static void GenerateAudioConfig()
+		{
+			if (!CanGenerateAudioConfig())
+			{
+				Debug.LogError("Unable to generate an AudioConfig from the selected assets.");
+				return;
+			}
+
+			GenerateAudioConfig(Selection.objects);
+		}
+
+		private static void GenerateAudioConfig(UnityEngine.Object[] selectedObjects, bool groupIntoOneConfig = true)
 		{
 			var sharedAudioConfigPath = "";
 			AudioConfig sharedAudioConfig = null;
@@ -48,7 +36,7 @@ namespace DUCK.AudioSystem.Editor
 			{
 				var audioClip = obj as AudioClip;
 				var assetFolderPath = "Assets" + new FileInfo(AssetDatabase.GetAssetPath(audioClip)).Directory.FullName.Substring(Application.dataPath.Length);
-
+				var newAudioConfigPath = assetFolderPath + "/" + audioClip.name + ".asset";
 				var newAudioConfig = sharedAudioConfig;
 
 				if (newAudioConfig == null)
@@ -58,7 +46,7 @@ namespace DUCK.AudioSystem.Editor
 					if (groupIntoOneConfig)
 					{
 						sharedAudioConfig = newAudioConfig;
-						sharedAudioConfigPath = assetFolderPath + "/New " + newAudioConfig.GetType() + ".asset";
+						sharedAudioConfigPath = newAudioConfigPath;
 					}
 					else
 					{
@@ -70,16 +58,15 @@ namespace DUCK.AudioSystem.Editor
 
 				if (!groupIntoOneConfig)
 				{
-					var newAudioConfigPath = assetFolderPath + "/" + audioClip.name + ".asset";
 					AssetDatabase.CreateAsset(newAudioConfig, AssetDatabase.GenerateUniqueAssetPath(newAudioConfigPath));
 				}
 			}
-			
+
 			if (groupIntoOneConfig)
 			{
 				AssetDatabase.CreateAsset(sharedAudioConfig, AssetDatabase.GenerateUniqueAssetPath(sharedAudioConfigPath));
 			}
-			
+
 			AssetDatabase.SaveAssets();
 			AssetDatabase.Refresh();
 		}
