@@ -9,7 +9,6 @@ namespace DUCK.AudioSystem
 	public abstract class AbstractAudioConfig : ScriptableObject
 	{
 		public abstract AudioConfig[] AudioConfigs { get; }
-		public abstract string AlternativeText { get; }
 	}
 
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
@@ -77,10 +76,6 @@ namespace DUCK.AudioSystem
 		[SerializeField]
 		private float maxDistance = 100.0f;
 		public float MaxDistance { get { return maxDistance; } }
-
-		[SerializeField]
-		private string alternativeText;
-		public override string AlternativeText { get { return alternativeText; } }
 
 		/// <summary>
 		/// When an audio clip played, the channel it uses will be stored into this list.

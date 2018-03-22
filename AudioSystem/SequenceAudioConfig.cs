@@ -24,14 +24,6 @@ namespace DUCK.AudioSystem
 			}
 		}
 
-		public override string AlternativeText
-		{
-			get
-			{
-				return String.Join(" ", entries.Select(e => e.AudioConfig.AlternativeText).ToArray());
-			}
-		}
-
 		[Serializable]
 		public class SequenceAudioConfigEntry
 		{
