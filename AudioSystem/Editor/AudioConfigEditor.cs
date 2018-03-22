@@ -19,6 +19,7 @@ namespace DUCK.AudioSystem.Editor
 		private SerializedProperty spatialMode;
 		private SerializedProperty minDistance;
 		private SerializedProperty maxDistance;
+		private SerializedProperty alternativeText;
 
 		private MethodInfo playClipMethod;
 		private MethodInfo stopAllClipsMethod;
@@ -38,6 +39,7 @@ namespace DUCK.AudioSystem.Editor
 			spatialMode = serializedObject.FindProperty("spatialMode");
 			minDistance = serializedObject.FindProperty("minDistance");
 			maxDistance = serializedObject.FindProperty("maxDistance");
+			alternativeText = serializedObject.FindProperty("alternativeText");
 
 			// Editor Audio Utils method for the Preview feature
 			// Pretty much the only option to play an audio clip in the Editor, for now
@@ -122,6 +124,9 @@ namespace DUCK.AudioSystem.Editor
 						throw new ArgumentOutOfRangeException();
 				}
 			}
+
+			EditorGUILayout.Space();
+			EditorGUILayout.PropertyField(alternativeText);
 
 			serializedObject.ApplyModifiedProperties();
 

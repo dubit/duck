@@ -66,6 +66,10 @@ namespace DUCK.AudioSystem
 		private float maxDistance = 100.0f;
 		public float MaxDistance { get { return maxDistance; } }
 
+		[SerializeField]
+		private string alternativeText;
+		public string AlternativeText { get { return alternativeText; } }
+
 		/// <summary>
 		/// When an audio clip played, the channel it uses will be stored into this list.
 		/// Should be auto managed by the Audio System Extension.
