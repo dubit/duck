@@ -16,8 +16,24 @@ namespace DUCK.AudioSystem
 			Parameter
 		}
 
+		public IEnumerable<AudioConfig> AudioConfigs
+		{
+			get
+			{
+				return entries.Select(e => e.AudioConfig);
+			}
+		}
+
+		string IAudioConfig.AlternativeText
+		{
+			get
+			{
+				return String.Join(" ", entries.Select(e => e.AudioConfig.AlternativeText).ToArray());
+			}
+		}
+
 		[Serializable]
-		public class CompositeAudioConfigEntry
+		public class SequenceAudioConfigEntry
 		{
 			[SerializeField]
 			private AudioConfig audioConfig;
@@ -53,18 +69,10 @@ namespace DUCK.AudioSystem
 			}
 		}
 
-		public IEnumerable<AudioConfig> AudioConfigs
-		{
-			get
-			{
-				return entries.Select(e => e.AudioConfig);
-			}
-		}
-
 		public float DelayBetweenClips { get { return delay; } }
 
 		[SerializeField]
-		private CompositeAudioConfigEntry[] entries;
+		private SequenceAudioConfigEntry[] entries;
 
 		[SerializeField]
 		private float delay;
