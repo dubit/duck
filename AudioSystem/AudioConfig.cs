@@ -6,9 +6,13 @@ using Random = UnityEngine.Random;
 
 namespace DUCK.AudioSystem
 {
+	public abstract class AbstractAudioConfig : ScriptableObject { }
+
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
-	public class AudioConfig : ScriptableObject
+	public class AudioConfig : AbstractAudioConfig
 	{
+		public const int RANDOM_CLIP = -1;
+
 		public enum SpatialModes
 		{
 			Pure2D,
@@ -87,6 +91,22 @@ namespace DUCK.AudioSystem
 			// Tiny helper for lazy developers
 			// In addition less crashes!
 			audioClips.RemoveAll(clip => clip == null);
+		}
+
+		/// <summary>
+		/// Get a specific Audio Clip from the list, or a random one if the index is invalid or unspecified.
+		/// </summary>
+		/// <param name="index">The index of the selected audio clip, if available.</param>
+		/// <returns>A random audio clip from the list</returns>
+		public AudioClip GetAudioClip(int index = RANDOM_CLIP)
+		{
+			var count = audioClips.Count;
+			if (count == 0 || index < 0 || index >= count)
+			{
+				return GetRandomAudioClip();
+			}
+
+			return audioClips[index];
 		}
 
 		/// <summary>

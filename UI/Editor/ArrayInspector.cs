@@ -17,21 +17,19 @@ namespace DUCK.Editor.Inspectors
 
 		protected SerializedProperty serializedArray;
 
-		protected void OnEnable()
+		protected virtual void OnEnable()
 		{
 			serializedArray = serializedObject.FindProperty(arrayPropertyName);
 		}
 
-		protected virtual void DrawPreArray() { }
+		protected virtual bool DrawPreArray() { return true; }
 		protected virtual void DrawPostArray() { }
 
 		public override void OnInspectorGUI()
 		{
 			serializedObject.Update();
 
-			DrawPreArray();
-
-			if (serializedArray != null)
+			if (DrawPreArray() && serializedArray != null)
 			{
 				arrayFoldoutBitmask = DrawArray(serializedArray, drawArrayElement, arrayFoldoutBitmask);
 			}

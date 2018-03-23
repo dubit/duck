@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DUCK.Utils;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DUCK.AudioSystem
@@ -42,7 +44,7 @@ namespace DUCK.AudioSystem
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
 		public static AudioSource Play(this AudioConfig audioConfig, Action onComplete = null)
 		{
-			return audioConfig.Play(audioConfig.VolumeScale, null, onComplete);
+			return audioConfig.Play(audioConfig.VolumeScale, null, onComplete: onComplete);
 		}
 
 		/// <summary>
@@ -52,9 +54,9 @@ namespace DUCK.AudioSystem
 		/// <param name="parent">The source of the audio</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this AudioConfig audioConfig, Transform parent, Action onComplete = null)
+		public static AudioSource Play(this AudioConfig audioConfig, Transform parent, int clipIndex = -1, Action onComplete = null)
 		{
-			return audioConfig.Play(audioConfig.VolumeScale, parent, onComplete);
+			return audioConfig.Play(audioConfig.VolumeScale, parent, clipIndex, onComplete);
 		}
 
 		/// <summary>
@@ -65,7 +67,7 @@ namespace DUCK.AudioSystem
 		/// <param name="parent">The source of the audio</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this AudioConfig audioConfig, float volume, Transform parent = null, Action onComplete = null)
+		public static AudioSource Play(this AudioConfig audioConfig, float volume, Transform parent = null, int clipIndex = -1, Action onComplete = null)
 		{
 			// Stop the previous playbacks if necessary
 			if (audioConfig.CurrentChannel != null)
@@ -94,13 +96,13 @@ namespace DUCK.AudioSystem
 			AudioSource targetChannel;
 			if (audioConfig.TemplateAudioSource != null)
 			{
-				targetChannel = AudioSystem.Instance.Play(audioConfig.GetRandomAudioClip(),
+				targetChannel = AudioSystem.Instance.Play(audioConfig.GetAudioClip(clipIndex),
 					audioConfig.TemplateAudioSource, volume, channel => HandleOnComplete(channel, audioConfig));
 			}
 			else
 			{
 				targetChannel = AudioSystem.Instance.GetFreeChannel();
-				targetChannel.clip = audioConfig.GetRandomAudioClip();
+				targetChannel.clip = audioConfig.GetAudioClip(clipIndex);
 				targetChannel.volume = volume;
 				targetChannel.loop = audioConfig.Loop;
 
@@ -149,6 +151,63 @@ namespace DUCK.AudioSystem
 			audioConfig.Callbacks.Add(targetChannel, onComplete);
 
 			return targetChannel;
+		}
+
+		/// <summary>
+		/// Play a sequence of audio clips with optional delay between them
+		/// </summary>
+		/// <param name="compositeAudioConfig">Enumerable collection of AudioConfigs</param>
+		/// <param name="volume">The volume scale for the channel (will override the config one)</param>
+		/// <param name="parent">The source of the audio</param>
+		/// <param name="delay">The delay time in between playing audio sources</param>
+		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
+		/// <param name="onComplete">The callback when the playback of all configs finished</param>
+		/// <returns>The channel (AudioSource) which the Audio System is using for the first clip in the sequence</returns>
+		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume = 1f, Transform parent = null, 
+			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
+		}
+
+		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume = 1f, Transform parent = null, 
+			Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
+		}
+
+		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, Action onComplete = null)
+		{
+			return PlaySequence(compositeConfig, onComplete: onComplete);
+		}
+
+		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 
+			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+		{
+			Func<AudioSource> playConfig = () =>
+			{
+				if (!enumerator.MoveNext())
+				{
+					onComplete.SafeInvoke();
+					return null;
+				}
+
+				onEachConfigPlayed.SafeInvoke(enumerator.Current);
+
+				return enumerator.Current.Play(volume, parent, (getClipId != null) ? getClipId(enumerator.Current) : AudioConfig.RANDOM_CLIP, () =>
+				{
+					PlaySequenceAtIndex(index + 1, enumerator, volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
+				});
+			};
+
+			if (index == 0 || delay <= 0f)
+			{
+				return playConfig();
+			}
+			else
+			{
+				Timer.SetTimeout(delay, () => playConfig());
+				return null;
+			}
 		}
 
 		private static void HandleOnComplete(AudioSource channel, AudioConfig audioConfig)

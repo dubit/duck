@@ -132,7 +132,7 @@ namespace DUCK.AudioSystem.Editor
 			GUI.enabled = config.AudioClips.Count > 0;
 			if (GUILayout.Button("Play Solo"))
 			{
-				PlayClip(config.GetRandomAudioClip());
+				PlayClip(config.GetAudioClip());
 			}
 			if (GUILayout.Button("Stop"))
 			{
