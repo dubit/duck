@@ -163,16 +163,21 @@ namespace DUCK.AudioSystem
 		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
 		/// <param name="onComplete">The callback when the playback of all configs finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System is using for the first clip in the sequence</returns>
-		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume, Transform parent = null, 
+		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume = 1f, Transform parent = null, 
 			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 		}
 
-		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume, Transform parent = null, 
+		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume = 1f, Transform parent = null, 
 			Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
+		}
+
+		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, Action onComplete = null)
+		{
+			return PlaySequence(compositeConfig, onComplete: onComplete);
 		}
 
 		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 

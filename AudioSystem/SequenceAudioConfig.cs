@@ -74,6 +74,11 @@ namespace DUCK.AudioSystem
 
 		private Dictionary<string, int> clipIndexParameters;
 
+		private void OnEnable()
+		{
+			compositeAudioConfigs = null;
+		}
+
 		public void SetParameter(string key, int value)
 		{
 			if (string.IsNullOrEmpty(key)) return;
