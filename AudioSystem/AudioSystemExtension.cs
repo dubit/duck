@@ -42,23 +42,6 @@ namespace DUCK.AudioSystem
 		/// <param name="audioConfig">The target audio config</param>
 		/// <param name="onComplete">The callback when the playback finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System are using</returns>
-		public static AudioSource Play(this AbstractAudioConfig audioConfig, float volume, Transform parent = null, Action onComplete = null)
-		{
-			if (audioConfig == null) return null;
-
-			if (audioConfig is AudioConfig)
-			{
-				return ((AudioConfig)audioConfig).Play(volume, parent, onComplete);
-			}
-
-			if (audioConfig is AudioConfigSequence)
-			{
-				return ((AudioConfigSequence)audioConfig).Play(volume, parent, onComplete);
-			}
-
-			throw new ArgumentException("Unsupported implementation of IAudioConfig: " + audioConfig.GetType());
-		}
-
 		public static AudioSource Play(this AudioConfig audioConfig, Action onComplete = null)
 		{
 			return audioConfig.Play(audioConfig.VolumeScale, null, onComplete: onComplete);
@@ -186,7 +169,7 @@ namespace DUCK.AudioSystem
 			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 		}
 
-		public static AudioSource Play(this AudioConfigSequence compositeConfig, float volume, Transform parent = null, 
+		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume, Transform parent = null, 
 			Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
