@@ -8,7 +8,7 @@ using UnityEngine;
 namespace DUCK.AudioSystem.Editor
 {
 	[CustomEditor(typeof(AudioConfigSequence))]
-	public class SequenceAudioConfigEditor : ArrayInspector
+	public class AudioConfigSequenceEditor : ArrayInspector
 	{
 		private AudioConfigSequence config;
 		private SerializedProperty delay;
