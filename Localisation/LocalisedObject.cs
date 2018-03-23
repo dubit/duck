@@ -7,7 +7,7 @@ namespace DUCK.Localisation
 	/// 
 	/// When the language is changed, they will automatically try to update their content to the localised version.
 	/// </summary>
-	public abstract class LocalisedObject : MonoBehaviour
+	public abstract class LocalisedObject : MonoBehaviour, ILocalisedObject
 	{
 		public enum LocalisedResourceType
 		{
