@@ -51,9 +51,9 @@ namespace DUCK.AudioSystem
 				return ((AudioConfig)audioConfig).Play(volume, parent, onComplete);
 			}
 
-			if (audioConfig is SequenceAudioConfig)
+			if (audioConfig is AudioConfigSequence)
 			{
-				return ((SequenceAudioConfig)audioConfig).Play(volume, parent, onComplete);
+				return ((AudioConfigSequence)audioConfig).Play(volume, parent, onComplete);
 			}
 
 			throw new ArgumentException("Unsupported implementation of IAudioConfig: " + audioConfig.GetType());
@@ -186,10 +186,10 @@ namespace DUCK.AudioSystem
 			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 		}
 
-		public static AudioSource Play(this SequenceAudioConfig compositeConfig, float volume, Transform parent = null, 
+		public static AudioSource Play(this AudioConfigSequence compositeConfig, float volume, Transform parent = null, 
 			Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
-			return PlaySequence(compositeConfig.AudioConfigs, volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
+			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.DelayBetweenClips, onComplete, onEachConfigPlayed);
 		}
 
 		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 

@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace DUCK.AudioSystem.Editor
 {
-	[CustomEditor(typeof(SequenceAudioConfig))]
+	[CustomEditor(typeof(AudioConfigSequence))]
 	public class SequenceAudioConfigEditor : ArrayInspector
 	{
-		private SequenceAudioConfig config;
+		private AudioConfigSequence config;
 		private SerializedProperty delay;
 
 		protected override Action<SerializedProperty> drawArrayElement { get { return DrawEntry; } }
@@ -47,14 +47,14 @@ namespace DUCK.AudioSystem.Editor
 				{
 					EditorGUILayout.PropertyField(clipMode);
 
-					var audioClipMode = (SequenceAudioConfig.AudioClipIndexType)clipMode.enumValueIndex;
+					var audioClipMode = (AudioConfigSequence.AudioClipIndexType)clipMode.enumValueIndex;
 					switch (audioClipMode)
 					{
-						case SequenceAudioConfig.AudioClipIndexType.Constant:
+						case AudioConfigSequence.AudioClipIndexType.Constant:
 							clipIndexConstant.intValue = Math.Max(0, EditorGUILayout.IntField(clipIndexConstant.intValue));
 							break;
 
-						case SequenceAudioConfig.AudioClipIndexType.Parameter:
+						case AudioConfigSequence.AudioClipIndexType.Parameter:
 							clipIndexParameter.stringValue = EditorGUILayout.TextField(clipIndexParameter.stringValue).Trim().Replace(" ", string.Empty);
 							break;
 					}

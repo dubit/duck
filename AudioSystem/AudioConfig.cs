@@ -6,10 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace DUCK.AudioSystem
 {
-	public abstract class AbstractAudioConfig : ScriptableObject
-	{
-		public abstract AudioConfig[] AudioConfigs { get; }
-	}
+	public abstract class AbstractAudioConfig : ScriptableObject { }
 
 	[CreateAssetMenu(menuName = "Audio Config (Fancy™)", order = 220)] // Right after Audio Mixer
 	public class AudioConfig : AbstractAudioConfig
@@ -28,14 +25,6 @@ namespace DUCK.AudioSystem
 			Normal,
 			Override,
 			OneAtATime
-		}
-
-		public override AudioConfig[] AudioConfigs
-		{
-			get
-			{
-				return new[] { this };
-			}
 		}
 
 		[Tooltip("A list of audio clips. Can play a random one if it has more than 1 clips.")]
