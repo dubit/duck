@@ -114,13 +114,15 @@ namespace DUCK.Localisation
 
 		public static void SwitchLanguage(string cultureName)
 		{
-			CurrentLocale = new CultureInfo(cultureName);
-			currentLocalisationTable = LoadLocalisationTable(cultureName);
-
-			if (currentLocalisationTable == null)
+			var loadedTable = LoadLocalisationTable(cultureName);
+			if (loadedTable == null)
 			{
 				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", cultureName));
+				return;
 			}
+
+			CurrentLocale = new CultureInfo(cultureName);
+			currentLocalisationTable = loadedTable;
 
 			OnLocaleChanged.SafeInvoke();
 		}
