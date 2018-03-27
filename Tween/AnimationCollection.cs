@@ -35,7 +35,7 @@ namespace DUCK.Tween
 		/// <summary>
 		/// Starts playback of the AnimationCollection starting at the first animation
 		/// </summary>
-		/// <param name="onComplete">An optional callback invoked when the AnimationCollection is complete</param>
+		/// <param name="onComplete">A callback invoked when the AnimationCollection is complete</param>
 		/// <param name="onAbort">An optional callback invoked if the AnimationCollection is aborted</param>
 		public override void Play(Action onComplete, Action onAbort = null)
 		{
