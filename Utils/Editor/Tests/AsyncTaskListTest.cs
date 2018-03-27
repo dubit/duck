@@ -12,7 +12,7 @@ namespace DUCK.Utils.Editor.Tests
 		{
 			Assert.DoesNotThrow(() =>
 			{
-				var tasks = new AsyncTaskList();
+				new AsyncTaskList();
 			});
 		}
 
