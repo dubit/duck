@@ -25,7 +25,7 @@ namespace DUCK.Tween
 				{
 					nextAnimation.Play(HandleCurrentAnimationCompleted, () =>
 					{
-						if (!nextAnimation.IsValid)
+						if (IsPlaying && !nextAnimation.IsValid)
 						{
 							Animations.Remove(nextAnimation);
 							PlayQueuedAnimations();

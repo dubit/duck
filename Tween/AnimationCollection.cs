@@ -37,7 +37,7 @@ namespace DUCK.Tween
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the AnimationCollection is complete</param>
 		/// <param name="onAbort">An optional callback invoked if the AnimationCollection is aborted</param>
-		public override void Play(Action onComplete = null, Action onAbort = null)
+		public override void Play(Action onComplete, Action onAbort = null)
 		{
 			base.Play(onComplete, onAbort);
 			NumberOfAnimationsCompleted = 0;
@@ -49,11 +49,11 @@ namespace DUCK.Tween
 		/// </summary>
 		public override void Abort()
 		{
+			base.Abort();
 			foreach (var animation in Animations)
 			{
 				animation.Abort();
 			}
-			base.Abort();
 		}
 
 		/// <summary>

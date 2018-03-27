@@ -13,13 +13,17 @@
 
 			if (Animations.Count > 0)
 			{
-				Animations.ForEach(animation => animation.Play(HandleEachAnimationCompleted, () =>
+				for (var i = 0; i < Animations.Count; ++i)
 				{
-					if (!animation.IsValid)
+					var animation = Animations[i];
+					animation.Play(HandleEachAnimationCompleted, () =>
 					{
-						Animations.Remove(animation);
-					}
-				}));
+						if (IsPlaying && !animation.IsValid)
+						{
+							Animations.Remove(animation);
+						}
+					});
+				}
 			}
 			// In case of all animations have been removed
 			else
