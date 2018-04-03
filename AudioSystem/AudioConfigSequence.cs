@@ -91,12 +91,15 @@ namespace DUCK.AudioSystem
 			clipIndexParameters[key] = value;
 		}
 
-		public int GetClipIndex(AudioConfig audioConfig)
+		public int GetClipIndex(int audioConfigIndex)
 		{
-			var entry = entries.FirstOrDefault(e => e.AudioConfig == audioConfig);
-			if (entry != null)
+			if (audioConfigIndex >= 0 && audioConfigIndex < entries.Length)
 			{
-				return entry.GetClipIndex(clipIndexParameters);
+				var entry = entries[audioConfigIndex];
+				if (entry != null)
+				{
+					return entry.GetClipIndex(clipIndexParameters);
+				}
 			}
 
 			return AudioConfig.RANDOM_CLIP;
