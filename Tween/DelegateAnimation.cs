@@ -119,7 +119,7 @@ namespace DUCK.Tween
 			this.animationCreationFunction = animationCreationFunction;
 		}
 
-		public override void Play(Action onComplete = null, Action onAbort = null)
+		public override void Play(Action onComplete, Action onAbort = null)
 		{
 			base.Play(onComplete, onAbort);
 

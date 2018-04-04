@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DUCK.Tween
 {
@@ -39,6 +40,12 @@ namespace DUCK.Tween
 		/// <param name="onAbort">An optional callback invoked if the AnimationCollection is aborted</param>
 		public override void Play(Action onComplete, Action onAbort = null)
 		{
+			if (!IsValid)
+			{
+				Debug.LogError("Invalid Animation Collection -- It's Empty!");
+				return;
+			}
+
 			base.Play(onComplete, onAbort);
 			NumberOfAnimationsCompleted = 0;
 			PlayQueuedAnimations();

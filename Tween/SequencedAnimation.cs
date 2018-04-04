@@ -18,6 +18,13 @@ namespace DUCK.Tween
 
 		protected override void PlayQueuedAnimations()
 		{
+			// All animations have been removed
+			if (Animations.Count == 0)
+			{
+				Debug.LogError("Aborting Sequenced Animation -- all animations are invalid!");
+				Abort();
+			}
+
 			if (NumberOfAnimationsCompleted < Animations.Count)
 			{
 				var nextAnimation = Animations[NumberOfAnimationsCompleted];
@@ -27,15 +34,13 @@ namespace DUCK.Tween
 					{
 						if (IsPlaying && !nextAnimation.IsValid)
 						{
-							Animations.Remove(nextAnimation);
-							PlayQueuedAnimations();
+							RemoveInvalidAnimation(nextAnimation);
 						}
 					});
 				}
 				else
 				{
-					Animations.Remove(nextAnimation);
-					PlayQueuedAnimations();
+					RemoveInvalidAnimation(nextAnimation);
 				}
 			}
 			else if (NumberOfAnimationsCompleted == Animations.Count)
@@ -47,6 +52,13 @@ namespace DUCK.Tween
 		private void HandleCurrentAnimationCompleted()
 		{
 			NumberOfAnimationsCompleted++;
+			PlayQueuedAnimations();
+		}
+
+		private void RemoveInvalidAnimation(AbstractAnimation targetAnimation)
+		{
+			Debug.LogError("Removed an invalid animation from the Sequenced Queue!");
+			Animations.Remove(targetAnimation);
 			PlayQueuedAnimations();
 		}
 
