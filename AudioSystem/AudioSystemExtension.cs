@@ -164,7 +164,7 @@ namespace DUCK.AudioSystem
 		/// <param name="onComplete">The callback when the playback of all configs finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System is using for the first clip in the sequence</returns>
 		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume = 1f, Transform parent = null, 
-			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+			Func<int, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 		}
@@ -181,7 +181,7 @@ namespace DUCK.AudioSystem
 		}
 
 		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 
-			Func<AudioConfig, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
+			Func<int, int> getClipId = null, float delay = 0f, Action onComplete = null, Action<AudioConfig> onEachConfigPlayed = null)
 		{
 			Func<AudioSource> playConfig = () =>
 			{
@@ -193,7 +193,7 @@ namespace DUCK.AudioSystem
 
 				onEachConfigPlayed.SafeInvoke(enumerator.Current);
 
-				return enumerator.Current.Play(volume, parent, (getClipId != null) ? getClipId(enumerator.Current) : AudioConfig.RANDOM_CLIP, () =>
+				return enumerator.Current.Play(volume, parent, (getClipId != null) ? getClipId(index) : AudioConfig.RANDOM_CLIP, () =>
 				{
 					PlaySequenceAtIndex(index + 1, enumerator, volume, parent, getClipId, delay, onComplete, onEachConfigPlayed);
 				});
