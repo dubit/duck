@@ -100,5 +100,22 @@ namespace DUCK.Tween.Extensions
 		{
 			return animationCollection.Add(new CustomAnimation(customUpdate, from, to, duration, easingFunction));
 		}
+
+		/// <summary>
+		/// Adds a CustomAnimation as a child of this AnimationCollection
+		/// </summary>
+		/// <param name="animationCollection">The target animation collection</param>
+		/// <param name="target">The target object</param>
+		/// <param name="customUpdate">A Custom Update function</param>
+		/// <param name="from">From value</param>
+		/// <param name="to">To value</param>
+		/// <param name="duration">Duration of the animation</param>
+		/// <param name="easingFunction">The easing function for the interpolation</param>
+		/// <returns>Returns this AnimationCollection to comply with fluent interface</returns>
+		public static AnimationCollection Custom<T>(this AnimationCollection animationCollection, T target, Action<T, float> customUpdate,
+			float from = 0, float to = 1.0f, float duration = 1.0f, Func<float, float> easingFunction = null)
+		{
+			return animationCollection.Add(new CustomAnimation<T>(target, customUpdate, from, to, duration, easingFunction));
+		}
 	}
 }
