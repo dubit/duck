@@ -121,7 +121,10 @@ namespace DUCK.Tween
 
 		public override void Abort()
 		{
-			AnimationDriver.Remove(Update);
+			if (IsPlaying)
+			{
+				AnimationDriver.Remove(Update);
+			}
 			base.Abort();
 		}
 

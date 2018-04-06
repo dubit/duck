@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DUCK.Tween
 {
@@ -35,10 +36,16 @@ namespace DUCK.Tween
 		/// <summary>
 		/// Starts playback of the AnimationCollection starting at the first animation
 		/// </summary>
-		/// <param name="onComplete">An optional callback invoked when the AnimationCollection is complete</param>
+		/// <param name="onComplete">A callback invoked when the AnimationCollection is complete</param>
 		/// <param name="onAbort">An optional callback invoked if the AnimationCollection is aborted</param>
-		public override void Play(Action onComplete = null, Action onAbort = null)
+		public override void Play(Action onComplete, Action onAbort = null)
 		{
+			if (!IsValid)
+			{
+				Debug.LogError("Invalid Animation Collection -- It's Empty!");
+				return;
+			}
+
 			base.Play(onComplete, onAbort);
 			NumberOfAnimationsCompleted = 0;
 			PlayQueuedAnimations();
@@ -49,11 +56,11 @@ namespace DUCK.Tween
 		/// </summary>
 		public override void Abort()
 		{
+			base.Abort();
 			foreach (var animation in Animations)
 			{
 				animation.Abort();
 			}
-			base.Abort();
 		}
 
 		/// <summary>
