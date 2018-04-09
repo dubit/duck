@@ -74,6 +74,10 @@ namespace DUCK.DebugMenu
 			Log(text, LogType.Error);
 		}
 
+		/// <summary>
+		/// The logs are passed back to the main thread through a queue as instantiating the new log
+		/// must be done on the main thread, however the queue itself is not properly concurrent.
+		/// </summary>
 		private static void Log(string text, LogType logType)
 		{
 			if (instance == null) return;
