@@ -1,13 +1,13 @@
-﻿using DUCK.Utils;
-using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using DUCK.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace DUCK.DebugMenu
 {
 	/// <summary>
-	/// A script which manages a list of loge entries for display to QA / user
+	/// Manages a list of log entries displayed in the debug menu
 	/// </summary>
 	public class DebugMenuLog : MonoBehaviour
 	{
@@ -18,17 +18,31 @@ namespace DUCK.DebugMenu
 			Error = 16711680
 		}
 
+		private struct PendingLog
+		{
+			public readonly string LogMessage;
+			public readonly LogType LogType;
+
+			public PendingLog(string logMessage, LogType logType)
+			{
+				LogMessage = logMessage;
+				LogType = logType;
+			}
+		}
+
 		[SerializeField]
 		private ScrollRect scrollRect;
 
 		[SerializeField]
 		private RectTransform container;
-		
+
 		[SerializeField]
 		private RectTransform entryPrefab;
 
 		[SerializeField]
 		private Button clearButton;
+
+		private Queue<PendingLog> pendingLogs;
 
 		private static DebugMenuLog instance;
 
@@ -64,7 +78,7 @@ namespace DUCK.DebugMenu
 		{
 			if (instance == null) return;
 
-			instance.AddLogEntry(text, logType);
+			instance.pendingLogs.Enqueue(new PendingLog(text, logType));
 		}
 
 		public void Initialise()
@@ -72,9 +86,13 @@ namespace DUCK.DebugMenu
 			if (instance == null)
 			{
 				instance = this;
+				pendingLogs = new Queue<PendingLog>();
 			}
 		}
 
+		/// <summary>
+		/// Called from a Clear button OnClick in the prefab
+		/// </summary>
 		public void Clear()
 		{
 			foreach (var rectTransform in container.GetComponentsInChildren<RectTransform>())
@@ -92,7 +110,7 @@ namespace DUCK.DebugMenu
 		{
 			clearButton.interactable = true;
 
-			var newLogEntry = Instantiate<RectTransform>(entryPrefab, container, false);
+			var newLogEntry = Instantiate(entryPrefab, container, false);
 			newLogEntry.transform.SetAsLastSibling();
 
 			var textComponent = newLogEntry.GetComponent<Text>();
@@ -102,17 +120,25 @@ namespace DUCK.DebugMenu
 			iconComponent.color = ColorUtils.IntToColor((int)logType);
 
 			newLogEntry.gameObject.SetActive(true);
-
-			if (gameObject.activeInHierarchy)
-			{
-				StartCoroutine(ScrollToBottom());
-			}
 		}
 
 		private IEnumerator ScrollToBottom()
 		{
 			yield return new WaitForEndOfFrame();
 			scrollRect.verticalNormalizedPosition = 0f;
+		}
+
+		private void Update()
+		{
+			if (pendingLogs.Count == 0) return;
+
+			while (pendingLogs.Count > 0)
+			{
+				var pendingLog = pendingLogs.Dequeue();
+				AddLogEntry(pendingLog.LogMessage, pendingLog.LogType);
+			}
+
+			StartCoroutine(ScrollToBottom());
 		}
 	}
 }
