@@ -66,7 +66,11 @@ namespace DUCK.DebugMenu
 
 			logPage.Initialise();
 
-			DontDestroyOnLoad(this);
+			//NOTE When running tests you cannot use DontDestroyOnLoad in editor mode
+			if (Application.isPlaying)
+			{
+				DontDestroyOnLoad(this);
+			}
 		}
 
 		private void Start()

@@ -32,7 +32,11 @@ namespace DUCK.Tween
 		private static DefaultAnimationDriver CreateInstance()
 		{
 			var gameObject = new GameObject { hideFlags = HideFlags.HideInHierarchy };
-			DontDestroyOnLoad(gameObject);
+			//NOTE When running tests you cannot use DontDestroyOnLoad in editor mode
+			if (Application.isPlaying)
+			{
+				DontDestroyOnLoad(gameObject);
+			}
 			return instance = gameObject.AddComponent<DefaultAnimationDriver>();
 		}
 

@@ -77,7 +77,11 @@ namespace DUCK.Utils
 		private MonoBehaviourService()
 		{
 			var gameObject = new GameObject { hideFlags = HideFlags.HideInHierarchy };
-			Object.DontDestroyOnLoad(gameObject);
+			//NOTE When running tests you cannot use DontDestroyOnLoad in editor mode
+			if (Application.isPlaying)
+			{
+				Object.DontDestroyOnLoad(gameObject);
+			}
 			serviceInstance = gameObject.AddComponent<MonoBehaviourServiceBehaviour>();
 
 			serviceInstance.OnLevelLoaded += () => { OnLevelLoaded.SafeInvoke(); };
