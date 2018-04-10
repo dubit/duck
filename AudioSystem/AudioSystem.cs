@@ -130,7 +130,9 @@ namespace DUCK.AudioSystem
 				throw new Exception("You should only have 1 AudioSystem in your game! " + name);
 			}
 			Instance = this;
-			if (transform.parent == null)
+
+			//NOTE When running tests you cannot use DontDestroyOnLoad in editor mode
+			if (transform.parent == null && Application.isPlaying)
 			{
 				DontDestroyOnLoad(this);
 			}
