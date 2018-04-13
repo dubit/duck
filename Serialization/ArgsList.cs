@@ -13,12 +13,15 @@ namespace DUCK.Serialization
 	{
 		public static bool IsSupportedType(Type type)
 		{
-			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
+			return supportedTypesArray.Contains(type) ||
+				type.IsSubclassOf(typeof(Component)) ||
+				type.IsSubclassOf(typeof(Enum));
 		}
 
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
 		private static readonly Type[] supportedTypesArray;
 		private static readonly Dictionary<string, Type> componentTypes;
+		private static readonly Dictionary<string, Type> enumTypes;
 
 		static ArgsList()
 		{
@@ -38,6 +41,7 @@ namespace DUCK.Serialization
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
 			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.FullName, t => t);
 			componentTypes = new Dictionary<string, Type>();
+			enumTypes = new Dictionary<string, Type>();
 
 			// Get every type that extends component
 			var assemblies = new []
@@ -50,16 +54,22 @@ namespace DUCK.Serialization
 				typeof(Graphic).Assembly,
 			};
 
-			var componentSubTypes = assemblies.SelectMany(a => a.GetTypes())
-				.Where(t => t.IsSubclassOf(typeof(Component)));
-
-			foreach (var type in componentSubTypes)
+			foreach (var type in assemblies.SelectMany(a => a.GetTypes()))
 			{
-				// Make sure this type has not been added already 
-				// (it can happen, since some types are shipped in multiple assemblies)
-				if (!componentTypes.ContainsKey(type.FullName))
+				var fullTypeName = type.FullName;
+				if (type.IsSubclassOf(typeof(Component)))
 				{
-					componentTypes.Add(type.FullName, type);
+					if (!componentTypes.ContainsKey(fullTypeName))
+					{
+						componentTypes.Add(fullTypeName, type);
+					}
+				}
+				else if (type.IsSubclassOf(typeof(Enum)))
+				{
+					if (!enumTypes.ContainsKey(fullTypeName))
+					{
+						enumTypes.Add(fullTypeName, type);
+					}
 				}
 			}
 		}
@@ -71,16 +81,16 @@ namespace DUCK.Serialization
 
 		public IList<object> AllArgs
 		{
-			get 
+			get
 			{
-				return args.Select((a,i) => 
+				return args.Select((a,i) =>
 				{
 					if (a != null && argTypes[i].IsSubclassOf(typeof(Component)))
 					{
 						return ((GameObject) a).GetComponent(argTypes[i]);
 					}
 					return a;
-				}).ToList(); 
+				}).ToList();
 			}
 		}
 
@@ -205,7 +215,7 @@ namespace DUCK.Serialization
 			{
 				return ((GameObject) args[index]).GetComponent<T>();
 			}
-			
+
 			return (T) args[index];
 		}
 

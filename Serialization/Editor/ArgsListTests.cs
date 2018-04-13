@@ -438,6 +438,26 @@ namespace DUCK.Serialization.Editor
 		}
 
 		[Test]
+		public void ExpectEnumSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(GradientMode)}));
+
+			// Add some data, serialize and deserialize
+			var value = GradientMode.Fixed;
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<GradientMode>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+
+		[Test]
 		public void ExpectSerializationOfMultipleTypesToBeSupported()
 		{
 			var argsList = new ArgsList();

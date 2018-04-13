@@ -9,6 +9,7 @@ namespace DUCK.Serialization
 	public partial class ArgsList
 	{
 		private const string COMPONENT_PREFIX = "c:";
+		private const string ENUM_PREFIX = "e:";
 
 		[SerializeField]
 		private string[] typeOrder;
@@ -53,11 +54,15 @@ namespace DUCK.Serialization
 				{
 					t = typeof(GameObject);
 				}
-				if (argLists.ContainsKey(t))
+				else if (t.IsSubclassOf(typeof(Enum)))
+				{
+					t = typeof(int);
+				}
+				else if (argLists.ContainsKey(t))
 				{
 					return argLists[t];
 				}
-				return argLists[t] = new List<object>();
+				return argLists.ContainsKey(t) ? argLists[t] : argLists[t] = new List<object>();
 			};
 
 			for (int i = 0; i < argTypes.Count; i++)
@@ -69,6 +74,12 @@ namespace DUCK.Serialization
 					var arg = args[i];
 					list.Add(arg);
 					typeOrderList.Add(COMPONENT_PREFIX + argType.FullName);
+				}
+				else if (argType.IsSubclassOf(typeof(Enum)))
+				{
+					var arg = args[i];
+					list.Add(arg);
+					typeOrderList.Add(ENUM_PREFIX + argType.FullName);
 				}
 				else
 				{
@@ -116,6 +127,20 @@ namespace DUCK.Serialization
 					argType = componentTypes[typeName];
 					localArgTypes.Add(argType);
 					list = serializedLists[typeof(GameObject).FullName];
+				}
+				else if (typeName.StartsWith(ENUM_PREFIX))
+				{
+					// strip off prefix
+					typeName = typeName.Replace(ENUM_PREFIX, "");
+
+					if (!enumTypes.ContainsKey(typeName))
+					{
+						throw new Exception("ArgsList cannot deserialize enum item of type: " + typeName + ", it was not found in the assemblies");
+					}
+
+					argType = enumTypes[typeName];
+					localArgTypes.Add(argType);
+					list = serializedLists[typeof(int).FullName];
 				}
 				else
 				{

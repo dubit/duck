@@ -46,6 +46,12 @@ namespace DUCK.Utils.Editor.EditorGUIHelpers
 				return EditorGUILayout.ObjectField(label, (UnityEngine.Object) obj, type, true);
 			}
 
+			// special case for enum fields
+			if (type.IsSubclassOf(typeof(Enum)))
+			{
+				return EditorGUILayout.EnumPopup(label, (Enum) obj);
+			}
+
 			// check we can deal with this type of field
 			if (!drawerFunctions.ContainsKey(type))
 			{
