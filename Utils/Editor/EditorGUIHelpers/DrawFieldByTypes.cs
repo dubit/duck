@@ -49,7 +49,7 @@ namespace DUCK.Utils.Editor.EditorGUIHelpers
 			// special case for enum fields
 			if (type.IsSubclassOf(typeof(Enum)))
 			{
-				return EditorGUILayout.EnumPopup(label, (Enum) obj);
+				return EditorGUILayout.EnumPopup(label, (Enum)Enum.ToObject(type, (int)obj));
 			}
 
 			// check we can deal with this type of field
