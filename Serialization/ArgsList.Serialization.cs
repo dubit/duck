@@ -10,6 +10,7 @@ namespace DUCK.Serialization
 	{
 		private const string COMPONENT_PREFIX = "c:";
 		private const string ENUM_PREFIX = "e:";
+		private const string SCRIPTABLE_OBJECT_PREFIX = "so:";
 
 		[SerializeField]
 		private string[] typeOrder;
@@ -41,6 +42,9 @@ namespace DUCK.Serialization
 		[SerializeField]
 		private Color[] colorArgs;
 
+		[SerializeField]
+		private ScriptableObject[] scriptableObjectArgs;
+
 		public void OnBeforeSerialize()
 		{
 			if (argTypes == null) return;
@@ -57,6 +61,10 @@ namespace DUCK.Serialization
 				else if (t.IsSubclassOf(typeof(Enum)))
 				{
 					t = typeof(int);
+				}
+				else if (t.IsSubclassOf(typeof(ScriptableObject)))
+				{
+					t = typeof(ScriptableObject);
 				}
 				else if (argLists.ContainsKey(t))
 				{
@@ -80,6 +88,12 @@ namespace DUCK.Serialization
 					var arg = args[i];
 					list.Add(arg);
 					typeOrderList.Add(ENUM_PREFIX + argType.FullName);
+				}
+				else if (argType.IsSubclassOf(typeof(ScriptableObject)))
+				{
+					var arg = args[i];
+					list.Add(arg);
+					typeOrderList.Add(SCRIPTABLE_OBJECT_PREFIX + argType.FullName);
 				}
 				else
 				{
@@ -141,6 +155,20 @@ namespace DUCK.Serialization
 					argType = enumTypes[typeName];
 					localArgTypes.Add(argType);
 					list = serializedLists[typeof(int).FullName];
+				}
+				else if (typeName.StartsWith(SCRIPTABLE_OBJECT_PREFIX))
+				{
+					// strip off prefix
+					typeName = typeName.Replace(SCRIPTABLE_OBJECT_PREFIX, "");
+
+					if (!scriptableObjectTypes.ContainsKey(typeName))
+					{
+						throw new Exception("ArgsList cannot deserialize ScriptableObject item of type: " + typeName + ", it was not found in the assemblies");
+					}
+
+					argType = scriptableObjectTypes[typeName];
+					localArgTypes.Add(argType);
+					list = serializedLists[typeof(ScriptableObject).FullName];
 				}
 				else
 				{

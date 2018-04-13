@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DUCK.Tween.Serialization;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -452,6 +453,26 @@ namespace DUCK.Serialization.Editor
 			var json = JsonUtility.ToJson(argsList);
 			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
 			var result = resultArgsList.Get<GradientMode>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+
+		[Test]
+		public void ExpectScriptableObjectSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TweenConfig)}));
+
+			// Add some data, serialize and deserialize
+			var value = ScriptableObject.CreateInstance<TweenConfig>();
+			argsList.Set(0, value);
+
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<TweenConfig>(0);
 
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);

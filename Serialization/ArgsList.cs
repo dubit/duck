@@ -15,6 +15,7 @@ namespace DUCK.Serialization
 		{
 			return supportedTypesArray.Contains(type) ||
 				type.IsSubclassOf(typeof(Component)) ||
+				type.IsSubclassOf(typeof(ScriptableObject)) ||
 				type.IsSubclassOf(typeof(Enum));
 		}
 
@@ -22,6 +23,7 @@ namespace DUCK.Serialization
 		private static readonly Type[] supportedTypesArray;
 		private static readonly Dictionary<string, Type> componentTypes;
 		private static readonly Dictionary<string, Type> enumTypes;
+		private static readonly Dictionary<string, Type> scriptableObjectTypes;
 
 		static ArgsList()
 		{
@@ -36,12 +38,14 @@ namespace DUCK.Serialization
 				SupportedType.Create(i => i.vector3Args, (i, v) => i.vector3Args = v),
 				SupportedType.Create(i => i.vector4Args, (i, v) => i.vector4Args = v),
 				SupportedType.Create(i => i.colorArgs, (i, v) => i.colorArgs = v),
+				SupportedType.Create(i => i.scriptableObjectArgs, (i, v) => i.scriptableObjectArgs = v),
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
 			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.FullName, t => t);
 			componentTypes = new Dictionary<string, Type>();
 			enumTypes = new Dictionary<string, Type>();
+			scriptableObjectTypes = new Dictionary<string, Type>();
 
 			// Get every type that extends component
 			var assemblies = new []
@@ -69,6 +73,13 @@ namespace DUCK.Serialization
 					if (!enumTypes.ContainsKey(fullTypeName))
 					{
 						enumTypes.Add(fullTypeName, type);
+					}
+				}
+				else if (type.IsSubclassOf(typeof(ScriptableObject)))
+				{
+					if (!scriptableObjectTypes.ContainsKey(fullTypeName))
+					{
+						scriptableObjectTypes.Add(fullTypeName, type);
 					}
 				}
 			}
