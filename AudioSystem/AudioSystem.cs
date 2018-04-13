@@ -77,7 +77,7 @@ namespace DUCK.AudioSystem
 
 				timer += dt;
 				channel.volume = Mathf.Lerp(from, to, timer / duration);
-				if (timer >= duration)
+				if (timer >= duration || !channel.isPlaying)
 				{
 					if (onComplete != null)
 					{
