@@ -13,30 +13,28 @@ namespace DUCK.Utils
 			return File.Exists(GetFilePath<T>(uid));
 		}
 
-		public static void Save<T>(T dataObject, string uid = "") where T : new()
+		public static void Save<T>(T dataObject, string uid = "")
 		{
 			if (dataObject == null) throw new ArgumentException("Cannot save a null object.");
 
 			File.WriteAllText(GetFilePath<T>(uid), JsonUtility.ToJson(dataObject));
 		}
 
-		public static bool Load<T>(out T loadedData, string uid = "") where T : new()
+		public static T Load<T>(string uid = "")
 		{
-			var path = GetFilePath<T>();
+			var path = GetFilePath<T>(uid);
 
 			try
 			{
-				loadedData = JsonUtility.FromJson<T>(File.ReadAllText(path));
-				return true;
+				return JsonUtility.FromJson<T>(File.ReadAllText(path));
 			}
 			catch
 			{
-				loadedData = new T();
-				return false;
+				return default(T);
 			}
 		}
 
-		public static bool Delete<T>(string uid = "") where T : new()
+		public static bool Delete<T>(string uid = "")
 		{
 			var path = GetFilePath<T>(uid);
 
@@ -49,7 +47,7 @@ namespace DUCK.Utils
 			return false;
 		}
 
-		private static string GetFilePath<T>(string uid = "")
+		private static string GetFilePath<T>(string uid)
 		{
 			if (!Directory.Exists(SaveDataPath))
 			{
