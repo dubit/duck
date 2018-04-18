@@ -225,7 +225,7 @@ namespace DUCK.Serialization
 			{
 				return new SupportedType(
 					typeof(T),
-					i => getList(i).Cast<object>().ToList(),
+					i => (getList(i) ?? new T[0]).Cast<object>().ToList(),
 					(i, v) => setList(i, v.Cast<T>().ToArray()));
 			}
 		}
