@@ -42,6 +42,10 @@ namespace DUCK.AudioSystem
 			[SerializeField]
 			private string clipIndexParameter;
 
+			[SerializeField]
+			private float postClipDelay;
+			public float PostClipDelay { get { return postClipDelay; } }
+
 			public AudioConfig AudioConfig { get { return audioConfig; } }
 
 			public int GetClipIndex(IDictionary<string, int> parameters = null)
@@ -64,13 +68,8 @@ namespace DUCK.AudioSystem
 			}
 		}
 
-		public float DelayBetweenClips { get { return delay; } }
-
 		[SerializeField]
 		private SequenceAudioConfigEntry[] entries;
-
-		[SerializeField]
-		private float delay;
 
 		private Dictionary<string, int> clipIndexParameters;
 
@@ -93,16 +92,34 @@ namespace DUCK.AudioSystem
 
 		public int GetClipIndex(int audioConfigIndex)
 		{
-			if (audioConfigIndex >= 0 && audioConfigIndex < entries.Length)
+			var entry = GetEntry(audioConfigIndex);
+			if (entry != null)
 			{
-				var entry = entries[audioConfigIndex];
-				if (entry != null)
-				{
-					return entry.GetClipIndex(clipIndexParameters);
-				}
+				return entry.GetClipIndex(clipIndexParameters);
 			}
 
 			return AudioConfig.RANDOM_CLIP;
+		}
+
+		public float GetPostClipDelay(int audioConfigIndex)
+		{
+			var entry = GetEntry(audioConfigIndex);
+			if (entry != null)
+			{
+				return entry.PostClipDelay;
+			}
+
+			return 0f;
+		}
+
+		private SequenceAudioConfigEntry GetEntry(int audioConfigIndex)
+		{
+			if (audioConfigIndex >= 0 && audioConfigIndex < entries.Length)
+			{
+				return entries[audioConfigIndex];
+			}
+
+			return null;
 		}
 	}
 }

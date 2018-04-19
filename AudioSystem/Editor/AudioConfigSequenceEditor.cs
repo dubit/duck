@@ -23,14 +23,6 @@ namespace DUCK.AudioSystem.Editor
 			delay = serializedObject.FindProperty("delay");
 		}
 
-		protected override void DrawPostArray()
-		{
-			base.DrawPostArray();
-
-			EditorGUILayout.Space();
-			delay.floatValue = Mathf.Max(0, EditorGUILayout.FloatField("Delay between clips:", delay.floatValue));
-		}
-
 		private void DrawEntry(SerializedProperty property)
 		{
 			var audioConfig = property.FindPropertyRelative("audioConfig");
@@ -60,6 +52,9 @@ namespace DUCK.AudioSystem.Editor
 					}
 				}
 				EditorGUILayout.EndHorizontal();
+
+				var postClipDelay = property.FindPropertyRelative("postClipDelay");
+				EditorGUILayout.PropertyField(postClipDelay);
 			}
 			EditorGUILayout.EndVertical();
 		}
