@@ -6,12 +6,21 @@ namespace DUCK.Crypto
 {
 	public static class SimpleAESEncryption
 	{
+		/// <summary>
+		/// A class containing AES-encrypted text, plus the IV value required to decrypt it (with the correct password)
+		/// </summary>
 		public struct AESEncryptedText
 		{
 			public string IV;
 			public string EncryptedText;
 		}
 
+		/// <summary>
+		/// Encrypts a given text string with a password
+		/// </summary>
+		/// <param name="plainText">The text to encrypt</param>
+		/// <param name="password">The password which will be required to decrypt it</param>
+		/// <returns>An AESEncryptedText object containing the encrypted string and the IV value required to decrypt it.</returns>
 		public static AESEncryptedText Encrypt(string plainText, string password)
 		{
 			using (Aes aes = Aes.Create())
@@ -32,11 +41,24 @@ namespace DUCK.Crypto
 			}
 		}
 
+		/// <summary>
+		/// Decrypts an AESEncryptedText with a password
+		/// </summary>
+		/// <param name="encryptedText">The AESEncryptedText object to decrypt</param>
+		/// <param name="password">The password to use when decrypting</param>
+		/// <returns>The original plainText string.</returns>
 		public static string Decrypt(AESEncryptedText encryptedText, string password)
 		{
 			return Decrypt(encryptedText.EncryptedText, encryptedText.IV, password);
 		}
 
+		/// <summary>
+		/// Decrypts an encrypted string with an IV value password
+		/// </summary>
+		/// <param name="encryptedText">The encrypted string to be decrypted</param>
+		/// <param name="iv">The IV value which was generated when the text was encrypted</param>
+		/// <param name="password">The password to use when decrypting</param>
+		/// <returns>The original plainText string.</returns>
 		public static string Decrypt(string encryptedText, string iv, string password)
 		{
 			using (Aes aes = Aes.Create())
