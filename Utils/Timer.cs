@@ -162,6 +162,14 @@ namespace DUCK.Utils
 			TimeLeft = Duration;
 		}
 
+		/// <summary>
+		/// Stops the timer, but ensures the callback is called.
+		/// </summary>
+		public void Skip()
+		{
+			Finish();
+		} 
+
 		private void AddToUpdateQueue()
 		{
 			if (!isUpdating)
@@ -194,8 +202,7 @@ namespace DUCK.Utils
 						// All loops are finished
 						if (LoopCount == 0)
 						{
-							Stop();
-							onComplete.SafeInvoke();
+							Finish();
 						}
 						// Start next loop
 						else
@@ -205,8 +212,7 @@ namespace DUCK.Utils
 					}
 					else
 					{
-						Stop();
-						onComplete.SafeInvoke();
+						Finish();
 					}
 				}
 			}
@@ -216,6 +222,12 @@ namespace DUCK.Utils
 			{
 				Stop();
 			}
+		}
+
+		private void Finish()
+		{
+			Stop();
+			onComplete.SafeInvoke();
 		}
 	}
 }
