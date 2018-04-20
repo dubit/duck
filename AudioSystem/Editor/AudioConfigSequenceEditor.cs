@@ -11,17 +11,9 @@ namespace DUCK.AudioSystem.Editor
 	public class AudioConfigSequenceEditor : ArrayInspector
 	{
 		private AudioConfigSequence config;
-		private SerializedProperty delay;
 
 		protected override Action<SerializedProperty> drawArrayElement { get { return DrawEntry; } }
 		protected override string arrayPropertyName { get { return "entries"; } }
-
-		protected override void OnEnable()
-		{
-			base.OnEnable();
-
-			delay = serializedObject.FindProperty("delay");
-		}
 
 		private void DrawEntry(SerializedProperty property)
 		{
