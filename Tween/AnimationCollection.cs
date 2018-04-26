@@ -156,6 +156,22 @@ namespace DUCK.Tween
 		}
 
 		/// <summary>
+		/// Change the animation driver for all the TimedAnimation in collection.
+		/// </summary>
+		/// <param name="driver">The target animation driver</param>
+		public void SetAnimationDriver(IAnimationDriver driver)
+		{
+			foreach (var animation in Animations)
+			{
+				var timedAnimation = animation as TimedAnimation;
+				if (timedAnimation != null)
+				{
+					timedAnimation.AnimationDriver = driver;
+				}
+			}
+		}
+
+		/// <summary>
 		/// This function decides how we handle the animations in the queue (collection).
 		/// Override this function for different playback strategies.
 		/// </summary>
