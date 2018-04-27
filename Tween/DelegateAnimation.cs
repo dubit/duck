@@ -5,6 +5,24 @@ namespace DUCK.Tween
 {
 	public abstract class DelegateAnimation : AbstractAnimation, IAnimationPlaybackControl
 	{
+		public IAnimationDriver AnimationDriver
+		{
+			get
+			{
+				return animationDriver ?? (animationDriver = TimedAnimation.DefaultDriver ?? DefaultAnimationDriver.Instance);
+			}
+			set
+			{
+				animationDriver = value;
+				var playbackControl = Animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.AnimationDriver = animationDriver;
+				}
+			}
+		}
+		private IAnimationDriver animationDriver;
+
 		/// <summary>
 		/// The embeded animation.
 		/// </summary>
@@ -126,6 +144,12 @@ namespace DUCK.Tween
 			try
 			{
 				Animation = animationCreationFunction();
+
+				var playbackControl = Animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.AnimationDriver = AnimationDriver;
+				}
 
 				if (speedChangeRequest != null)
 				{
