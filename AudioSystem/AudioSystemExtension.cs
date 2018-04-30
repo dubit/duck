@@ -164,15 +164,18 @@ namespace DUCK.AudioSystem
 		/// <param name="onComplete">The callback when the playback of all configs finished</param>
 		/// <returns>The channel (AudioSource) which the Audio System is using for the first clip in the sequence</returns>
 		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume = 1f, Transform parent = null, 
-			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, Action onComplete = null, Action<int> onEachConfigPlayed = null)
+			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, 
+			Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
-			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, getClipDelay, onComplete, onEachConfigPlayed);
+			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, getClipDelay, 
+				onComplete, onEachConfigPlayed, onTimerStarted);
 		}
 
 		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume = 1f, Transform parent = null, 
-			Action onComplete = null, Action<int> onEachConfigPlayed = null)
+			Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
-			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.GetPostClipDelay, onComplete, onEachConfigPlayed);
+			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.GetPostClipDelay, 
+				onComplete, onEachConfigPlayed, onTimerStarted);
 		}
 
 		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, Action onComplete = null)
@@ -181,7 +184,7 @@ namespace DUCK.AudioSystem
 		}
 
 		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 
-			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, Action onComplete = null, Action<int> onEachConfigPlayed = null)
+			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
 			Func<AudioSource> playNextConfig = () =>
 			{
@@ -207,7 +210,8 @@ namespace DUCK.AudioSystem
 			}
 			else
 			{
-				Timer.SetTimeout(delay, () => playNextConfig());
+				var timer = Timer.SetTimeout(delay, () => playNextConfig());
+				onTimerStarted.SafeInvoke(timer);
 				return null;
 			}
 		}
