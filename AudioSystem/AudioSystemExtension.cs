@@ -159,58 +159,65 @@ namespace DUCK.AudioSystem
 		/// <param name="compositeAudioConfig">Enumerable collection of AudioConfigs</param>
 		/// <param name="volume">The volume scale for the channel (will override the config one)</param>
 		/// <param name="parent">The source of the audio</param>
-		/// <param name="delay">The delay time in between playing audio sources</param>
-		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
+		/// <param name="getClipId">Function for deciding what clip sub-index to play for each config in the sequence</param>
+		/// <param name="getClipId">Function for deciding delay to play for each config in the sequence with</param>
 		/// <param name="onComplete">The callback when the playback of all configs finished</param>
+		/// <param name="onEachConfigPlayed">The callback when the playback of each config starts</param>
+		/// <param name="onTimerStarted">The callback called when a delay timer is created</param>
 		/// <returns>The channel (AudioSource) which the Audio System is using for the first clip in the sequence</returns>
-		public static AudioSource PlaySequence(this IEnumerable<AudioConfig> audioConfigs, float volume = 1f, Transform parent = null, 
+		public static AudioConfig PlaySequence(this AudioConfig[] audioConfigs, float volume = 1f, Transform parent = null, 
 			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, 
-			Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
+			Action onComplete = null, Action<AudioConfig, int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
-			return PlaySequenceAtIndex(0, audioConfigs.GetEnumerator(), volume, parent, getClipId, getClipDelay, 
+			return PlaySequenceAtIndex(audioConfigs, 0, volume, parent, getClipId, getClipDelay, 
 				onComplete, onEachConfigPlayed, onTimerStarted);
 		}
 
-		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, float volume = 1f, Transform parent = null, 
-			Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
+		public static AudioConfig PlaySequence(this AudioConfigSequence compositeConfig, float volume = 1f, Transform parent = null, 
+			Action onComplete = null, Action<AudioConfig, int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
-			return PlaySequence(compositeConfig.GetAudioConfigs(), volume, parent, compositeConfig.GetClipIndex, compositeConfig.GetPostClipDelay, 
+			return PlaySequence(compositeConfig.AudioConfigs, volume, parent, compositeConfig.GetClipIndex, compositeConfig.GetClipDelay, 
 				onComplete, onEachConfigPlayed, onTimerStarted);
 		}
 
-		public static AudioSource PlaySequence(this AudioConfigSequence compositeConfig, Action onComplete = null)
+		public static AudioConfig PlaySequence(this AudioConfigSequence compositeConfig, Action onComplete = null)
 		{
 			return PlaySequence(compositeConfig, onComplete: onComplete);
 		}
 
-		private static AudioSource PlaySequenceAtIndex(int index, IEnumerator<AudioConfig> enumerator, float volume, Transform parent = null, 
-			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, Action onComplete = null, Action<int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
+		private static AudioConfig PlaySequenceAtIndex(AudioConfig[] configs, int index, float volume, Transform parent = null, 
+			Func<int, int> getClipId = null, Func<int, float> getClipDelay = null, 
+			Action onComplete = null, Action<AudioConfig, int> onEachConfigPlayed = null, Action<Timer> onTimerStarted = null)
 		{
-			Func<AudioSource> playNextConfig = () =>
+			Func<AudioConfig> playThisConfig = () =>
 			{
-				if (!enumerator.MoveNext())
+				if (index >= configs.Length)
 				{
 					onComplete.SafeInvoke();
 					return null;
 				}
 
-				onEachConfigPlayed.SafeInvoke(index);
+				var thisConfig = configs[index];
 
-				return enumerator.Current.Play(volume, parent, (getClipId != null) ? getClipId(index) : AudioConfig.RANDOM_CLIP, () =>
+				onEachConfigPlayed.SafeInvoke(thisConfig, index);
+
+				thisConfig.Play(volume, parent, (getClipId != null) ? getClipId(index) : AudioConfig.RANDOM_CLIP, () =>
 				{
-					PlaySequenceAtIndex(index + 1, enumerator, volume, parent, getClipId, getClipDelay, onComplete, onEachConfigPlayed);
+					PlaySequenceAtIndex(configs, index + 1, volume, parent, getClipId, getClipDelay, onComplete, onEachConfigPlayed);
 				});
+
+				return thisConfig;
 			};
 
 			var delay = (getClipDelay != null) ? getClipDelay(index) : 0f;
 
 			if (index == 0 || delay <= 0f)
 			{
-				return playNextConfig();
+				return playThisConfig();
 			}
 			else
 			{
-				var timer = Timer.SetTimeout(delay, () => playNextConfig());
+				var timer = Timer.SetTimeout(delay, () => playThisConfig());
 				onTimerStarted.SafeInvoke(timer);
 				return null;
 			}
