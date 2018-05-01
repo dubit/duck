@@ -11,6 +11,27 @@ namespace DUCK.Tween
 	/// </summary>
 	public abstract class AnimationCollection : AbstractAnimation, IAnimationPlaybackControl
 	{
+		public IAnimationDriver AnimationDriver
+		{
+			get
+			{
+				return animationDriver ?? (animationDriver = TimedAnimation.DefaultDriver ?? DefaultAnimationDriver.Instance);
+			}
+			set
+			{
+				animationDriver = value;
+				foreach (var animation in Animations)
+				{
+					var playbackControl = animation as IAnimationPlaybackControl;
+					if (playbackControl != null)
+					{
+						playbackControl.AnimationDriver = animationDriver;
+					}
+				}
+			}
+		}
+		private IAnimationDriver animationDriver;
+
 		public override bool IsValid { get { return Animations.Count > 0; } }
 
 		protected List<AbstractAnimation> Animations { get; private set; }
@@ -29,7 +50,15 @@ namespace DUCK.Tween
 		/// <returns>Returns this AnimationCollection to comply with fluent interface</returns>
 		public AnimationCollection Add(params AbstractAnimation[] animations)
 		{
-			Animations.AddRange(animations);
+			foreach (var animation in animations)
+			{
+				var playbackControl = animation as IAnimationPlaybackControl;
+				if (playbackControl != null)
+				{
+					playbackControl.AnimationDriver = AnimationDriver;
+				}
+				Animations.Add(animation);
+			}
 			return this;
 		}
 
