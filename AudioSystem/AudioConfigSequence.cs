@@ -17,14 +17,25 @@ namespace DUCK.AudioSystem
 		}
 
 		private AudioConfig[] compositeAudioConfigs;
-		public IEnumerable<AudioConfig> GetAudioConfigs()
+		public AudioConfig[] AudioConfigs
 		{
-			if (compositeAudioConfigs == null)
+			get
 			{
-				compositeAudioConfigs = entries.Select(e => e.AudioConfig).ToArray();
-			}
+				if (compositeAudioConfigs == null)
+				{
+					compositeAudioConfigs = entries.Select(e => e.AudioConfig).ToArray();
+				}
 
-			return compositeAudioConfigs;
+				return compositeAudioConfigs;
+			}
+		}
+
+		public int Count
+		{
+			get
+			{
+				return AudioConfigs.Length;
+			}
 		}
 
 		[Serializable]
@@ -43,8 +54,8 @@ namespace DUCK.AudioSystem
 			private string clipIndexParameter;
 
 			[SerializeField]
-			private float postClipDelay;
-			public float PostClipDelay { get { return postClipDelay; } }
+			private float preClipDelay;
+			public float ClipDelay { get { return preClipDelay; } }
 
 			public AudioConfig AudioConfig { get { return audioConfig; } }
 
@@ -101,12 +112,12 @@ namespace DUCK.AudioSystem
 			return AudioConfig.RANDOM_CLIP;
 		}
 
-		public float GetPostClipDelay(int audioConfigIndex)
+		public float GetClipDelay(int audioConfigIndex)
 		{
 			var entry = GetEntry(audioConfigIndex);
 			if (entry != null)
 			{
-				return entry.PostClipDelay;
+				return entry.ClipDelay;
 			}
 
 			return 0f;

@@ -45,8 +45,8 @@ namespace DUCK.AudioSystem.Editor
 				}
 				EditorGUILayout.EndHorizontal();
 
-				var postClipDelay = property.FindPropertyRelative("postClipDelay");
-				EditorGUILayout.PropertyField(postClipDelay);
+				var preClipDelay = property.FindPropertyRelative("preClipDelay");
+				EditorGUILayout.PropertyField(preClipDelay);
 			}
 			EditorGUILayout.EndVertical();
 		}
