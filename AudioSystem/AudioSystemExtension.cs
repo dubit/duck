@@ -203,7 +203,7 @@ namespace DUCK.AudioSystem
 
 				thisConfig.Play(volume, parent, (getClipId != null) ? getClipId(index) : AudioConfig.RANDOM_CLIP, () =>
 				{
-					PlaySequenceAtIndex(configs, index + 1, volume, parent, getClipId, getClipDelay, onComplete, onEachConfigPlayed);
+					PlaySequenceAtIndex(configs, index + 1, volume, parent, getClipId, getClipDelay, onComplete, onEachConfigPlayed, onTimerStarted);
 				});
 
 				return thisConfig;
@@ -211,7 +211,7 @@ namespace DUCK.AudioSystem
 
 			var delay = (getClipDelay != null) ? getClipDelay(index) : 0f;
 
-			if (index == 0 || delay <= 0f)
+			if (delay <= 0f)
 			{
 				return playThisConfig();
 			}
