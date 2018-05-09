@@ -1,6 +1,6 @@
 ﻿namespace DUCK.Tween.Extensions
 {
-	public static partial class AnimationExtensions
+	public static class AnimationExtensions
 	{
 		/// <summary>
 		/// Aborts an animation if the reference is valid and it is playing.

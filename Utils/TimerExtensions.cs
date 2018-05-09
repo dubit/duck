@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace DUCK.Utils
+﻿namespace DUCK.Utils
 {
 	public static class TimerExtensions
 	{
