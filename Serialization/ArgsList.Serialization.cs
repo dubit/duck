@@ -76,28 +76,24 @@ namespace DUCK.Serialization
 			for (int i = 0; i < argTypes.Count; i++)
 			{
 				var argType = argTypes[i];
+				var arg = args[i];
 				var list = lazyGetList(argType);
+				list.Add(arg);
+
 				if (argType.IsSubclassOf(typeof(Component)))
 				{
-					var arg = args[i];
-					list.Add(arg);
 					typeOrderList.Add(COMPONENT_PREFIX + argType.FullName);
 				}
 				else if (argType.IsSubclassOf(typeof(Enum)))
 				{
-					var arg = args[i];
-					list.Add(arg);
 					typeOrderList.Add(ENUM_PREFIX + argType.FullName);
 				}
 				else if (argType.IsSubclassOf(typeof(ScriptableObject)))
 				{
-					var arg = args[i];
-					list.Add(arg);
 					typeOrderList.Add(SCRIPTABLE_OBJECT_PREFIX + argType.FullName);
 				}
 				else
 				{
-					list.Add(args[i]);
 					typeOrderList.Add(argType.FullName);
 				}
 			}
@@ -225,7 +221,11 @@ namespace DUCK.Serialization
 			{
 				return new SupportedType(
 					typeof(T),
-					i => (getList(i) ?? new T[0]).Cast<object>().ToList(),
+					i =>
+					{
+						var list = getList(i);
+						return list != null ? list.Cast<object>().ToList() : new List<object>();
+					},
 					(i, v) => setList(i, v.Cast<T>().ToArray()));
 			}
 		}

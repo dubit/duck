@@ -47,40 +47,22 @@ namespace DUCK.Serialization
 			enumTypes = new Dictionary<string, Type>();
 			scriptableObjectTypes = new Dictionary<string, Type>();
 
-			// Get every type that extends component
-			var assemblies = new []
-			{
-				// Project assembly
-				Assembly.GetExecutingAssembly(),
-				// UnityEngine Assembly
-				typeof(Component).Assembly,
-				// UnityEngine.UI Assembly
-				typeof(Graphic).Assembly,
-			};
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 			foreach (var type in assemblies.SelectMany(a => a.GetTypes()))
 			{
 				var fullTypeName = type.FullName;
 				if (type.IsSubclassOf(typeof(Component)))
 				{
-					if (!componentTypes.ContainsKey(fullTypeName))
-					{
-						componentTypes.Add(fullTypeName, type);
-					}
+					componentTypes[fullTypeName] = type;
 				}
 				else if (type.IsSubclassOf(typeof(Enum)))
 				{
-					if (!enumTypes.ContainsKey(fullTypeName))
-					{
-						enumTypes.Add(fullTypeName, type);
-					}
+					enumTypes[fullTypeName] = type;
 				}
 				else if (type.IsSubclassOf(typeof(ScriptableObject)))
 				{
-					if (!scriptableObjectTypes.ContainsKey(fullTypeName))
-					{
-						scriptableObjectTypes.Add(fullTypeName, type);
-					}
+					scriptableObjectTypes[fullTypeName] = type;
 				}
 			}
 		}

@@ -10,6 +10,14 @@ namespace DUCK.Serialization.Editor
 	[TestFixture]
 	public class ArgsListTests
 	{
+		public class TestScriptableObject : ScriptableObject{}
+
+		public enum TestEnum
+		{
+			A,
+			B
+		}
+
 		[Test]
 		public void ExpectConstructorNotToThrow()
 		{
@@ -445,14 +453,14 @@ namespace DUCK.Serialization.Editor
 
 			// test that it doesn't throw when specifying the type
 
-			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(GradientMode)}));
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TestEnum)}));
 
 			// Add some data, serialize and deserialize
-			var value = GradientMode.Fixed;
+			var value = TestEnum.A;
 			argsList.Set(0, value);
 			var json = JsonUtility.ToJson(argsList);
 			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
-			var result = resultArgsList.Get<GradientMode>(0);
+			var result = resultArgsList.Get<TestEnum>(0);
 
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);
@@ -464,15 +472,15 @@ namespace DUCK.Serialization.Editor
 			var argsList = new ArgsList();
 
 			// test that it doesn't throw when specifying the type
-			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TweenConfig)}));
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TestScriptableObject)}));
 
 			// Add some data, serialize and deserialize
-			var value = ScriptableObject.CreateInstance<TweenConfig>();
+			var value = ScriptableObject.CreateInstance<TestScriptableObject>();
 			argsList.Set(0, value);
 
 			var json = JsonUtility.ToJson(argsList);
 			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
-			var result = resultArgsList.Get<TweenConfig>(0);
+			var result = resultArgsList.Get<TestScriptableObject>(0);
 
 			// Now test the value is what it should be
 			Assert.AreEqual(value, result);
