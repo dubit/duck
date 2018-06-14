@@ -54,6 +54,20 @@ namespace DUCK.Tween.Extensions
 		}
 
 		/// <summary>
+		/// Adds a UIFadeAnimation to the collection using a CanvasGroup
+		/// </summary>
+		/// <param name="animationCollection">The animation collection to add to</param>
+		/// <param name="canvasGroup">The CanvasGroup who's alpha will be faded</param>
+		/// <param name="to">The end alpha value of the fade</param>
+		/// <param name="duration">The duration of the animation in seconds, defaults to 1f</param>
+		/// <param name="easingFunction">The easing function that will be used to interpolate with</param>
+		/// <returns>Returns this AnimationCollection to comply with fluent interface</returns>
+		public static AnimationCollection FadeTo(this AnimationCollection animationCollection, CanvasGroup canvasGroup, float to, float duration = 1f, Func<float, float> easingFunction = null)
+		{
+			return animationCollection.Add(canvasGroup.FadeTo(to, duration, easingFunction));
+		}
+
+		/// <summary>
 		/// Adds a UIColorFadeAnimation to the collection using a Graphic
 		/// </summary>
 		/// <param name="animationCollection">The animation collection to add to</param>

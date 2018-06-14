@@ -7,7 +7,7 @@ namespace DUCK.Tween.Extensions
 	public static class UIComponentAnimationExtensions
 	{
 		/// <summary>
-		/// Creates a new UIFadeAnimation using a CanvasGroup
+		/// Creates a new UIFadeAnimation using a Graphic
 		/// </summary>
 		/// <param name="graphic">The Graphic that will be the target of the animation</param>
 		/// <param name="from">The start alpha value of the fade</param>
@@ -21,7 +21,7 @@ namespace DUCK.Tween.Extensions
 		}
 
 		/// <summary>
-		/// Creates a new UIFadeAnimation using a CanvasGroup
+		/// Creates a new UIFadeAnimation using a Graphic
 		/// </summary>
 		/// <param name="graphic">The Graphic that will be the target of the animation</param>
 		/// <param name="to">The end alpha value of the fade</param>
@@ -36,7 +36,7 @@ namespace DUCK.Tween.Extensions
 		}
 
 		/// <summary>
-		/// Creates a new UIFadeAnimation using a CanvasGroup using this Graphic
+		/// Creates a new UIFadeAnimation using a CanvasGroup
 		/// </summary>
 		/// <param name="canvasGroup">The CanvasGroup that will be the target of the animation</param>
 		/// <param name="from">The start alpha value of the fade</param>
@@ -47,6 +47,21 @@ namespace DUCK.Tween.Extensions
 		public static UIFadeAnimation Fade(this CanvasGroup canvasGroup, float from, float to, float duration = 1f, Func<float, float> easingFunction = null)
 		{
 			return new UIFadeAnimation(canvasGroup, from, to, duration, easingFunction);
+		}
+
+		/// <summary>
+		/// Creates a new UIFadeAnimation using a CanvasGroup
+		/// </summary>
+		/// <param name="canvasGroup">The CanvasGroup that will be the target of the animation</param>
+		/// <param name="to">The end alpha value of the fade</param>
+		/// <param name="duration">The duration of the animation in seconds, defaults to 1f</param>
+		/// <param name="easingFunction">The easing function that will be used to interpolate with</param>
+		/// <returns>The newly created UIFadeAnimation</returns>
+		public static DelegateAnimation<UIFadeAnimation> FadeTo(this CanvasGroup canvasGroup, float to, float duration = 1f, Func<float, float> easingFunction = null)
+		{
+			var animation = new DelegateAnimation<UIFadeAnimation>(() =>
+				new UIFadeAnimation(canvasGroup, canvasGroup.alpha, to, duration, easingFunction));
+			return animation;
 		}
 
 		/// <summary>
