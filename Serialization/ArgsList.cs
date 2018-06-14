@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DUCK.Serialization
 {
@@ -13,12 +11,17 @@ namespace DUCK.Serialization
 	{
 		public static bool IsSupportedType(Type type)
 		{
-			return supportedTypesArray.Contains(type) || type.IsSubclassOf(typeof(Component));
+			return supportedTypesArray.Contains(type) ||
+				type.IsSubclassOf(typeof(Component)) ||
+				type.IsSubclassOf(typeof(ScriptableObject)) ||
+				type.IsSubclassOf(typeof(Enum));
 		}
 
 		private static readonly Dictionary<string, SupportedType> supportedTypes;
 		private static readonly Type[] supportedTypesArray;
 		private static readonly Dictionary<string, Type> componentTypes;
+		private static readonly Dictionary<string, Type> enumTypes;
+		private static readonly Dictionary<string, Type> scriptableObjectTypes;
 
 		static ArgsList()
 		{
@@ -33,33 +36,31 @@ namespace DUCK.Serialization
 				SupportedType.Create(i => i.vector3Args, (i, v) => i.vector3Args = v),
 				SupportedType.Create(i => i.vector4Args, (i, v) => i.vector4Args = v),
 				SupportedType.Create(i => i.colorArgs, (i, v) => i.colorArgs = v),
+				SupportedType.Create(i => i.scriptableObjectArgs, (i, v) => i.scriptableObjectArgs = v),
 			};
 
 			supportedTypesArray = supportedTypesList.Select(t => t.Type).ToArray();
 			supportedTypes = supportedTypesList.ToDictionary(t => t.Type.FullName, t => t);
 			componentTypes = new Dictionary<string, Type>();
+			enumTypes = new Dictionary<string, Type>();
+			scriptableObjectTypes = new Dictionary<string, Type>();
 
-			// Get every type that extends component
-			var assemblies = new []
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+			foreach (var type in assemblies.SelectMany(a => a.GetTypes()))
 			{
-				// Project assembly
-				Assembly.GetExecutingAssembly(),
-				// UnityEngine Assembly
-				typeof(Component).Assembly,
-				// UnityEngine.UI Assembly
-				typeof(Graphic).Assembly,
-			};
-
-			var componentSubTypes = assemblies.SelectMany(a => a.GetTypes())
-				.Where(t => t.IsSubclassOf(typeof(Component)));
-
-			foreach (var type in componentSubTypes)
-			{
-				// Make sure this type has not been added already 
-				// (it can happen, since some types are shipped in multiple assemblies)
-				if (!componentTypes.ContainsKey(type.FullName))
+				var fullTypeName = type.FullName;
+				if (type.IsSubclassOf(typeof(Component)))
 				{
-					componentTypes.Add(type.FullName, type);
+					componentTypes[fullTypeName] = type;
+				}
+				else if (type.IsSubclassOf(typeof(Enum)))
+				{
+					enumTypes[fullTypeName] = type;
+				}
+				else if (type.IsSubclassOf(typeof(ScriptableObject)))
+				{
+					scriptableObjectTypes[fullTypeName] = type;
 				}
 			}
 		}
@@ -71,16 +72,16 @@ namespace DUCK.Serialization
 
 		public IList<object> AllArgs
 		{
-			get 
+			get
 			{
-				return args.Select((a,i) => 
+				return args.Select((a,i) =>
 				{
 					if (a != null && argTypes[i].IsSubclassOf(typeof(Component)))
 					{
 						return ((GameObject) a).GetComponent(argTypes[i]);
 					}
 					return a;
-				}).ToList(); 
+				}).ToList();
 			}
 		}
 
@@ -205,7 +206,7 @@ namespace DUCK.Serialization
 			{
 				return ((GameObject) args[index]).GetComponent<T>();
 			}
-			
+
 			return (T) args[index];
 		}
 
