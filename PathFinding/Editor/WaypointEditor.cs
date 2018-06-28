@@ -16,7 +16,6 @@ namespace DUCK.PathFinding.Editor
 
 		private void OnEnable()
 		{
-			// Hard cast since we know it's 100% a Waypoint (unless Unity fails!)
 			waypoint = (Waypoint)target;
 			waypoint.ValidateConnectedWaypoints();
 			EditorApplication.update += ForceUpdateGizmosAnimation;
@@ -53,20 +52,24 @@ namespace DUCK.PathFinding.Editor
 
 		private Waypoint CreateNewWaypoint()
 		{
+			var snap = new Vector3(EditorPrefs.GetFloat("MoveSnapX"), 0f, 0f);
+
 			var obj = new GameObject("Waypoint");
 			obj.transform.SetParent(waypoint.transform.parent);
-			obj.transform.position = waypoint.transform.position + Vector3.forward;
+			obj.transform.position = waypoint.transform.position + snap;
 			return obj.AddComponent<Waypoint>();
 		}
 
 		private void OnOneWayConnectToSelected()
 		{
-			var targetWaypoint = Selection.activeGameObject.GetComponent<Waypoint>();
-			if (targetWaypoint != null && waypoint != null)
-			{
-				waypoint.ConnectWaypoint(targetWaypoint);
-			}
 			Selection.selectionChanged -= OnOneWayConnectToSelected;
+
+			if (Selection.activeGameObject == null) return;
+
+			var targetWaypoint = Selection.activeGameObject.GetComponent<Waypoint>();
+			if (targetWaypoint == null || waypoint == null) return;
+
+			waypoint.ConnectWaypoint(targetWaypoint);
 		}
 
 		private void OnDoubleWayConnectToSelected()

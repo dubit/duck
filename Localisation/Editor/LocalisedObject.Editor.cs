@@ -30,6 +30,20 @@ namespace DUCK.Localisation.Editor
 
 		public override void OnInspectorGUI()
 		{
+			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex), 
+				(serializedObject.targetObject as ILocalisedObject).ResourceType, localisationKey, keyName, categoryName);
+
+			serializedObject.ApplyModifiedProperties();
+
+			selectedKeyIndex = vec2int.x;
+			selectedCategoryIndex = vec2int.y;
+
+			initialised = true;
+		}
+
+		public static Vector2Int DrawLocalisedObject(bool initialised, Vector2Int selectedKeyAndCategory, LocalisedObject.LocalisedResourceType resourceType,
+			SerializedProperty localisationKey, SerializedProperty keyName, SerializedProperty categoryName, bool autosave = false)
+		{
 			var currentSchema = LocalisationEditor.CurrentSchema;
 
 			if (currentSchema == null)
@@ -45,19 +59,20 @@ namespace DUCK.Localisation.Editor
 				{
 					if (keyLookup.IsValid)
 					{
-						selectedCategoryIndex = Math.Max(0, keyLookup.categoryIndex);
-						selectedKeyIndex = Math.Max(0, keyLookup.keyIndex);
+						selectedKeyAndCategory = new Vector2Int
+						{
+							x = Math.Max(0, keyLookup.keyIndex),
+							y = Math.Max(0, keyLookup.categoryIndex)
+						};
 					}
 					else
 					{
-						selectedCategoryIndex = 0;
-						selectedKeyIndex = 0;
+						selectedKeyAndCategory = Vector2Int.zero;
 					}
 
 					initialised = true;
 				}
 
-				var resourceType = (target as LocalisedObject).ResourceType;
 				var availableCategories = LocalisationEditorUtils.GetAvailableCategories(resourceType);
 				var categoryNames = new string[availableCategories.Length];
 				for (var i = 0; i < categoryNames.Length; i++)
@@ -72,29 +87,29 @@ namespace DUCK.Localisation.Editor
 					}
 				}
 
-				var categoryIndex = selectedCategoryIndex;
+				var categoryIndex = selectedKeyAndCategory.y;
 				if (categoryIndex < 0 || categoryIndex >= availableCategories.Length)
 				{
 					categoryIndex = 0;
 				}
 				categoryIndex = EditorGUILayout.Popup(categoryIndex, categoryNames);
-				selectedCategoryIndex = categoryIndex;
+				selectedKeyAndCategory.y = categoryIndex;
 
 				var category = currentSchema.categories[availableCategories[categoryIndex]];
-				var locKeyIndex = selectedKeyIndex;
+				var locKeyIndex = selectedKeyAndCategory.x;
 				if (locKeyIndex < 0 || locKeyIndex >= category.keys.Length)
 				{
 					locKeyIndex = 0;
 				}
 				locKeyIndex = EditorGUILayout.Popup(locKeyIndex, category.keys);
-				selectedKeyIndex = locKeyIndex;
+				selectedKeyAndCategory.x = locKeyIndex;
 
 				var selectedLocKey = category.keys[locKeyIndex];
 				var savedLocKey = keyName.stringValue;
 
 				if (savedLocKey != selectedLocKey)
 				{
-					if (GUILayout.Button("SET"))
+					if (autosave || GUILayout.Button("SET"))
 					{
 						keyName.stringValue = selectedLocKey;
 						categoryName.stringValue = category.name;
@@ -129,9 +144,9 @@ namespace DUCK.Localisation.Editor
 						savedLocKey != selectedLocKey ? "*" : string.Empty
 					), style);
 				}
-
-				serializedObject.ApplyModifiedProperties();
 			}
+
+			return selectedKeyAndCategory;
 		}
 	}
 }

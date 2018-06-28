@@ -39,13 +39,18 @@ namespace DUCK.DebugMenu
 		private Button actionButtonTemplate;
 
 		[SerializeField]
+		private Text appVersionText;
+
+		[Header("App info")]
+		[SerializeField]
 		private GameObject infoPage;
 
 		[SerializeField]
-		private Text appVersionText;
-		
-		[SerializeField]
 		private Text infoPageText;
+
+		[Header("Log")]
+		[SerializeField]
+		private DebugMenuLog logPage;
 
 		private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
 
@@ -56,8 +61,16 @@ namespace DUCK.DebugMenu
 		{
 			if (instance != null) throw new Exception("Cannot have more than one Instance of DebugMenu active");
 			instance = this;
-			
-			DontDestroyOnLoad(this);
+
+			rootObject.gameObject.SetActive(false);
+
+			logPage.Initialise();
+
+			//NOTE When running tests you cannot use DontDestroyOnLoad in editor mode
+			if (Application.isPlaying)
+			{
+				DontDestroyOnLoad(this);
+			}
 		}
 
 		private void Start()
@@ -115,6 +128,14 @@ namespace DUCK.DebugMenu
 			}
 			
 			infoPage.SetActive(true);
+		}
+
+		/// <summary>
+		/// Displays the game log
+		/// </summary>
+		public void ShowGameLog()
+		{
+			logPage.gameObject.SetActive(true);
 		}
 
 		/// <summary>

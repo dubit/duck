@@ -3,6 +3,12 @@
 	internal interface IAnimationPlaybackControl
 	{
 		/// <summary>
+		/// The animation driver has the responsibility that updating all TimedAnimation.
+		/// You can also assign a customised Animation Driver to replace the default one for each individual instance of the animations.
+		/// </summary>
+		IAnimationDriver AnimationDriver { get; set; }
+
+		/// <summary>
 		/// Set the animation duration and also keep the current progress.
 		/// i.e. ScaleTime(5.0f) will change a 1.0s/2.0s animation to a 2.5s/5.0s animation.
 		/// This function actually doing the same thing of "change the animation playback speed".

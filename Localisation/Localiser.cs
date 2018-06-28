@@ -49,6 +49,11 @@ namespace DUCK.Localisation
 
 			var localisationTables = Resources.LoadAll<LocalisationTable>(path);
 
+			if (localisationTables.Length == 0)
+			{
+				Debug.LogError(string.Format("No localisation tables found at path: {0}", path));
+			}
+
 			foreach (var locTable in localisationTables)
 			{
 				var fullPath = Path.Combine(path, locTable.name);
@@ -78,7 +83,7 @@ namespace DUCK.Localisation
 						{
 							currentLocalisationTable = locTable;
 						}
-						else
+						else if (!locTable.SupportedLocales.Contains(CurrentLocale.Name))
 						{
 							Resources.UnloadAsset(locTable);
 						}
@@ -88,7 +93,7 @@ namespace DUCK.Localisation
 
 			if (currentLocalisationTable == null && Application.isPlaying)
 			{
-				Debug.LogError(string.Format("Error: unsupported locale: {0}", CurrentLocale.Name));
+				Debug.LogError(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, defaultCulture));
 				SwitchLanguage(defaultCulture);
 			}
 
@@ -109,13 +114,15 @@ namespace DUCK.Localisation
 
 		public static void SwitchLanguage(string cultureName)
 		{
-			CurrentLocale = new CultureInfo(cultureName);
-			currentLocalisationTable = LoadLocalisationTable(cultureName);
-
-			if (currentLocalisationTable == null)
+			var loadedTable = LoadLocalisationTable(cultureName);
+			if (loadedTable == null)
 			{
 				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", cultureName));
+				return;
 			}
+
+			CurrentLocale = new CultureInfo(cultureName);
+			currentLocalisationTable = loadedTable;
 
 			OnLocaleChanged.SafeInvoke();
 		}

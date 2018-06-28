@@ -34,11 +34,19 @@ namespace DUCK.Tween
 		private Action onAbortCallback;
 
 		/// <summary>
+		/// Simply play the animation
+		/// </summary>
+		public void Play()
+		{
+			Play(null);
+		}
+
+		/// <summary>
 		/// Starts playback of the animation
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the animation is complete</param>
 		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
-		public virtual void Play(Action onComplete = null, Action onAbort = null)
+		public virtual void Play(Action onComplete, Action onAbort = null)
 		{
 			if (!IsValid)
 			{

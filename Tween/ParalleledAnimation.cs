@@ -1,4 +1,6 @@
-﻿namespace DUCK.Tween
+﻿using UnityEngine;
+
+namespace DUCK.Tween
 {
 	/// <summary>
 	/// ParalleledAnimation is used to play a set of animations in parallel.
@@ -9,21 +11,29 @@
 	{
 		protected override void PlayQueuedAnimations()
 		{
-			Animations.RemoveAll(animation => !animation.IsValid);
-
-			if (Animations.Count > 0)
+			for (var i = Animations.Count - 1; i >= 0; --i)
 			{
-				Animations.ForEach(animation => animation.Play(HandleEachAnimationCompleted, () =>
+				var animation = Animations[i];
+				if (animation.IsValid)
 				{
-					if (!animation.IsValid)
+					animation.Play(HandleEachAnimationCompleted, () =>
 					{
-						Animations.Remove(animation);
-					}
-				}));
+						if (IsPlaying && !animation.IsValid)
+						{
+							RemoveInvalidAnimation(animation);
+						}
+					});
+				}
+				else
+				{
+					RemoveInvalidAnimation(animation);
+				}
 			}
-			// In case of all animations have been removed
-			else
+
+			// All animations have been removed
+			if (Animations.Count == 0)
 			{
+				Debug.LogError("Aborting Parallelled Animation -- all animations are invalid!");
 				Abort();
 			}
 		}
@@ -35,6 +45,12 @@
 			{
 				NotifyAnimationComplete();
 			}
+		}
+
+		private void RemoveInvalidAnimation(AbstractAnimation targetAnimation)
+		{
+			Debug.LogError("Removed an invalid animation from the Paralleled Queue!");
+			Animations.Remove(targetAnimation);
 		}
 	}
 }

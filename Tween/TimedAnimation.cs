@@ -13,12 +13,16 @@ namespace DUCK.Tween
 	public abstract class TimedAnimation : AbstractAnimation, IAnimationPlaybackControl
 	{
 		/// <summary>
-		/// The animation driver has the responsibility that updating all TimedAnimation.
-		/// You can also assign a customised Animation Driver to replace the default one.
+		/// The default animation driver will be used everytime the animation starts to play.
+		/// You can assign a customised Animation Driver to replace the default one.
+		/// You can also set it to null -- and it will force the animation using the default driver from DUCK.
 		/// </summary>
+		public static IAnimationDriver DefaultDriver { get { return defaultDriver; } set { defaultDriver = value; } }
+		private static IAnimationDriver defaultDriver = DefaultAnimationDriver.Instance;
+
 		public IAnimationDriver AnimationDriver
 		{
-			get { return animationDriver ?? (animationDriver = DefaultAnimationDriver.Instance); }
+			get { return animationDriver ?? (animationDriver = DefaultDriver ?? DefaultAnimationDriver.Instance); }
 			set { animationDriver = value; }
 		}
 		private IAnimationDriver animationDriver;
@@ -82,7 +86,7 @@ namespace DUCK.Tween
 		/// </summary>
 		/// <param name="onComplete">An optional callback invoked when the animation is complete</param>
 		/// <param name="onAbort">An optional callback invoked if the animation is aborted</param>
-		public override void Play(Action onComplete = null, Action onAbort = null)
+		public override void Play(Action onComplete, Action onAbort = null)
 		{
 			if (!IsValid)
 			{
@@ -113,7 +117,10 @@ namespace DUCK.Tween
 
 		public override void Abort()
 		{
-			AnimationDriver.Remove(Update);
+			if (IsPlaying)
+			{
+				AnimationDriver.Remove(Update);
+			}
 			base.Abort();
 		}
 

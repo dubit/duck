@@ -83,7 +83,7 @@ namespace DUCK.Localisation.Editor
 		{
 			GUILayout.Label("Locales (languages) supported", EditorStyles.boldLabel);
 			EditorGUI.indentLevel++;
-			DrawLocales();
+			LocalisationEditorUtils.DrawLocalesProperty(locales);
 			EditorGUI.indentLevel--;
 
 			GUILayout.Label("Save / load", EditorStyles.boldLabel);
@@ -132,33 +132,6 @@ namespace DUCK.Localisation.Editor
 			if (GUI.changed)
 			{
 				AssetDatabase.SaveAssets();
-			}
-		}
-
-		private void DrawLocales()
-		{
-			locales.arraySize = EditorGUILayout.IntField("Size", locales.arraySize);
-
-			var supportedLocaleNames = LocalisationEditorUtils.SupportedLocaleNames;
-
-			for (var i = 0; i < locales.arraySize; i++)
-			{
-				var currentValue = locales.GetArrayElementAtIndex(i).stringValue;
-				var currentIndex = LocalisationEditorUtils.SupportedLocaleIndex(currentValue);
-
-				if (currentIndex < 0)
-				{
-					currentIndex = 0;
-				}
-
-				var newIndex = EditorGUILayout.Popup(currentIndex, supportedLocaleNames);
-				locales.GetArrayElementAtIndex(i).stringValue = supportedLocaleNames[newIndex];
-			}
-
-			if (locales.arraySize == 0)
-			{
-				EditorGUILayout.HelpBox("A table with no Locales will never be used as it doesn't relate to any language(s)",
-					MessageType.Warning);
 			}
 		}
 

@@ -79,8 +79,9 @@ namespace DUCK.Localisation.Editor
 			}
 			else
 			{
+				var numberOfCategories = (localSchema.categories == null) ? 0 : localSchema.categories.Length;
 				EditorGUILayout.HelpBox(
-					string.Format("Key schema supplied ({0} categories defined)", localSchema.categories.Length), MessageType.None);
+					string.Format("Key schema supplied ({0} categories defined)", numberOfCategories), MessageType.None);
 				if (GUILayout.Button("Remove schema"))
 				{
 					CurrentSchema = null;

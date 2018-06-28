@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DUCK.Tween.Serialization;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,14 @@ namespace DUCK.Serialization.Editor
 	[TestFixture]
 	public class ArgsListTests
 	{
+		public class TestScriptableObject : ScriptableObject{}
+
+		public enum TestEnum
+		{
+			A,
+			B
+		}
+
 		[Test]
 		public void ExpectConstructorNotToThrow()
 		{
@@ -435,6 +444,46 @@ namespace DUCK.Serialization.Editor
 
 			Assert.AreEqual(spriteRenderer, resultArgsList[0]);
 			Assert.AreEqual(image, resultArgsList[1]);
+		}
+
+		[Test]
+		public void ExpectEnumSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TestEnum)}));
+
+			// Add some data, serialize and deserialize
+			var value = TestEnum.A;
+			argsList.Set(0, value);
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<TestEnum>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
+		}
+
+		[Test]
+		public void ExpectScriptableObjectSerializationToBeSupported()
+		{
+			var argsList = new ArgsList();
+
+			// test that it doesn't throw when specifying the type
+			Assert.DoesNotThrow(() => argsList.SetTypes(new List<Type> {typeof(TestScriptableObject)}));
+
+			// Add some data, serialize and deserialize
+			var value = ScriptableObject.CreateInstance<TestScriptableObject>();
+			argsList.Set(0, value);
+
+			var json = JsonUtility.ToJson(argsList);
+			var resultArgsList = JsonUtility.FromJson<ArgsList>(json);
+			var result = resultArgsList.Get<TestScriptableObject>(0);
+
+			// Now test the value is what it should be
+			Assert.AreEqual(value, result);
 		}
 
 		[Test]
