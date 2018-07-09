@@ -104,6 +104,16 @@ namespace DUCK.Http
 		}
 
 		/// <summary>
+		/// Creates a HttpRequest configured for HTTP GET for a Texture.
+		/// </summary>
+		/// <param name="uri">The URI of the resource to retrieve via HTTP GET.</param>
+		/// <returns>A HttpRequest object configured to retrieve data from uri.</returns>
+		public static HttpRequest GetTexture(string uri)
+		{
+			return new HttpRequest(UnityWebRequestTexture.GetTexture(uri));
+		}
+
+		/// <summary>
 		/// Create a HttpRequest configured to send form data to a server via HTTP POST.
 		/// </summary>
 		/// <param name="uri">The target URI to which form data will be transmitted.</param>
