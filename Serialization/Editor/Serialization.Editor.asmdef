@@ -2,7 +2,8 @@
     "name": "Serialization.Editor",
     "references": [
         "DUCK",
-        "Editor"
+        "Editor",
+        "Utils.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

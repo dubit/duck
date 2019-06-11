@@ -2,7 +2,9 @@
     "name": "Tween.Editor",
     "references": [
         "DUCK",
-        "Editor"
+        "Editor",
+        "Utils.Editor",
+        "Serialization.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
