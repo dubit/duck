@@ -1,0 +1,13 @@
+{
+    "name": "Localisation.Editor",
+    "references": [
+        "DUCK",
+        "Editor"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

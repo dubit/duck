@@ -1,0 +1,14 @@
+{
+    "name": "FSM.Tests",
+    "references": [
+        "DUCK"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
