@@ -1,7 +1,8 @@
 {
     "name": "Editor",
     "references": [
-        "DUCK"
+        "DUCK",
+        "Utils.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
