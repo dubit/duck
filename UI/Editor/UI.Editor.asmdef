@@ -1,0 +1,12 @@
+{
+    "name": "UI.Editor",
+    "references": [
+        "DUCK"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
