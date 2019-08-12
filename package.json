@@ -1,0 +1,12 @@
+{
+	"name": "com.dubit.duck",
+	"version": "2.3.0",
+	"displayName": "Dubit Unity Component Kit (DUCK)",
+	"description": "Duck is a suite of commonly used components and extensions for unity game development, intended to be used within a larger game project to limit code duplication across projects and promote good practice by setting a standard and encouraging decoupled independent components.",
+	"unity": "2019.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dubit/duck.git#lts_package"
+	},
+	"src": "Packages/DUCK"
+}
