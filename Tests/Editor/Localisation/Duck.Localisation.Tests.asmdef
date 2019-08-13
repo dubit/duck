@@ -1,0 +1,16 @@
+{
+    "name": "DUCK.Localisation.Tests",
+    "references": [
+        "Duck.Localisation"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
