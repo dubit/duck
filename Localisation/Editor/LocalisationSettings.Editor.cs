@@ -129,8 +129,6 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.BeginHorizontal();
 			var newName = EditorGUILayout.TextField("Name", nameProperty.stringValue);
 			newName = newName.Trim();
-			newName = Regex.Replace(newName, @"[^a-zA-Z0-9\-]", string.Empty);
-			newName = Regex.Replace(newName, @"^[\d-]*\s*", string.Empty);
 			if (nameProperty.stringValue != newName)
 			{
 				nameProperty.stringValue = newName;
@@ -158,8 +156,6 @@ namespace DUCK.Localisation.Editor
 
 				var newKey = EditorGUILayout.TextField(string.Empty, keyProperty.stringValue, options);
 				newKey = newKey.Trim();
-				newKey = Regex.Replace(newKey, @"[^a-zA-Z0-9\-]", string.Empty);
-				newKey = Regex.Replace(newKey, @"^[\d-]*\s*", string.Empty);
 				if (keyProperty.stringValue != newKey)
 				{
 					keyProperty.stringValue = newKey;
