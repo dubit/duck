@@ -6,17 +6,15 @@ namespace DUCK.Localisation.Editor
 {
 	/// <summary>
 	/// Key schema: the master-list of all localisation keys in the game, sorted by category, and what content type they refer to.
-	/// 
 	/// This is used in generating the LocalisationConfig for application-side, and driving most of the related Editor UI.
 	/// </summary>
 	[Serializable]
-	public class LocalisationKeySchema : ScriptableObject, ISerializationCallbackReceiver
+	public class LocalisationKeySchema : ISerializationCallbackReceiver
 	{
 		[Serializable]
 		public class LocalisationKeyCategory
 		{
 			public string name = string.Empty;
-			public LocalisedObject.LocalisedResourceType type = LocalisedObject.LocalisedResourceType.Text;
 			public string[] keys = { };
 
 			public override string ToString()

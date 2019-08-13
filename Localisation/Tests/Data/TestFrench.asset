@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4bff26a4e609d46a7c49a2d32dff08, type: 3}
+  m_Name: TestFrench
+  m_EditorClassIdentifier: 
+  locales:
+  - fr
+  crcEncodingVersion: 1
+  keys: 15d9ec9db249d95794a46bb2
+  values:
+  - Bonjour
+  - Merci
+  - Au revoir
