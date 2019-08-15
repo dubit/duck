@@ -1,4 +1,4 @@
-namespace DUCK.Localisation.Editor
+namespace DUCK.Localisation
 {
 	public static class CrcUtils
 	{
