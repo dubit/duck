@@ -1,6 +1,8 @@
 {
     "name": "DUCK.Runtime",
-    "references": [],
+    "references": [
+        "Unity.TextMeshPro"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
