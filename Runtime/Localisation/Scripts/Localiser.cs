@@ -23,12 +23,12 @@ namespace DUCK.Localisation
 		/// <summary>
 		/// True if the localiser has initialised successfully and loaded a localisation table
 		/// </summary>
-		public static bool Initialised { get { return currentLocalisationTable != null; } }
+		public static bool Initialised { get { return CurrentLocalisationTable != null; } }
 
 		private static readonly Dictionary<string, string> validTablePaths = new Dictionary<string, string>();
 		private static readonly Dictionary<string, string> allTablePaths = new Dictionary<string, string>();
 
-		private static LocalisationTable currentLocalisationTable;
+		public static LocalisationTable CurrentLocalisationTable { get; private set; }
 
 		public static event Action OnLocaleChanged;
 
@@ -78,7 +78,7 @@ namespace DUCK.Localisation
 
 						if (localeName == CurrentLocale.Name && Application.isPlaying)
 						{
-							currentLocalisationTable = locTable;
+							CurrentLocalisationTable = locTable;
 						}
 						else if (!locTable.SupportedLocales.Contains(CurrentLocale.Name))
 						{
@@ -88,7 +88,7 @@ namespace DUCK.Localisation
 				}
 			}
 
-			if (currentLocalisationTable == null && Application.isPlaying)
+			if (CurrentLocalisationTable == null && Application.isPlaying)
 			{
 				Debug.LogWarning(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, DefaultCulture));
 				SwitchCulture(DefaultCulture);
@@ -129,7 +129,20 @@ namespace DUCK.Localisation
 			}
 
 			CurrentLocale = new CultureInfo(culture);
-			currentLocalisationTable = loadedTable;
+			CurrentLocalisationTable = loadedTable;
+
+			if (OnLocaleChanged != null)
+			{
+				OnLocaleChanged.Invoke();
+			}
+
+			return true;
+		}
+
+		public static bool SwitchCulture(string culture, LocalisationTable localisationTable)
+		{
+			CurrentLocale = new CultureInfo(culture);
+			CurrentLocalisationTable = localisationTable;
 
 			if (OnLocaleChanged != null)
 			{
@@ -163,7 +176,7 @@ namespace DUCK.Localisation
 
 			try
 			{
-				target = currentLocalisationTable.GetString(key);
+				target = CurrentLocalisationTable.GetString(key);
 			}
 			catch (KeyNotFoundException)
 			{
