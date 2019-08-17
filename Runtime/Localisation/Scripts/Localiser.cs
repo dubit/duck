@@ -171,15 +171,18 @@ namespace DUCK.Localisation
 		{
 			if (!Initialised)
 			{
-				throw new Exception("Localiser not initialised");
+				Debug.LogError("Localiser GetLocalisedString: Localiser not initialised!");
+				target = string.Empty;
+				return false;
 			}
 
 			try
 			{
 				target = CurrentLocalisationTable.GetString(key);
 			}
-			catch (KeyNotFoundException)
+			catch (KeyNotFoundException exception)
 			{
+				Debug.LogError($"Localiser GetLocalisedString Exception: {exception.Message}");
 				target = string.Empty;
 				return false;
 			}

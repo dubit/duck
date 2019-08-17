@@ -48,13 +48,13 @@ namespace DUCK.Localisation.LocalisedObjects
 					try
 					{
 						localisedText = string.Format(localisedText, formatParameters);
+						HandleLocaleChanged(foundtranslation, localisedText);
 					}
 					catch (FormatException e)
 					{
 						Debug.LogError($"FormatException thrown by {name}: {e.Message}", this);
 					}
 				}
-				HandleLocaleChanged(foundtranslation, localisedText);
 			}
 			else
 			{
