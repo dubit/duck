@@ -43,7 +43,8 @@ namespace DUCK.Localisation.LocalisedObjects
 			{
 				var localisedText = "";
 				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
-				if (foundtranslation && formatParameters != null && formatParameters.Length > 0)
+				if (!foundtranslation) return;
+				if (formatParameters != null && formatParameters.Length > 0)
 				{
 					try
 					{
@@ -54,6 +55,10 @@ namespace DUCK.Localisation.LocalisedObjects
 					{
 						Debug.LogError($"FormatException thrown by {name}: {e.Message}", this);
 					}
+				}
+				else
+				{
+					HandleLocaleChanged(foundtranslation, localisedText);
 				}
 			}
 			else
