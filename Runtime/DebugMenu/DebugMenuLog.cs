@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using DUCK.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,7 +42,7 @@ namespace DUCK.DebugMenu
 		[SerializeField]
 		private Button clearButton;
 
-		private Queue<PendingLog> pendingLogs;
+		private ConcurrentQueue<PendingLog> pendingLogs;
 
 		private static DebugMenuLog instance;
 
@@ -90,7 +90,7 @@ namespace DUCK.DebugMenu
 			if (instance == null)
 			{
 				instance = this;
-				pendingLogs = new Queue<PendingLog>();
+				pendingLogs = new ConcurrentQueue<PendingLog>();
 			}
 		}
 
@@ -134,12 +134,14 @@ namespace DUCK.DebugMenu
 
 		private void Update()
 		{
-			if (pendingLogs.Count == 0) return;
+			if (pendingLogs.IsEmpty) return;
 
 			while (pendingLogs.Count > 0)
 			{
-				var pendingLog = pendingLogs.Dequeue();
-				AddLogEntry(pendingLog.LogMessage, pendingLog.LogType);
+				if (pendingLogs.TryDequeue(out var pendingLog))
+				{
+					AddLogEntry(pendingLog.LogMessage, pendingLog.LogType);
+				}
 			}
 
 			StartCoroutine(ScrollToBottom());
