@@ -21,8 +21,8 @@ namespace DUCK.Http
 		public HttpResponse(UnityWebRequest unityWebRequest)
 		{
 			Url = unityWebRequest.url;
-			Bytes = unityWebRequest.downloadHandler.data;
-			Text = unityWebRequest.downloadHandler.text;
+			Bytes = unityWebRequest.downloadHandler?.data;
+			Text = unityWebRequest.downloadHandler?.text;
 			IsSuccessful = !unityWebRequest.isHttpError && !unityWebRequest.isNetworkError;
 			IsHttpError = unityWebRequest.isHttpError;
 			IsNetworkError = unityWebRequest.isNetworkError;
