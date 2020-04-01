@@ -49,7 +49,7 @@ namespace DUCK.Utils.Editor
 					var selected = selection[i];
 
 					GameObject newObject;
-					if (PrefabUtility.GetPrefabType(targetPrefab) == PrefabType.Prefab)
+					if (PrefabUtility.GetPrefabAssetType(targetPrefab) != PrefabAssetType.NotAPrefab)
 					{
 						newObject = (GameObject)PrefabUtility.InstantiatePrefab(targetPrefab);
 					}

@@ -35,8 +35,6 @@ namespace DUCK.Localisation.Editor.Data
 
 			try
 			{
-				const char separator = ',';
-
 				var newData = new Dictionary<int, string>();
 
 				Func<string, string> cleanInput = input => input.Replace("\t", string.Empty);
