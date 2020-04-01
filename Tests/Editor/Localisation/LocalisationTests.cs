@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace DUCK.Localisation.Tests
 {
 	public class LocalisationTests
 	{
-		private const string TEST_DATA_PATH = "Assets/unity-localisation/Tests/Data";
+		private const string TEST_DATA_PATH = "Packages/com.dubit.duck/Tests/Editor/Localisation/Data";
 		private const string TEST_TABLE_ENGLISH = TEST_DATA_PATH + "/TestEnglish";
 		private const string TEST_TABLE_FRENCH = TEST_DATA_PATH + "/TestFrench";
 
