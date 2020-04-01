@@ -32,7 +32,7 @@ namespace DUCK.Localisation.Tests
 			}
 			catch (System.InvalidCastException e)
 			{
-				Debug.LogError(string.Format("Localisation key could not be cast to int: {0}", key));
+				Debug.LogError(string.Format("Localisation key could not be cast to int: {0}", key) + $"\n{e.Message}");
 			}
 
 			return target;
