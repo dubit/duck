@@ -74,7 +74,15 @@ namespace DUCK.Http
 			{
 				throw new ArgumentException("Value cannot be null or empty, if you are intending to remove the value, use the RemoveSuperHeader() method.");
 			}
-			superHeaders[key] = value;
+
+			if (superHeaders != null)
+			{
+				superHeaders[key] = value;
+			}
+			else if (Application.isPlaying)
+			{
+				Debug.LogError("DUCK Http SetSuperHeader Error: superHeaders Dictonary is null! Check the Http Instance is Initialized properly.");
+			}
 		}
 
 		/// <summary>
@@ -88,7 +96,17 @@ namespace DUCK.Http
 			{
 				throw new ArgumentException("Key cannot be null or empty.");
 			}
-			return superHeaders.Remove(key);
+
+			if (superHeaders != null)
+			{
+				return superHeaders.Remove(key);
+			}
+			else if (Application.isPlaying)
+			{
+				Debug.LogError("DUCK Http RemoveSuperHeader Error: superHeaders Dictonary is null! Check the Http Instance is Initialized properly.");
+			}
+
+			return false;
 		}
 
 		#region Creation Helpers
