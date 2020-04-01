@@ -11,10 +11,12 @@ namespace DUCK.PathFinding.Editor
 		private WaypointSystem waypointSystem;
 		private List<Waypoint> waypoints;
 		private Scene editorScene;
+		private string previousScenePath;
 
 		[OneTimeSetUp]
 		public void SetUpTest()
 		{
+			previousScenePath = EditorSceneManager.GetActiveScene().path;
 			editorScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 		}
 
@@ -271,7 +273,10 @@ namespace DUCK.PathFinding.Editor
 		[OneTimeTearDown]
 		public void TearDownTest()
 		{
-			EditorSceneManager.CloseScene(editorScene, true);
+			if (!string.IsNullOrEmpty(previousScenePath))
+			{
+				EditorSceneManager.OpenScene(previousScenePath, OpenSceneMode.Single);
+			}
 		}
 	}
 }
